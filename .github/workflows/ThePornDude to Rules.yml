@@ -35,10 +35,10 @@ jobs:
 
           headers = {
               "User-Agent": (
-                  "Mozilla/5.0 (Linux; Android 10; K) "
+                  "Mozilla/5.0 (X11; Linux x86_64) "
                   "AppleWebKit/537.36 "
                   "(KHTML, like Gecko) "
-                  "Chrome/140.0.0.0 Mobile Safari/537.36"
+                  "Chrome/140.0 Safari/537.36"
               )
           }
 
@@ -62,7 +62,6 @@ jobs:
 
           domains = set()
 
-          # 常见多级公共后缀处理
           multi_suffixes = {
               "co.uk",
               "org.uk",
@@ -112,37 +111,18 @@ jobs:
               if len(parts) < 2:
                   return None
 
-              suffix2 = ".".join(parts[-2:])
+              suffix = ".".join(parts[-2:])
 
-              if suffix2 in multi_suffixes and len(parts) >= 3:
+              if suffix in multi_suffixes and len(parts) >= 3:
                   return ".".join(parts[-3:])
 
-              return ".".join(parts[-2:])
-
-          excluded = {
-              "theporndude.com",
-              "google.com",
-              "googleapis.com",
-              "gstatic.com",
-              "google-analytics.com",
-              "googletagmanager.com",
-              "doubleclick.net",
-              "facebook.com",
-              "twitter.com",
-              "x.com",
-              "youtube.com",
-              "instagram.com",
-              "tiktok.com"
-          }
+              return suffix
 
           for tag in soup.find_all(
               ["a", "area"],
               href=True
           ):
               href = tag.get("href", "").strip()
-
-              if not href:
-                  continue
 
               if not href.startswith(
                   ("http://", "https://")
@@ -157,46 +137,39 @@ jobs:
                   if not host:
                       continue
 
-                  root = get_root_domain(host)
+                  domain = get_root_domain(host)
 
-                  if not root:
+                  if not domain:
                       continue
 
-                  if root in excluded:
+                  if domain == "theporndude.com":
                       continue
 
-                  if root == "theporndude.com":
+                  if domain.endswith(".theporndude.com"):
                       continue
 
-                  # 基本域名合法性检查
                   if not re.match(
                       r"^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$",
-                      root
+                      domain
                   ):
                       continue
 
-                  domains.add(root)
+                  domains.add(domain)
 
               except Exception:
                   continue
 
           domains = sorted(domains)
 
-          print()
-          print("==============================")
-          print("Domains found:", len(domains))
-          print("==============================")
-
-          for domain in domains:
-              print(domain)
-
           if not domains:
               raise RuntimeError(
-                  "No domains found. "
-                  "ThePornDude page structure may have changed."
+                  "No domains found."
               )
 
-          # 临时源文件，仅用于 Mihomo 转换
+          print(
+              f"Found {len(domains)} domains."
+          )
+
           os.makedirs(
               "/tmp/theporndude",
               exist_ok=True
@@ -207,12 +180,9 @@ jobs:
               "w",
               encoding="utf-8"
           ) as f:
-              f.write(
-                  "\n".join(domains)
-                  + "\n"
-              )
+              for domain in domains:
+                  f.write(domain + "\n")
 
-          # Surge
           os.makedirs(
               "ruleset",
               exist_ok=True
@@ -228,103 +198,53 @@ jobs:
                       f"DOMAIN-SUFFIX,{domain}\n"
                   )
 
-          print()
           print(
-              "Surge list generated:",
-              "ruleset/ThePornDude.list"
+              "Surge list generated."
           )
           PY
 
-      - name: Download latest Mihomo
+      - name: Prepare Mihomo
         run: |
           set -e
 
-          mkdir -p /tmp/mihomo
-
-          API="https://api.github.com/repos/MetaCubeX/mihomo/releases/latest"
-
-          URL=$(
-            curl -fsSL \
-              -H "Accept: application/vnd.github+json" \
-              "$API" \
-              | jq -r '
-                .assets[]
-                | select(
-                    .name
-                    | test("linux-amd64.*\\.gz$")
-                  )
-                | .browser_download_url
-              ' \
-              | head -n 1
-          )
-
-          if [ -z "$URL" ]; then
-            echo "Mihomo download URL not found."
+          if [ ! -f tools/mihomo ]; then
+            echo "tools/mihomo not found."
             exit 1
           fi
 
-          echo "Downloading:"
-          echo "$URL"
+          chmod +x tools/mihomo
 
-          curl -fL \
-            --retry 3 \
-            --retry-delay 2 \
-            "$URL" \
-            -o /tmp/mihomo/mihomo.gz
+          tools/mihomo version
 
-          gunzip -f \
-            /tmp/mihomo/mihomo.gz
-
-          chmod +x \
-            /tmp/mihomo/mihomo
-
-          /tmp/mihomo/mihomo version
-
-      - name: Convert domain rules to MRS
+      - name: Convert to MRS
         run: |
           set -e
 
-          rm -f \
-            ruleset/ThePornDude.mrs
+          rm -f ruleset/ThePornDude.mrs
 
-          /tmp/mihomo/mihomo convert-ruleset \
+          tools/mihomo convert-ruleset \
             domain \
             text \
             /tmp/theporndude/domains.txt \
             ruleset/ThePornDude.mrs
 
-          if [ ! -s ruleset/ThePornDude.mrs ]; then
-            echo "MRS generation failed."
-            exit 1
-          fi
+          test -s ruleset/ThePornDude.mrs
 
-          echo
           echo "MRS generated:"
-          ls -lh \
-            ruleset/ThePornDude.mrs
-
-      - name: Verify generated rules
-        run: |
-          set -e
-
-          echo "========== Surge =========="
-          wc -l \
-            ruleset/ThePornDude.list
-
-          echo
-          echo "========== MRS =========="
-          ls -lh \
-            ruleset/ThePornDude.mrs
-
-          echo
-          echo "========== First 20 domains =========="
-          head -n 20 \
-            ruleset/ThePornDude.list
+          ls -lh ruleset/ThePornDude.mrs
 
       - name: Cleanup
         run: |
           rm -rf /tmp/theporndude
-          rm -rf /tmp/mihomo
+
+      - name: Show result
+        run: |
+          echo "========== Surge =========="
+          wc -l ruleset/ThePornDude.list
+
+          echo
+          echo "========== MRS =========="
+          ls -lh ruleset/ThePornDude.mrs
 
       - name: Commit changes
         run: |
