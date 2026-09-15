@@ -1,0 +1,360 @@
+name: Update AdultBlock Rules
+
+on:
+  schedule:
+    - cron: "0 22 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install requests beautifulsoup4 tldextract
+
+      - name: Download latest Mihomo
+        run: |
+          set -e
+
+          VERSION=$(curl -fsSL \
+            https://api.github.com/repos/MetaCubeX/mihomo/releases/latest \
+            | jq -r '.tag_name')
+
+          echo "Mihomo version: ${VERSION}"
+
+          URL=$(curl -fsSL \
+            https://api.github.com/repos/MetaCubeX/mihomo/releases/latest \
+            | jq -r '
+              .assets[]
+              | select(
+                  .name
+                  | test("mihomo-linux-amd64.*\\.gz$")
+                )
+              | .browser_download_url
+            ' | head -n 1)
+
+          test -n "$URL"
+
+          curl -fL "$URL" -o /tmp/mihomo.gz
+          gunzip -f /tmp/mihomo.gz
+          chmod +x /tmp/mihomo
+
+          /tmp/mihomo -v
+
+      - name: Crawl ThePornDude and extract domains
+        run: |
+          python3 <<'PY'
+          import requests
+          import tldextract
+          from bs4 import BeautifulSoup
+          from urllib.parse import urljoin, urlparse
+          import re
+
+          START_URL = "https://theporndude.com/zh"
+
+          session = requests.Session()
+
+          session.headers.update({
+              "User-Agent": (
+                  "Mozilla/5.0 (X11; Linux x86_64) "
+                  "AppleWebKit/537.36 "
+                  "(KHTML, like Gecko) "
+                  "Chrome/140.0 Safari/537.36"
+              ),
+              "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+          })
+
+          visited_pages = set()
+          discovered_urls = set()
+
+          # 只允许继续抓取 ThePornDude 自己的页面
+          allowed_hosts = {
+              "theporndude.com",
+              "www.theporndude.com",
+          }
+
+          def normalize_host(host):
+              if not host:
+                  return ""
+
+              host = host.lower().strip().rstrip(".")
+
+              if host.startswith("www."):
+                  host = host[4:]
+
+              return host
+
+          def is_valid_http_url(url):
+              try:
+                  p = urlparse(url)
+
+                  if p.scheme not in ("http", "https"):
+                      return False
+
+                  if not p.netloc:
+                      return False
+
+                  return True
+
+              except Exception:
+                  return False
+
+          def get_registered_domain(host):
+              host = normalize_host(host)
+
+              if not host:
+                  return ""
+
+              try:
+                  result = tldextract.extract(host)
+
+                  if not result.domain or not result.suffix:
+                      return ""
+
+                  return f"{result.domain}.{result.suffix}".lower()
+
+              except Exception:
+                  return ""
+
+          def add_links_from_page(url):
+              if url in visited_pages:
+                  return []
+
+              visited_pages.add(url)
+
+              print("Fetching:", url)
+
+              try:
+                  r = session.get(
+                      url,
+                      timeout=30,
+                      allow_redirects=True
+                  )
+
+                  r.raise_for_status()
+
+              except Exception as e:
+                  print("Fetch failed:", url, e)
+                  return []
+
+              soup = BeautifulSoup(
+                  r.text,
+                  "html.parser"
+              )
+
+              internal_pages = []
+
+              for a in soup.find_all("a", href=True):
+
+                  href = a.get("href", "").strip()
+
+                  if not href:
+                      continue
+
+                  if href.startswith(("#", "mailto:", "javascript:", "tel:")):
+                      continue
+
+                  absolute = urljoin(url, href)
+
+                  if not is_valid_http_url(absolute):
+                      continue
+
+                  p = urlparse(absolute)
+
+                  host = normalize_host(p.hostname)
+
+                  if not host:
+                      continue
+
+                  # 保存所有实际外部链接
+                  if host not in allowed_hosts:
+                      discovered_urls.add(absolute)
+
+                  # 继续发现 ThePornDude 自己的分页/
+                  # 分类/隐藏页面
+                  if host in allowed_hosts:
+                      clean = (
+                          f"{p.scheme}://{host}"
+                          f"{p.path}"
+                      )
+
+                      if p.query:
+                          clean += "?" + p.query
+
+                      if clean not in visited_pages:
+                          internal_pages.append(clean)
+
+              return internal_pages
+
+          # 第一页
+          queue = [START_URL]
+
+          # 最多继续抓取 200 个站内页面，避免意外爬虫循环
+          MAX_INTERNAL_PAGES = 200
+
+          while queue and len(visited_pages) < MAX_INTERNAL_PAGES:
+
+              current = queue.pop(0)
+
+              new_pages = add_links_from_page(current)
+
+              for page in new_pages:
+                  if page not in visited_pages:
+                      queue.append(page)
+
+          print()
+          print("Internal pages crawled:", len(visited_pages))
+          print("External URLs discovered:", len(discovered_urls))
+
+          # 从实际 href 提取注册域名
+          domains = set()
+
+          for url in discovered_urls:
+
+              try:
+                  host = urlparse(url).hostname
+
+                  domain = get_registered_domain(host)
+
+                  if not domain:
+                      continue
+
+                  # 排除目录自身
+                  if domain in {
+                      "theporndude.com",
+                      "pdude.link",
+                  }:
+                      continue
+
+                  # 排除明显的社交/统计/广告基础设施
+                  if domain in {
+                      "google.com",
+                      "googleapis.com",
+                      "googletagmanager.com",
+                      "google-analytics.com",
+                      "twitter.com",
+                      "x.com",
+                      "facebook.com",
+                      "instagram.com",
+                      "youtube.com",
+                      "youtube-nocookie.com",
+                      "tiktok.com",
+                  }:
+                      continue
+
+                  domains.add(domain)
+
+              except Exception:
+                  continue
+
+          domains = sorted(domains)
+
+          print("Final domains:", len(domains))
+
+          # 输出纯域名文件
+          with open(
+              "ruleset/AdultBlock_domains.txt",
+              "w",
+              encoding="utf-8"
+          ) as f:
+
+              for domain in domains:
+                  f.write(domain + "\n")
+
+          # Surge / Clash 通用 DOMAIN-SUFFIX 规则
+          with open(
+              "ruleset/AdultBlock.list",
+              "w",
+              encoding="utf-8"
+          ) as f:
+
+              f.write(
+                  "# ThePornDude domain blocklist\n"
+              )
+
+              for domain in domains:
+                  f.write(
+                      f"DOMAIN-SUFFIX,{domain},REJECT\n"
+                  )
+
+          # 额外输出纯 Mihomo domain provider 文本
+          with open(
+              "ruleset/AdultBlock_mrs.txt",
+              "w",
+              encoding="utf-8"
+          ) as f:
+
+              for domain in domains:
+                  f.write(
+                      f"+.{domain}\n"
+                  )
+
+          print()
+          print("Generated:")
+          print("  ruleset/AdultBlock_domains.txt")
+          print("  ruleset/AdultBlock.list")
+          print("  ruleset/AdultBlock_mrs.txt")
+          PY
+
+      - name: Build MRS
+        run: |
+          set -e
+
+          mkdir -p ruleset
+
+          /tmp/mihomo convert-ruleset \
+            domain \
+            text \
+            ruleset/AdultBlock_mrs.txt \
+            ruleset/AdultBlock.mrs
+
+          ls -lh ruleset/AdultBlock*
+
+      - name: Show statistics
+        run: |
+          echo "========== Statistics =========="
+
+          echo "Domains:"
+          wc -l ruleset/AdultBlock_domains.txt
+
+          echo
+          echo "Surge list:"
+          wc -l ruleset/AdultBlock.list
+
+          echo
+          echo "MRS:"
+          ls -lh ruleset/AdultBlock.mrs
+
+          echo
+          echo "First 20 domains:"
+          head -n 20 ruleset/AdultBlock_domains.txt
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add ruleset/AdultBlock_domains.txt
+          git add ruleset/AdultBlock.list
+          git add ruleset/AdultBlock_mrs.txt
+          git add ruleset/AdultBlock.mrs
+
+          if git diff --cached --quiet; then
+            echo "No changes."
+            exit 0
+          fi
+
+          git commit -m "Update AdultBlock rules"
+
+          git push
