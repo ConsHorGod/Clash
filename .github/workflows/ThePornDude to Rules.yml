@@ -1,4 +1,4 @@
-name: Update ThePornDude Rules
+name: Update AdultBlock Rules
 
 on:
   schedule:
@@ -15,140 +15,195 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Install dependencies
         run: |
-          python3 -m pip install --disable-pip-version-check -q \
-            requests \
-            beautifulsoup4
+          python3 -m pip install --upgrade pip
+          pip install requests beautifulsoup4 tldextract
 
-      - name: Crawl ThePornDude
+      - name: Download latest Mihomo
         run: |
+          set -e
+
+          URL=$(curl -fsSL \
+            https://api.github.com/repos/MetaCubeX/mihomo/releases/latest \
+            | jq -r '
+              .assets[]
+              | select(.name | test("mihomo-linux-amd64.*\\.gz$"))
+              | .browser_download_url
+            ' | head -n 1)
+
+          test -n "$URL"
+
+          curl -fL "$URL" -o /tmp/mihomo.gz
+          gunzip -f /tmp/mihomo.gz
+          chmod +x /tmp/mihomo
+
+          /tmp/mihomo -v
+
+      - name: Crawl and build rules
+        run: |
+          mkdir -p ruleset
+
           python3 <<'PY'
           import requests
+          import tldextract
           from bs4 import BeautifulSoup
-          from urllib.parse import urlparse
-          import re
-          import os
+          from urllib.parse import urljoin, urlparse
 
-          URL = "https://theporndude.com/zh"
+          START_URL = "https://theporndude.com/zh"
 
-          headers = {
-              "User-Agent": (
+          session = requests.Session()
+          session.headers.update({
+              "User-Agent":
                   "Mozilla/5.0 (X11; Linux x86_64) "
                   "AppleWebKit/537.36 "
                   "(KHTML, like Gecko) "
-                  "Chrome/140.0 Safari/537.36"
-              )
+                  "Chrome/140.0 Safari/537.36",
+              "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+          })
+
+          visited = set()
+          external_urls = set()
+          queue = [START_URL]
+
+          allowed_hosts = {
+              "theporndude.com",
+              "www.theporndude.com",
           }
 
-          print("Downloading:", URL)
-
-          r = requests.get(
-              URL,
-              headers=headers,
-              timeout=20
-          )
-
-          r.raise_for_status()
-
-          print("HTTP:", r.status_code)
-          print("HTML:", len(r.content), "bytes")
-
-          soup = BeautifulSoup(
-              r.content,
-              "html.parser"
-          )
-
-          domains = set()
-
-          multi_suffixes = {
-              "co.uk",
-              "org.uk",
-              "ac.uk",
-              "gov.uk",
-              "com.au",
-              "net.au",
-              "org.au",
-              "com.br",
-              "com.cn",
-              "com.hk",
-              "com.tw",
-              "co.jp",
-              "co.kr",
-              "co.nz",
-              "co.za",
-              "com.sg",
-              "com.mx",
-              "com.tr",
-              "com.ua",
-              "com.pl",
-              "com.ar",
-              "com.co",
-              "com.pe",
-              "com.my",
-              "com.ph",
-              "com.pk",
-              "com.vn",
-              "com.id",
-              "com.ng",
-              "com.bd",
-              "com.eg",
-              "co.in",
-              "co.il",
-              "co.th",
-              "co.id"
+          excluded_domains = {
+              "theporndude.com",
+              "pdude.link",
+              "google.com",
+              "googleapis.com",
+              "googletagmanager.com",
+              "google-analytics.com",
+              "twitter.com",
+              "x.com",
+              "facebook.com",
+              "instagram.com",
+              "youtube.com",
+              "youtube-nocookie.com",
+              "tiktok.com",
           }
 
-          def root_domain(host):
-              host = host.lower().strip(".")
+          MAX_PAGES = 200
+
+          def normalize_host(host):
+              if not host:
+                  return ""
+
+              host = host.lower().strip().rstrip(".")
 
               if host.startswith("www."):
                   host = host[4:]
 
-              parts = host.split(".")
+              return host
 
-              if len(parts) < 2:
-                  return None
+          def registered_domain(host):
+              host = normalize_host(host)
 
-              suffix = ".".join(parts[-2:])
+              if not host:
+                  return ""
 
-              if suffix in multi_suffixes and len(parts) >= 3:
-                  return ".".join(parts[-3:])
+              result = tldextract.extract(host)
 
-              return suffix
+              if not result.domain or not result.suffix:
+                  return ""
 
-          for tag in soup.find_all(
-              ["a", "area"],
-              href=True
-          ):
-              href = tag.get("href", "").strip()
+              return f"{result.domain}.{result.suffix}".lower()
 
-              if not href.startswith(
-                  ("http://", "https://")
-              ):
+          while queue and len(visited) < MAX_PAGES:
+
+              page = queue.pop(0)
+
+              if page in visited:
                   continue
 
-              try:
-                  parsed = urlparse(href)
+              visited.add(page)
 
-                  host = parsed.hostname
+              print("Fetching:", page)
+
+              try:
+                  response = session.get(
+                      page,
+                      timeout=30,
+                      allow_redirects=True
+                  )
+                  response.raise_for_status()
+
+              except Exception as e:
+                  print("Failed:", e)
+                  continue
+
+              soup = BeautifulSoup(
+                  response.text,
+                  "html.parser"
+              )
+
+              for a in soup.find_all("a", href=True):
+
+                  href = a["href"].strip()
+
+                  if not href:
+                      continue
+
+                  if href.startswith(
+                      ("#", "mailto:", "javascript:", "tel:")
+                  ):
+                      continue
+
+                  absolute = urljoin(page, href)
+
+                  try:
+                      parsed = urlparse(absolute)
+                  except Exception:
+                      continue
+
+                  if parsed.scheme not in ("http", "https"):
+                      continue
+
+                  host = normalize_host(parsed.hostname)
 
                   if not host:
                       continue
 
-                  domain = root_domain(host)
+                  # 保存实际外部链接
+                  if host not in allowed_hosts:
+                      external_urls.add(absolute)
+
+                  # 继续抓取 ThePornDude 自己的页面
+                  if host in allowed_hosts:
+
+                      internal = (
+                          f"https://{host}{parsed.path}"
+                      )
+
+                      if parsed.query:
+                          internal += "?" + parsed.query
+
+                      if internal not in visited:
+                          queue.append(internal)
+
+          print()
+          print("Internal pages:", len(visited))
+          print("External URLs:", len(external_urls))
+
+          domains = set()
+
+          for url in external_urls:
+
+              try:
+                  host = urlparse(url).hostname
+                  domain = registered_domain(host)
 
                   if not domain:
                       continue
 
-                  if domain == "theporndude.com":
-                      continue
-
-                  if not re.match(
-                      r"^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$",
-                      domain
-                  ):
+                  if domain in excluded_domains:
                       continue
 
                   domains.add(domain)
@@ -158,133 +213,66 @@ jobs:
 
           domains = sorted(domains)
 
-          if not domains:
-              raise RuntimeError(
-                  "No domains found."
-              )
+          print("Final domains:", len(domains))
 
-          print()
-          print(
-              "Found",
-              len(domains),
-              "domains."
-          )
-
-          os.makedirs(
-              "/tmp/theporndude",
-              exist_ok=True
-          )
-
+          # 生成 Surge LIST，不带 REJECT
           with open(
-              "/tmp/theporndude/domains.txt",
+              "ruleset/AdultBlock.list",
               "w",
               encoding="utf-8"
           ) as f:
-              for domain in domains:
-                  f.write(domain + "\n")
 
-          os.makedirs(
-              "ruleset",
-              exist_ok=True
-          )
-
-          with open(
-              "ruleset/ThePornDude.list",
-              "w",
-              encoding="utf-8"
-          ) as f:
               for domain in domains:
                   f.write(
                       f"DOMAIN-SUFFIX,{domain}\n"
                   )
 
+          print("Generated AdultBlock.list")
+
+          # 将 MRS 转换所需内容通过 GitHub Actions 环境变量传递
+          with open(
+              "/tmp/AdultBlock_domains.txt",
+              "w",
+              encoding="utf-8"
+          ) as f:
+
+              for domain in domains:
+                  f.write(
+                      f"+.{domain}\n"
+                  )
+
           PY
-
-      - name: Download Mihomo
-        run: |
-          set -e
-
-          MIHOMO_VERSION="v1.19.20"
-
-          mkdir -p /tmp/mihomo
-
-          URL="https://github.com/MetaCubeX/mihomo/releases/download/${MIHOMO_VERSION}/mihomo-linux-amd64-compatible-${MIHOMO_VERSION}.gz"
-
-          echo "Downloading Mihomo:"
-          echo "$URL"
-
-          curl -fL \
-            --retry 3 \
-            --retry-delay 2 \
-            --connect-timeout 10 \
-            --max-time 120 \
-            "$URL" \
-            -o /tmp/mihomo/mihomo.gz
-
-          gunzip -f \
-            /tmp/mihomo/mihomo.gz
-
-          chmod +x \
-            /tmp/mihomo/mihomo
-
-          /tmp/mihomo/mihomo version
 
       - name: Convert to MRS
         run: |
-          set -e
-
-          rm -f \
-            ruleset/ThePornDude.mrs
-
-          /tmp/mihomo/mihomo convert-ruleset \
+          /tmp/mihomo convert-ruleset \
             domain \
             text \
-            /tmp/theporndude/domains.txt \
-            ruleset/ThePornDude.mrs
-
-          test -s \
-            ruleset/ThePornDude.mrs
-
-          echo "MRS generated:"
-          ls -lh \
-            ruleset/ThePornDude.mrs
-
-      - name: Cleanup
-        run: |
-          rm -rf /tmp/theporndude
-          rm -rf /tmp/mihomo
+            /tmp/AdultBlock_domains.txt \
+            ruleset/AdultBlock.mrs
 
       - name: Show result
         run: |
-          echo "========== Surge =========="
+          echo "========== Result =========="
 
-          wc -l \
-            ruleset/ThePornDude.list
+          echo "Surge:"
+          wc -l ruleset/AdultBlock.list
 
-          echo
-          echo "========== MRS =========="
+          echo "MRS:"
+          ls -lh ruleset/AdultBlock.mrs
 
-          ls -lh \
-            ruleset/ThePornDude.mrs
-
-      - name: Commit changes
+      - name: Commit and push
         run: |
-          git config user.name \
-            "github-actions[bot]"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git config user.email \
-            "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add \
-            ruleset/ThePornDude.list \
-            ruleset/ThePornDude.mrs
+          git add ruleset/AdultBlock.list
+          git add ruleset/AdultBlock.mrs
 
           if git diff --cached --quiet; then
             echo "No changes."
             exit 0
           fi
 
-          git commit \
-            -m "Update ThePornDude rules"
-
+          git commit -m "Update AdultBlock rules"
           git push
