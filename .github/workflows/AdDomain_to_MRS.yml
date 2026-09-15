@@ -1,0 +1,63 @@
+name: Update AdDomain MRS
+
+on:
+  schedule:
+    - cron: "0 22 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download AdDomain
+        run: |
+          mkdir -p ruleset
+          curl -L --fail --retry 3 \
+            -o ruleset/AdDomain.list \
+            https://raw.githubusercontent.com/Thoseyearsbrian/Aegis/main/rules/AdDomain.list
+
+      - name: Download Mihomo
+        run: |
+          MIHOMO_URL=$(curl -s https://api.github.com/repos/MetaCubeX/mihomo/releases/latest \
+            | jq -r '.assets[] | select(.name | test("mihomo-linux-amd64-v.*\\.gz$")) | .browser_download_url' \
+            | head -n 1)
+
+          curl -L --fail --retry 3 -o mihomo.gz "$MIHOMO_URL"
+          gzip -d mihomo.gz
+          chmod +x mihomo
+
+      - name: Convert AdDomain to MRS
+        run: |
+          ./mihomo convert-ruleset domain text \
+            ruleset/AdDomain.list \
+            ruleset/AdDomain.mrs
+
+      - name: Remove source files
+        run: |
+          rm -f ruleset/AdDomain.list
+          rm -f mihomo
+
+      - name: Show result
+        run: |
+          ls -lh ruleset/AdDomain.mrs
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add ruleset/AdDomain.mrs
+
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "Update AdDomain MRS"
+            git push
+          fi
