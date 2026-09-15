@@ -40,6 +40,10 @@ jobs:
             "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Global/Global_Classical.yaml" \
             -o /tmp/Global_Classical.yaml
 
+          curl -L \
+            "https://yfamilys.com/rule/ASN-CN.rule" \
+            -o /tmp/ASN-CN.rule
+
       - name: Download mihomo
         run: |
           VERSION=$(curl -s https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | jq -r .tag_name)
@@ -249,7 +253,6 @@ jobs:
                   if not line or line.startswith("#"):
                       continue
 
-                  # 提取 IP-CIDR / IP-CIDR6
                   m = re.match(
                       r"^-\s*IP-CIDR6?,\s*([^,\s]+)",
                       line,
@@ -264,7 +267,6 @@ jobs:
 
                       continue
 
-                  # 提取纯 IPv4 CIDR
                   m = re.match(
                       r"^-\s*((?:\d{1,3}\.){3}\d{1,3}/\d{1,2})(?:\s|$)",
                       line
@@ -274,7 +276,6 @@ jobs:
                       cidrs.add(m.group(1).strip())
                       continue
 
-                  # 提取纯 IPv6 CIDR
                   m = re.match(
                       r"^-\s*([0-9a-fA-F:]+/\d{1,3})(?:\s|$)",
                       line
@@ -295,6 +296,40 @@ jobs:
             /tmp/Global_Classical_IP.yaml \
             ruleset/Global_Classical_IP.mrs
 
+      - name: Convert ASN-CN to MRS
+        run: |
+          python3 - <<'PY'
+          import re
+
+          src = "/tmp/ASN-CN.rule"
+          out = "/tmp/ASN-CN.yaml"
+
+          asns = set()
+
+          with open(src, "r", encoding="utf-8") as f:
+              for line in f:
+                  line = line.strip()
+
+                  if not line or line.startswith("#"):
+                      continue
+
+                  m = re.match(r"^IP-ASN,(\d+)(?:,.*)?$", line, re.I)
+
+                  if m:
+                      asns.add(m.group(1))
+
+          with open(out, "w", encoding="utf-8") as f:
+              f.write("payload:\n")
+              for asn in sorted(asns, key=int):
+                  f.write(f'  - "{asn}"\n')
+
+          print(f"ASN-CN rules: {len(asns)}")
+          PY
+
+          /tmp/mihomo convert-ruleset ip-asn yaml \
+            /tmp/ASN-CN.yaml \
+            ruleset/ASN-CN.mrs
+
       - name: Check output
         run: |
           echo "===== MRS files ====="
@@ -304,6 +339,7 @@ jobs:
           ls -lh ruleset/Proxy_Domain.mrs
           ls -lh ruleset/Global_Domain.mrs
           ls -lh ruleset/Global_Classical_IP.mrs
+          ls -lh ruleset/ASN-CN.mrs
 
           echo "===== File type ====="
 
@@ -312,6 +348,7 @@ jobs:
           file ruleset/Proxy_Domain.mrs
           file ruleset/Global_Domain.mrs
           file ruleset/Global_Classical_IP.mrs
+          file ruleset/ASN-CN.mrs
 
       - name: Commit changes
         run: |
@@ -323,10 +360,11 @@ jobs:
           git add ruleset/Proxy_Domain.mrs
           git add ruleset/Global_Domain.mrs
           git add ruleset/Global_Classical_IP.mrs
+          git add ruleset/ASN-CN.mrs
 
           if git diff --cached --quiet; then
             echo "No changes."
           else
-            git commit -m "Update ChinaMax Proxy Global and Global Classical IP MRS"
+            git commit -m "Update ChinaMax Proxy Global Global Classical IP and ASN MRS"
             git push
           fi
