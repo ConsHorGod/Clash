@@ -1,86 +1,76 @@
-name: Update AdultBlock Rules
-
+name: Update AdultWebsites Rules
 on:
   schedule:
     - cron: "0 22 * * *"
   workflow_dispatch:
-
 permissions:
   contents: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip
-          pip install requests beautifulsoup4 tldextract
-
+          python3 -m pip install --disable-pip-version-check -q \
+            requests \
+            beautifulsoup4 \
+            tldextract
       - name: Download latest Mihomo
         run: |
           set -e
-
-          URL=$(curl -fsSL \
-            https://api.github.com/repos/MetaCubeX/mihomo/releases/latest \
+          API="https://api.github.com/repos/MetaCubeX/mihomo/releases/latest"
+          URL=$(curl -fsSL --retry 3 --retry-delay 2 "$API" \
             | jq -r '
-              .assets[]
-              | select(.name | test("mihomo-linux-amd64.*\\.gz$"))
-              | .browser_download_url
-            ' | head -n 1)
-
-          test -n "$URL"
-
-          curl -fL "$URL" -o /tmp/mihomo.gz
+                .assets[]
+                | select(
+                    .name
+                    | test("^mihomo-linux-amd64.*\\.gz$")
+                  )
+                | .browser_download_url
+              ' \
+            | head -n 1)
+          if [ -z "$URL" ]; then
+            echo "Failed to find Mihomo release."
+            exit 1
+          fi
+          echo "Downloading Mihomo:"
+          echo "$URL"
+          curl -fL --retry 5 --retry-delay 2 \
+            "$URL" \
+            -o /tmp/mihomo.gz
           gunzip -f /tmp/mihomo.gz
           chmod +x /tmp/mihomo
-
           /tmp/mihomo -v
-
-      - name: Crawl and build rules
+      - name: Crawl all pages and build rules
         run: |
           mkdir -p ruleset
-
           python3 <<'PY'
+          import re
+          import json
           import requests
           import tldextract
           from bs4 import BeautifulSoup
-          from urllib.parse import urljoin, urlparse
-
+          from urllib.parse import (
+              urljoin,
+              urlparse,
+              urldefrag
+          )
+          from collections import deque
           START_URL = "https://theporndude.com/zh"
-
-          session = requests.Session()
-          session.headers.update({
-              "User-Agent":
-                  "Mozilla/5.0 (X11; Linux x86_64) "
-                  "AppleWebKit/537.36 "
-                  "(KHTML, like Gecko) "
-                  "Chrome/140.0 Safari/537.36",
-              "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-          })
-
-          visited = set()
-          external_urls = set()
-          queue = [START_URL]
-
-          allowed_hosts = {
+          ALLOWED_HOSTS = {
               "theporndude.com",
               "www.theporndude.com",
           }
-
-          excluded_domains = {
-              "theporndude.com",
-              "pdude.link",
+          EXCLUDED_DOMAINS = {
               "google.com",
               "googleapis.com",
               "googletagmanager.com",
               "google-analytics.com",
+              "doubleclick.net",
               "twitter.com",
               "x.com",
               "facebook.com",
@@ -88,191 +78,719 @@ jobs:
               "youtube.com",
               "youtube-nocookie.com",
               "tiktok.com",
+              "linkedin.com",
+              "pinterest.com",
+              "reddit.com",
+              "cloudflare.com",
+              "cdnjs.cloudflare.com",
           }
-
-          MAX_PAGES = 200
-
+          # 常见 HTML URL 属性
+          URL_ATTRIBUTES = (
+              "href",
+              "src",
+              "data-src",
+              "data-url",
+              "data-href",
+              "data-link",
+              "data-site",
+              "data-domain",
+              "action",
+              "poster",
+          )
+          # 从 HTML / JS / JSON 中提取 URL
+          URL_REGEX = re.compile(
+              r'https?://[^\s"\'<>\\]+',
+              re.IGNORECASE
+          )
+          session = requests.Session()
+          session.headers.update({
+              "User-Agent":
+                  "Mozilla/5.0 (X11; Linux x86_64) "
+                  "AppleWebKit/537.36 "
+                  "(KHTML, like Gecko) "
+                  "Chrome/140.0 Safari/537.36",
+              "Accept":
+                  "text/html,application/xhtml+xml,"
+                  "application/xml,application/json,"
+                  "text/javascript,text/css,"
+                  "*/*;q=0.8",
+              "Accept-Language":
+                  "zh-CN,zh;q=0.9,en;q=0.8",
+              "Connection":
+                  "keep-alive",
+          })
+          session.max_redirects = 10
           def normalize_host(host):
               if not host:
                   return ""
-
               host = host.lower().strip().rstrip(".")
-
               if host.startswith("www."):
                   host = host[4:]
-
               return host
-
           def registered_domain(host):
               host = normalize_host(host)
-
               if not host:
                   return ""
-
-              result = tldextract.extract(host)
-
+              try:
+                  result = tldextract.extract(host)
+              except Exception:
+                  return ""
               if not result.domain or not result.suffix:
                   return ""
-
-              return f"{result.domain}.{result.suffix}".lower()
-
-          while queue and len(visited) < MAX_PAGES:
-
-              page = queue.pop(0)
-
+              return (
+                  f"{result.domain}.{result.suffix}"
+                  .lower()
+              )
+          def clean_url(url, base_url=None):
+              if not url:
+                  return None
+              url = str(url).strip()
+              if not url:
+                  return None
+              # 去掉常见包裹字符
+              url = url.strip(
+                  "\"'`()[]{}<>"
+              )
+              if base_url:
+                  try:
+                      url = urljoin(
+                          base_url,
+                          url
+                      )
+                  except Exception:
+                      return None
+              url, _ = urldefrag(url)
+              try:
+                  parsed = urlparse(url)
+              except Exception:
+                  return None
+              if parsed.scheme not in (
+                  "http",
+                  "https",
+              ):
+                  return None
+              if not parsed.hostname:
+                  return None
+              return url
+          def normalize_internal_url(url):
+              url = clean_url(url)
+              if not url:
+                  return None
+              try:
+                  parsed = urlparse(url)
+              except Exception:
+                  return None
+              host = normalize_host(
+                  parsed.hostname
+              )
+              if host not in ALLOWED_HOSTS:
+                  return None
+              path = parsed.path or "/"
+              result = (
+                  f"https://{host}"
+                  f"{path}"
+              )
+              if parsed.query:
+                  result += (
+                      "?" + parsed.query
+                  )
+              return result
+          def extract_urls_from_text(
+              text,
+              base_url
+          ):
+              results = set()
+              if not text:
+                  return results
+              # 直接扫描 http(s) URL
+              for match in URL_REGEX.findall(
+                  text
+              ):
+                  url = clean_url(
+                      match,
+                      base_url
+                  )
+                  if url:
+                      results.add(url)
+              return results
+          def extract_json_urls(
+              obj,
+              base_url
+          ):
+              results = set()
+              if isinstance(obj, dict):
+                  for key, value in obj.items():
+                      if isinstance(value, str):
+                          if (
+                              value.startswith(
+                                  "http://"
+                              )
+                              or
+                              value.startswith(
+                                  "https://"
+                              )
+                          ):
+                              url = clean_url(
+                                  value,
+                                  base_url
+                              )
+                              if url:
+                                  results.add(url)
+                          results.update(
+                              extract_urls_from_text(
+                                  value,
+                                  base_url
+                              )
+                          )
+                      elif isinstance(
+                          value,
+                          (dict, list)
+                      ):
+                          results.update(
+                              extract_json_urls(
+                                  value,
+                                  base_url
+                              )
+                          )
+              elif isinstance(obj, list):
+                  for item in obj:
+                      results.update(
+                          extract_json_urls(
+                              item,
+                              base_url
+                          )
+                      )
+              return results
+          queue = deque([START_URL])
+          visited = set()
+          discovered_external_urls = set()
+          discovered_internal_urls = set()
+          domains = {
+              "theporndude.com"
+          }
+          while queue:
+              page = queue.popleft()
               if page in visited:
                   continue
-
               visited.add(page)
-
-              print("Fetching:", page)
-
+              print(
+                  f"[PAGE {len(visited)}] {page}"
+              )
               try:
                   response = session.get(
                       page,
-                      timeout=30,
+                      timeout=25,
                       allow_redirects=True
                   )
-                  response.raise_for_status()
-
-              except Exception as e:
-                  print("Failed:", e)
-                  continue
-
-              soup = BeautifulSoup(
-                  response.text,
-                  "html.parser"
-              )
-
-              for a in soup.find_all("a", href=True):
-
-                  href = a["href"].strip()
-
-                  if not href:
-                      continue
-
-                  if href.startswith(
-                      ("#", "mailto:", "javascript:", "tel:")
-                  ):
-                      continue
-
-                  absolute = urljoin(page, href)
-
-                  try:
-                      parsed = urlparse(absolute)
-                  except Exception:
-                      continue
-
-                  if parsed.scheme not in ("http", "https"):
-                      continue
-
-                  host = normalize_host(parsed.hostname)
-
-                  if not host:
-                      continue
-
-                  # 保存实际外部链接
-                  if host not in allowed_hosts:
-                      external_urls.add(absolute)
-
-                  # 继续抓取 ThePornDude 自己的页面
-                  if host in allowed_hosts:
-
-                      internal = (
-                          f"https://{host}{parsed.path}"
+                  if response.status_code != 200:
+                      print(
+                          "  HTTP:",
+                          response.status_code
                       )
-
-                      if parsed.query:
-                          internal += "?" + parsed.query
-
-                      if internal not in visited:
-                          queue.append(internal)
-
+                      continue
+              except Exception as e:
+                  print(
+                      "  FAILED:",
+                      e
+                  )
+                  continue
+              final_page_url = response.url
+              content_type = (
+                  response.headers
+                  .get(
+                      "content-type",
+                      ""
+                  )
+                  .lower()
+              )
+              # 当前页面如果自己发生重定向，
+              # 也记录最终域名
+              final_host = normalize_host(
+                  urlparse(
+                      final_page_url
+                  ).hostname
+              )
+              final_domain = registered_domain(
+                  final_host
+              )
+              if (
+                  final_domain
+                  and final_domain
+                  not in EXCLUDED_DOMAINS
+              ):
+                  if final_host not in ALLOWED_HOSTS:
+                      discovered_external_urls.add(
+                          final_page_url
+                      )
+              body = response.content
+              # ==============================
+              # HTML
+              # ==============================
+              if (
+                  "html" in content_type
+                  or not content_type
+              ):
+                  try:
+                      text = response.text
+                  except Exception:
+                      text = body.decode(
+                          "utf-8",
+                          errors="ignore"
+                      )
+                  soup = BeautifulSoup(
+                      body,
+                      "html.parser"
+                  )
+                  # --------------------------------
+                  # HTML 标签属性
+                  # --------------------------------
+                  for tag in soup.find_all(True):
+                      for attr in URL_ATTRIBUTES:
+                          if not tag.has_attr(
+                              attr
+                          ):
+                              continue
+                          value = tag.get(
+                              attr
+                          )
+                          if isinstance(
+                              value,
+                              list
+                          ):
+                              value = " ".join(
+                                  value
+                              )
+                          if not value:
+                              continue
+                          url = clean_url(
+                              value,
+                              response.url
+                          )
+                          if url:
+                              parsed = urlparse(
+                                  url
+                              )
+                              host = normalize_host(
+                                  parsed.hostname
+                              )
+                              if (
+                                  host
+                                  in ALLOWED_HOSTS
+                              ):
+                                  internal = (
+                                      normalize_internal_url(
+                                          url
+                                      )
+                                  )
+                                  if (
+                                      internal
+                                      and internal
+                                      not in visited
+                                  ):
+                                      queue.append(
+                                          internal
+                                      )
+                                      discovered_internal_urls.add(
+                                          internal
+                                      )
+                              else:
+                                  discovered_external_urls.add(
+                                      url
+                                  )
+                  # --------------------------------
+                  # HTML / JS / JSON 内的 URL
+                  # --------------------------------
+                  text_urls = (
+                      extract_urls_from_text(
+                          text,
+                          response.url
+                      )
+                  )
+                  for url in text_urls:
+                      parsed = urlparse(url)
+                      host = normalize_host(
+                          parsed.hostname
+                      )
+                      if host in ALLOWED_HOSTS:
+                          internal = (
+                              normalize_internal_url(
+                                  url
+                              )
+                          )
+                          if (
+                              internal
+                              and internal
+                              not in visited
+                          ):
+                              queue.append(
+                                  internal
+                              )
+                              discovered_internal_urls.add(
+                                  internal
+                              )
+                      else:
+                          discovered_external_urls.add(
+                              url
+                          )
+                  # --------------------------------
+                  # JSON script
+                  # --------------------------------
+                  for script in soup.find_all(
+                      "script"
+                  ):
+                      script_text = (
+                          script.string
+                          or script.get_text()
+                          or ""
+                      )
+                      if not script_text:
+                          continue
+                      # 普通 URL
+                      for url in (
+                          extract_urls_from_text(
+                              script_text,
+                              response.url
+                          )
+                      ):
+                          parsed = urlparse(
+                              url
+                          )
+                          host = normalize_host(
+                              parsed.hostname
+                          )
+                          if (
+                              host
+                              in ALLOWED_HOSTS
+                          ):
+                              internal = (
+                                  normalize_internal_url(
+                                      url
+                                  )
+                              )
+                              if (
+                                  internal
+                                  and internal
+                                  not in visited
+                              ):
+                                  queue.append(
+                                      internal
+                                  )
+                          else:
+                              discovered_external_urls.add(
+                                  url
+                              )
+                      # application/json
+                      script_type = (
+                          script.get(
+                              "type",
+                              ""
+                          )
+                          .lower()
+                      )
+                      if (
+                          "json"
+                          in script_type
+                      ):
+                          try:
+                              data = json.loads(
+                                  script_text
+                              )
+                              for url in (
+                                  extract_json_urls(
+                                      data,
+                                      response.url
+                                  )
+                              ):
+                                  parsed = urlparse(
+                                      url
+                                  )
+                                  host = normalize_host(
+                                      parsed.hostname
+                                  )
+                                  if (
+                                      host
+                                      in ALLOWED_HOSTS
+                                  ):
+                                      internal = (
+                                          normalize_internal_url(
+                                              url
+                                          )
+                                      )
+                                      if (
+                                          internal
+                                          and internal
+                                          not in visited
+                                      ):
+                                          queue.append(
+                                              internal
+                                          )
+                                  else:
+                                      discovered_external_urls.add(
+                                          url
+                                      )
+                          except Exception:
+                              pass
+              # ==============================
+              # JSON 响应
+              # ==============================
+              elif (
+                  "json" in content_type
+              ):
+                  try:
+                      data = response.json()
+                      json_urls = (
+                          extract_json_urls(
+                              data,
+                              response.url
+                          )
+                      )
+                      for url in json_urls:
+                          parsed = urlparse(
+                              url
+                          )
+                          host = normalize_host(
+                              parsed.hostname
+                          )
+                          if (
+                              host
+                              in ALLOWED_HOSTS
+                          ):
+                              internal = (
+                                  normalize_internal_url(
+                                      url
+                                  )
+                              )
+                              if (
+                                  internal
+                                  and internal
+                                  not in visited
+                              ):
+                                  queue.append(
+                                      internal
+                                  )
+                          else:
+                              discovered_external_urls.add(
+                                  url
+                              )
+                  except Exception:
+                      pass
+              # ==============================
+              # JS / TXT / CSS 等文本资源
+              # ==============================
+              elif any(
+                  x in content_type
+                  for x in (
+                      "javascript",
+                      "text/plain",
+                      "text/css",
+                      "xml",
+                  )
+              ):
+                  try:
+                      text = response.text
+                  except Exception:
+                      text = body.decode(
+                          "utf-8",
+                          errors="ignore"
+                      )
+                  for url in (
+                      extract_urls_from_text(
+                          text,
+                          response.url
+                      )
+                  ):
+                      parsed = urlparse(url)
+                      host = normalize_host(
+                          parsed.hostname
+                      )
+                      if (
+                          host
+                          in ALLOWED_HOSTS
+                      ):
+                          internal = (
+                              normalize_internal_url(
+                                  url
+                              )
+                          )
+                          if (
+                              internal
+                              and internal
+                              not in visited
+                          ):
+                              queue.append(
+                                  internal
+                              )
+                      else:
+                          discovered_external_urls.add(
+                              url
+                          )
           print()
-          print("Internal pages:", len(visited))
-          print("External URLs:", len(external_urls))
-
-          domains = set()
-
-          for url in external_urls:
-
+          print(
+              "======================================"
+          )
+          print(
+              "Internal pages:",
+              len(visited)
+          )
+          print(
+              "Internal URLs:",
+              len(discovered_internal_urls)
+          )
+          print(
+              "External URLs:",
+              len(discovered_external_urls)
+          )
+          print(
+              "======================================"
+          )
+          # ==================================
+          # 跟随外部 URL 重定向
+          # ==================================
+          redirect_session = requests.Session()
+          redirect_session.headers.update({
+              "User-Agent":
+                  "Mozilla/5.0 "
+                  "(X11; Linux x86_64) "
+                  "AppleWebKit/537.36 "
+                  "(KHTML, like Gecko) "
+                  "Chrome/140.0 Safari/537.36",
+          })
+          total_external = len(
+              discovered_external_urls
+          )
+          for index, url in enumerate(
+              sorted(
+                  discovered_external_urls
+              ),
+              1
+          ):
+              print(
+                  f"[REDIRECT {index}/{total_external}] "
+                  f"{url}"
+              )
               try:
-                  host = urlparse(url).hostname
-                  domain = registered_domain(host)
-
+                  response = redirect_session.get(
+                      url,
+                      timeout=15,
+                      allow_redirects=True,
+                      stream=True
+                  )
+                  final_url = response.url
+                  response.close()
+                  parsed = urlparse(
+                      final_url
+                  )
+                  host = normalize_host(
+                      parsed.hostname
+                  )
+                  domain = registered_domain(
+                      host
+                  )
                   if not domain:
                       continue
-
-                  if domain in excluded_domains:
+                  # 排除公共服务域名
+                  if (
+                      domain
+                      in EXCLUDED_DOMAINS
+                  ):
                       continue
-
                   domains.add(domain)
-
-              except Exception:
-                  continue
-
+              except Exception as e:
+                  # 重定向失败时仍使用原始 URL
+                  try:
+                      parsed = urlparse(url)
+                      host = normalize_host(
+                          parsed.hostname
+                      )
+                      domain = registered_domain(
+                          host
+                      )
+                      if (
+                          domain
+                          and domain
+                          not in EXCLUDED_DOMAINS
+                      ):
+                          domains.add(domain)
+                  except Exception:
+                      pass
           domains = sorted(domains)
-
-          print("Final domains:", len(domains))
-
-          # 生成 Surge LIST，不带 REJECT
+          print()
+          print(
+              "======================================"
+          )
+          print(
+              "FINAL REGISTERED DOMAINS:",
+              len(domains)
+          )
+          print(
+              "======================================"
+          )
+          # ==================================
+          # Surge LIST
+          # ==================================
           with open(
-              "ruleset/AdultBlock.list",
+              "ruleset/AdultWebsites.list",
               "w",
               encoding="utf-8"
           ) as f:
-
               for domain in domains:
                   f.write(
                       f"DOMAIN-SUFFIX,{domain}\n"
                   )
-
-          print("Generated AdultBlock.list")
-
-          # 将 MRS 转换所需内容通过 GitHub Actions 环境变量传递
+          # ==================================
+          # MRS 临时输入
+          # 不进入 Git
+          # ==================================
           with open(
-              "/tmp/AdultBlock_domains.txt",
+              "/tmp/AdultWebsites_mrs.txt",
               "w",
               encoding="utf-8"
           ) as f:
-
               for domain in domains:
                   f.write(
                       f"+.{domain}\n"
                   )
-
+          print(
+              "Generated AdultWebsites.list"
+          )
           PY
-
       - name: Convert to MRS
         run: |
+          set -e
           /tmp/mihomo convert-ruleset \
             domain \
             text \
-            /tmp/AdultBlock_domains.txt \
-            ruleset/AdultBlock.mrs
-
-      - name: Show result
+            /tmp/AdultWebsites_mrs.txt \
+            ruleset/AdultWebsites.mrs
+      - name: Verify result
         run: |
-          echo "========== Result =========="
-
-          echo "Surge:"
-          wc -l ruleset/AdultBlock.list
-
+          echo "======================================"
+          echo "AdultWebsites Rules"
+          echo "======================================"
+          echo
+          echo "Surge LIST:"
+          wc -l ruleset/AdultWebsites.list
+          echo
           echo "MRS:"
-          ls -lh ruleset/AdultBlock.mrs
-
+          ls -lh ruleset/AdultWebsites.mrs
+          echo
+          echo "First 30:"
+          head -n 30 ruleset/AdultWebsites.list
+          echo
+          echo "Last 30:"
+          tail -n 30 ruleset/AdultWebsites.list
       - name: Commit and push
         run: |
+          set -e
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add ruleset/AdultBlock.list
-          git add ruleset/AdultBlock.mrs
-
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ruleset/AdultWebsites.list
+          git add ruleset/AdultWebsites.mrs
           if git diff --cached --quiet; then
             echo "No changes."
             exit 0
           fi
-
-          git commit -m "Update AdultBlock rules"
+          git commit \
+            -m "Update AdultWebsites rules"
           git push
