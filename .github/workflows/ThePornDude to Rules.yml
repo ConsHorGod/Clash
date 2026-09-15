@@ -71,6 +71,8 @@ jobs:
 
           START_URL = "https://theporndude.com/zh"
 
+          THEPORNDude_DOMAIN = "theporndude.com"
+
           ALLOWED_HOSTS = {
               "theporndude.com",
               "www.theporndude.com",
@@ -258,13 +260,21 @@ jobs:
 
               return results
 
+          # ==========================================
+          # 规则：
+          #
+          # 1. theporndude.com 只固定加入最终规则
+          # 2. 不把 theporndude.com 自己作为外部域名处理
+          # 3. 但为了发现外部网站，仍然递归访问站内页面
+          # ==========================================
+
+          domains = {
+              THEPORNDude_DOMAIN
+          }
+
           queue = deque([START_URL])
 
           visited = set()
-
-          domains = {
-              "theporndude.com"
-          }
 
           while queue:
 
@@ -310,7 +320,7 @@ jobs:
               )
 
               # ==================================
-              # HTML 页面
+              # HTML
               # ==================================
 
               if (
@@ -334,7 +344,7 @@ jobs:
                   )
 
                   # ------------------------------
-                  # HTML 标签中的 URL
+                  # HTML 标签 URL
                   # ------------------------------
 
                   for tag in soup.find_all(True):
@@ -370,7 +380,11 @@ jobs:
                               parsed.hostname
                           )
 
-                          # 站内链接继续爬
+                          # --------------------------
+                          # ThePornDude 自身
+                          # 只用于继续发现页面
+                          # --------------------------
+
                           if host in ALLOWED_HOSTS:
 
                               internal = (
@@ -388,26 +402,30 @@ jobs:
                                       internal
                                   )
 
-                          # 外部链接只提取注册域名
-                          else:
+                              continue
 
-                              domain = (
-                                  registered_domain(
-                                      host
-                                  )
+                          # --------------------------
+                          # 外部网站
+                          # 只提取注册域名
+                          # --------------------------
+
+                          domain = (
+                              registered_domain(
+                                  host
+                              )
+                          )
+
+                          if (
+                              domain
+                              and domain
+                              not in EXCLUDED_DOMAINS
+                          ):
+                              domains.add(
+                                  domain
                               )
 
-                              if (
-                                  domain
-                                  and domain
-                                  not in EXCLUDED_DOMAINS
-                              ):
-                                  domains.add(
-                                      domain
-                                  )
-
                   # ------------------------------
-                  # HTML / JS / JSON 内 URL
+                  # HTML / JS / JSON 中的 URL
                   # ------------------------------
 
                   for url in extract_urls(
@@ -438,22 +456,22 @@ jobs:
                                   internal
                               )
 
-                      else:
+                          continue
 
-                          domain = (
-                              registered_domain(
-                                  host
-                              )
+                      domain = (
+                          registered_domain(
+                              host
                           )
+                      )
 
-                          if (
+                      if (
+                          domain
+                          and domain
+                          not in EXCLUDED_DOMAINS
+                      ):
+                          domains.add(
                               domain
-                              and domain
-                              not in EXCLUDED_DOMAINS
-                          ):
-                              domains.add(
-                                  domain
-                              )
+                          )
 
                   # ------------------------------
                   # Script / JSON
@@ -500,25 +518,25 @@ jobs:
                                       internal
                                   )
 
-                          else:
+                              continue
 
-                              domain = (
-                                  registered_domain(
-                                      host
-                                  )
+                          domain = (
+                              registered_domain(
+                                  host
+                              )
+                          )
+
+                          if (
+                              domain
+                              and domain
+                              not in EXCLUDED_DOMAINS
+                          ):
+                              domains.add(
+                                  domain
                               )
 
-                              if (
-                                  domain
-                                  and domain
-                                  not in EXCLUDED_DOMAINS
-                              ):
-                                  domains.add(
-                                      domain
-                                  )
-
               # ==================================
-              # JSON / JS / CSS / XML 等
+              # JS / JSON / CSS / XML / TXT
               # ==================================
 
               elif any(
@@ -568,22 +586,22 @@ jobs:
                                   internal
                               )
 
-                      else:
+                          continue
 
-                          domain = (
-                              registered_domain(
-                                  host
-                              )
+                      domain = (
+                          registered_domain(
+                              host
                           )
+                      )
 
-                          if (
+                      if (
+                          domain
+                          and domain
+                          not in EXCLUDED_DOMAINS
+                      ):
+                          domains.add(
                               domain
-                              and domain
-                              not in EXCLUDED_DOMAINS
-                          ):
-                              domains.add(
-                                  domain
-                              )
+                          )
 
           domains = sorted(domains)
 
@@ -592,7 +610,7 @@ jobs:
               "======================================"
           )
           print(
-              "Internal pages:",
+              "Internal pages crawled:",
               len(visited)
           )
           print(
@@ -632,6 +650,8 @@ jobs:
                   f.write(
                       f"+.{domain}\n"
                   )
+
+          echo = None
 
           PY
 
