@@ -100,7 +100,7 @@ jobs:
               "co.id"
           }
 
-          def get_root_domain(host):
+          def root_domain(host):
               host = host.lower().strip(".")
 
               if host.startswith("www."):
@@ -137,15 +137,12 @@ jobs:
                   if not host:
                       continue
 
-                  domain = get_root_domain(host)
+                  domain = root_domain(host)
 
                   if not domain:
                       continue
 
                   if domain == "theporndude.com":
-                      continue
-
-                  if domain.endswith(".theporndude.com"):
                       continue
 
                   if not re.match(
@@ -166,8 +163,11 @@ jobs:
                   "No domains found."
               )
 
+          print()
           print(
-              f"Found {len(domains)} domains."
+              "Found",
+              len(domains),
+              "domains."
           )
 
           os.makedirs(
@@ -198,53 +198,74 @@ jobs:
                       f"DOMAIN-SUFFIX,{domain}\n"
                   )
 
-          print(
-              "Surge list generated."
-          )
           PY
 
-      - name: Prepare Mihomo
+      - name: Download Mihomo
         run: |
           set -e
 
-          if [ ! -f tools/mihomo ]; then
-            echo "tools/mihomo not found."
-            exit 1
-          fi
+          MIHOMO_VERSION="v1.19.20"
 
-          chmod +x tools/mihomo
+          mkdir -p /tmp/mihomo
 
-          tools/mihomo version
+          URL="https://github.com/MetaCubeX/mihomo/releases/download/${MIHOMO_VERSION}/mihomo-linux-amd64-compatible-${MIHOMO_VERSION}.gz"
+
+          echo "Downloading Mihomo:"
+          echo "$URL"
+
+          curl -fL \
+            --retry 3 \
+            --retry-delay 2 \
+            --connect-timeout 10 \
+            --max-time 120 \
+            "$URL" \
+            -o /tmp/mihomo/mihomo.gz
+
+          gunzip -f \
+            /tmp/mihomo/mihomo.gz
+
+          chmod +x \
+            /tmp/mihomo/mihomo
+
+          /tmp/mihomo/mihomo version
 
       - name: Convert to MRS
         run: |
           set -e
 
-          rm -f ruleset/ThePornDude.mrs
+          rm -f \
+            ruleset/ThePornDude.mrs
 
-          tools/mihomo convert-ruleset \
+          /tmp/mihomo/mihomo convert-ruleset \
             domain \
             text \
             /tmp/theporndude/domains.txt \
             ruleset/ThePornDude.mrs
 
-          test -s ruleset/ThePornDude.mrs
+          test -s \
+            ruleset/ThePornDude.mrs
 
           echo "MRS generated:"
-          ls -lh ruleset/ThePornDude.mrs
+          ls -lh \
+            ruleset/ThePornDude.mrs
 
       - name: Cleanup
         run: |
           rm -rf /tmp/theporndude
+          rm -rf /tmp/mihomo
 
       - name: Show result
         run: |
           echo "========== Surge =========="
-          wc -l ruleset/ThePornDude.list
+
+          wc -l \
+            ruleset/ThePornDude.list
 
           echo
           echo "========== MRS =========="
-          ls -lh ruleset/ThePornDude.mrs
+
+          ls -lh \
+            ruleset/ThePornDude.mrs
 
       - name: Commit changes
         run: |
