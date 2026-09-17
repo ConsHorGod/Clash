@@ -19,7 +19,9 @@ jobs:
       - name: Prepare output directory
         run: |
           mkdir -p RULESET
-      - name: Download blackmatrix7 rules
+          rm -f RULESET/*.mrs
+          rm -f RULESET/*.yaml
+      - name: Download Blackmatrix7 rules
         run: |
           curl -L \
             "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMax/ChinaMax_Domain.txt" \
@@ -45,7 +47,7 @@ jobs:
           gunzip /tmp/mihomo.gz
           chmod +x /tmp/mihomo
           /tmp/mihomo -v
-      - name: Convert ChinaMax Domain to MRS
+      - name: Convert ChinaMax Domain
         run: |
           python3 - <<'PY'
           import re
@@ -64,11 +66,6 @@ jobs:
                   m = re.match(r"^DOMAIN,(.+)$", line, re.I)
                   if m:
                       domains.add(m.group(1).strip())
-                      continue
-                  if line.upper().startswith("DOMAIN-KEYWORD,"):
-                      continue
-                  if "," not in line and "/" not in line:
-                      domains.add(line)
           with open(out, "w", encoding="utf-8") as f:
               f.write("payload:\n")
               for domain in sorted(domains):
@@ -78,7 +75,7 @@ jobs:
           /tmp/mihomo convert-ruleset domain yaml \
             /tmp/ChinaMax_Domain.yaml \
             RULESET/ChinaMax_Domain.mrs
-      - name: Convert ChinaMax IP to MRS
+      - name: Convert ChinaMax IP
         run: |
           python3 - <<'PY'
           import re
@@ -97,15 +94,6 @@ jobs:
                   )
                   if m:
                       cidrs.add(m.group(1).strip())
-                      continue
-                  if re.match(
-                      r"^(?:\d{1,3}\.){3}\d{1,3}/\d{1,2}$",
-                      line
-                  ):
-                      cidrs.add(line)
-                      continue
-                  if ":" in line and "/" in line:
-                      cidrs.add(line)
           with open(out, "w", encoding="utf-8") as f:
               f.write("payload:\n")
               for cidr in sorted(cidrs):
@@ -115,7 +103,7 @@ jobs:
           /tmp/mihomo convert-ruleset ipcidr yaml \
             /tmp/ChinaMax_IP.yaml \
             RULESET/ChinaMax_IP.mrs
-      - name: Convert Proxy Domain to MRS
+      - name: Convert Proxy Domain
         run: |
           python3 - <<'PY'
           import re
@@ -134,11 +122,6 @@ jobs:
                   m = re.match(r"^DOMAIN,(.+)$", line, re.I)
                   if m:
                       domains.add(m.group(1).strip())
-                      continue
-                  if line.upper().startswith("DOMAIN-KEYWORD,"):
-                      continue
-                  if "," not in line and "/" not in line:
-                      domains.add(line)
           with open(out, "w", encoding="utf-8") as f:
               f.write("payload:\n")
               for domain in sorted(domains):
@@ -148,7 +131,7 @@ jobs:
           /tmp/mihomo convert-ruleset domain yaml \
             /tmp/Proxy_Domain.yaml \
             RULESET/Proxy_Domain.mrs
-      - name: Convert Global Domain to MRS
+      - name: Convert Global Domain
         run: |
           python3 - <<'PY'
           import re
@@ -167,11 +150,6 @@ jobs:
                   m = re.match(r"^DOMAIN,(.+)$", line, re.I)
                   if m:
                       domains.add(m.group(1).strip())
-                      continue
-                  if line.upper().startswith("DOMAIN-KEYWORD,"):
-                      continue
-                  if "," not in line and "/" not in line:
-                      domains.add(line)
           with open(out, "w", encoding="utf-8") as f:
               f.write("payload:\n")
               for domain in sorted(domains):
@@ -181,7 +159,7 @@ jobs:
           /tmp/mihomo convert-ruleset domain yaml \
             /tmp/Global_Domain.yaml \
             RULESET/Global_Domain.mrs
-      - name: Convert Global Classical IP to MRS
+      - name: Convert Global Classical IP
         run: |
           python3 - <<'PY'
           import re
@@ -197,22 +175,6 @@ jobs:
                       r"^-\s*IP-CIDR6?,\s*([^,\s]+)",
                       line,
                       re.I
-                  )
-                  if m:
-                      cidr = m.group(1).strip()
-                      if "/" in cidr:
-                          cidrs.add(cidr)
-                      continue
-                  m = re.match(
-                      r"^-\s*((?:\d{1,3}\.){3}\d{1,3}/\d{1,2})(?:\s|$)",
-                      line
-                  )
-                  if m:
-                      cidrs.add(m.group(1).strip())
-                      continue
-                  m = re.match(
-                      r"^-\s*([0-9a-fA-F:]+/\d{1,3})(?:\s|$)",
-                      line
                   )
                   if m:
                       cidrs.add(m.group(1).strip())
@@ -232,7 +194,7 @@ jobs:
           import re
           URL = "https://bgp.he.net/country/CN"
           headers = {
-              "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36"
+              "User-Agent": "Mozilla/5.0"
           }
           r = requests.get(
               URL,
@@ -255,16 +217,9 @@ jobs:
           )
           if not asns:
               raise RuntimeError(
-                  "没有抓取到任何 ASN，可能是 HE 页面结构发生变化或触发限制。"
+                  "没有抓取到中国 ASN"
               )
           print(f"Found {len(asns)} China ASNs")
-          with open(
-              "RULESET/China_ASN.list",
-              "w",
-              encoding="utf-8"
-          ) as f:
-              for asn in asns:
-                  f.write(f"IP-ASN,{asn}\n")
           with open(
               "RULESET/China_ASN.yaml",
               "w",
@@ -273,7 +228,7 @@ jobs:
               f.write("payload:\n")
               for asn in asns:
                   f.write(f"  - IP-ASN,{asn}\n")
-          print("Generated China ASN rules")
+          print("Generated RULESET/China_ASN.yaml")
           PY
       - name: Check output
         run: |
@@ -284,10 +239,7 @@ jobs:
           ls -lh RULESET/*.mrs
           echo
           echo "===== China ASN ====="
-          echo "ASN count: $(grep -c '^IP-ASN,' RULESET/China_ASN.list)"
-          echo
-          echo "===== File type ====="
-          file RULESET/*.mrs
+          grep -c "IP-ASN," RULESET/China_ASN.yaml
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
@@ -297,5 +249,5 @@ jobs:
             echo "No changes."
             exit 0
           fi
-          git commit -m "Update rulesets"
+          git commit -m "Update Clash rules"
           git push
