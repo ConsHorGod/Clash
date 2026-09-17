@@ -196,14 +196,14 @@ rule-anchor:
 #>>>>>>>>>>>>>>>>>>>>>規則集<<<<<<<<<<<<<<<<<<<<
 rule-providers:
   MY_DIRECT:
-    <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/Clash/refs/heads/main/MY_DIRECT.yaml"
+    <<: *domain
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_DIRECT.mrs"
   MY_PROXY:
-    <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/Clash/refs/heads/main/MY_PROXY.yaml"
+    <<: *domain
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_PROXY.mrs"
   MY_REJECT:
-    <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/Clash/refs/heads/main/MY_REJECT.yaml"
+    <<: *domain
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_REJECT.mrs"
   iOS_OTA:
     <<: *classical
     url: "https://raw.githubusercontent.com/ConsHorGod/Clash/refs/heads/main/iOS_OTA.yaml"
