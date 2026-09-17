@@ -21,17 +21,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download latest Mihomo
+      - name: Download Mihomo
         shell: bash
         run: |
           set -e
 
-          VERSION=$(curl -fsSL https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | jq -r '.tag_name')
+          curl -fL --retry 5 --retry-delay 3 --connect-timeout 15 --max-time 180 \
+            "https://github.com/MetaCubeX/mihomo/releases/latest/download/mihomo-linux-amd64-v3.gz" \
+            -o mihomo.gz
 
-          URL="https://github.com/MetaCubeX/mihomo/releases/download/${VERSION}/mihomo-linux-amd64-${VERSION}.gz"
-
-          curl -fL "$URL" -o mihomo.gz
-          gzip -d mihomo.gz
+          gzip -df mihomo.gz
           chmod +x mihomo
 
           ./mihomo version
@@ -55,6 +54,15 @@ jobs:
             MY_REJECT.yaml \
             RULESET/MY_REJECT.mrs
 
+      - name: Check generated files
+        shell: bash
+        run: |
+          set -e
+
+          ls -lh RULESET/MY_DIRECT.mrs
+          ls -lh RULESET/MY_PROXY.mrs
+          ls -lh RULESET/MY_REJECT.mrs
+
       - name: Commit and push
         shell: bash
         run: |
@@ -68,7 +76,7 @@ jobs:
           git add RULESET/MY_REJECT.mrs
 
           if git diff --cached --quiet; then
-            echo "No MRS changes."
+            echo "No changes."
             exit 0
           fi
 
