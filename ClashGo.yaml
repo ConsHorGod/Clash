@@ -197,19 +197,19 @@ rule-anchor:
 rule-providers:
   My_DIRECT:
     <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/my-config/refs/heads/配置文件/Clash_DIRECT.yaml"
+    url: "https://raw.githubusercontent.com/ConsHorGod/Clash/refs/heads/main/Clash_DIRECT.yaml"
   My_PROXY:
     <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/my-config/refs/heads/配置文件/Clash_PROXY.yaml"
+    url: "https://https://raw.githubusercontent.com/ConsHorGod/Clash/refs/heads/main/Clash_PROXY.yaml"
   My_REJECT:
     <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/my-config/refs/heads/配置文件/Clash_REJECT.yaml"
+    url: "https://https://raw.githubusercontent.com/ConsHorGod/Clash/refs/heads/main/Clash_REJECT.yaml"
   Clash_iOS_UPDATE:
     <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/my-config/refs/heads/配置文件/Clash_iOS_UPDATE.yaml"
+    url: "https://https://raw.githubusercontent.com/ConsHorGod/Clash/refs/heads/main/iOS_OTA.yaml"
   Clash_iOS_PUSH:
     <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/my-config/refs/heads/配置文件/Clash_iOS_PUSH.yaml"
+    url: "https://https://raw.githubusercontent.com/ConsHorGod/Clash/refs/heads/main/iOS_PUSH.yaml"
   anti-ad:
     <<: *domain
     url: "https://raw.githubusercontent.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs"
