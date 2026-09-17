@@ -34,41 +34,31 @@ jobs:
         run: |
           set -e
 
-          curl -fL \
+          curl -fsSL \
             "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMax/ChinaMax_Domain.txt" \
             -o /tmp/ChinaMax_Domain.txt
 
-          curl -fL \
+          curl -fsSL \
             "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMax/ChinaMax_IP.txt" \
             -o /tmp/ChinaMax_IP.txt
 
-          curl -fL \
+          curl -fsSL \
             "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Proxy/Proxy_Domain.txt" \
             -o /tmp/Proxy_Domain.txt
 
-          curl -fL \
+          curl -fsSL \
             "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Global/Global_Domain.txt" \
             -o /tmp/Global_Domain.txt
 
-          curl -fL \
+          curl -fsSL \
             "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Global/Global_Classical.yaml" \
             -o /tmp/Global_Classical.yaml
 
           echo "===== Downloaded files ====="
-
-          echo "ChinaMax Domain:"
           wc -l /tmp/ChinaMax_Domain.txt
-
-          echo "ChinaMax IP:"
           wc -l /tmp/ChinaMax_IP.txt
-
-          echo "Proxy Domain:"
           wc -l /tmp/Proxy_Domain.txt
-
-          echo "Global Domain:"
           wc -l /tmp/Global_Domain.txt
-
-          echo "Global Classical:"
           wc -l /tmp/Global_Classical.yaml
 
       - name: Download mihomo
@@ -76,8 +66,8 @@ jobs:
           set -e
 
           VERSION=$(curl -fsSL \
-            https://api.github.com/repos/MetaCubeX/mihomo/releases/latest \
-            | jq -r .tag_name)
+            "https://api.github.com/repos/MetaCubeX/mihomo/releases/latest" \
+            | jq -r '.tag_name')
 
           if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
             echo "Failed to get Mihomo version"
@@ -95,79 +85,91 @@ jobs:
 
           /tmp/mihomo -v
 
-      - name: Convert ChinaMax Domain
+      - name: Generate converter
         run: |
-          set -e
+          cat > /tmp/convert.py <<'PY'
+          import sys
+          import re
+          import ipaddress
 
-          python3 - <<'PY'
-          src = "/tmp/ChinaMax_Domain.txt"
-          out = "/tmp/ChinaMax_Domain.yaml"
+          def read_lines(path):
+              with open(path, "r", encoding="utf-8") as f:
+                  return [x.strip() for x in f]
 
-          domains = set()
+          def clean_line(line):
+              line = line.strip()
 
-          with open(src, "r", encoding="utf-8") as f:
-              for line in f:
-                  line = line.strip()
+              if not line:
+                  return ""
 
-                  if not line or line.startswith("#"):
+              if line.startswith("#"):
+                  return ""
+
+              if "#" in line:
+                  line = line.split("#", 1)[0].strip()
+
+              return line
+
+          def extract_domain_rules(path):
+              rules = set()
+
+              for raw in read_lines(path):
+                  line = clean_line(raw)
+
+                  if not line:
                       continue
 
                   parts = [x.strip() for x in line.split(",")]
 
-                  if len(parts) >= 2:
-                      rule_type = parts[0].upper()
+                  rule_type = parts[0].upper()
 
-                      if rule_type == "DOMAIN":
-                          domains.add(parts[1])
-                          continue
+                  if rule_type == "DOMAIN" and len(parts) >= 2:
+                      value = parts[1]
+                      if value:
+                          rules.add(value)
+                      continue
 
-                      if rule_type == "DOMAIN-SUFFIX":
-                          domains.add("+" + parts[1])
-                          continue
+                  if rule_type == "DOMAIN-SUFFIX" and len(parts) >= 2:
+                      value = parts[1]
+                      if value:
+                          rules.add("+" + value)
+                      continue
 
-                      if rule_type == "DOMAIN-KEYWORD":
-                          domains.add("*" + parts[1] + "*")
-                          continue
+                  if rule_type == "DOMAIN-KEYWORD" and len(parts) >= 2:
+                      value = parts[1]
+                      if value:
+                          rules.add("*" + value + "*")
+                      continue
 
-                  domains.add(parts[0])
+                  if rule_type in (
+                      "DOMAIN-REGEX",
+                      "PROCESS-NAME",
+                      "PROCESS-PATH",
+                      "IP-CIDR",
+                      "IP-CIDR6",
+                      "IP-ASN",
+                      "GEOIP",
+                      "MATCH",
+                      "FINAL"
+                  ):
+                      continue
 
-          if not domains:
-              echo "ChinaMax Domain source:"
-              head -30 "$src"
-              raise RuntimeError(
-                  "ChinaMax Domain 没有提取到任何有效规则"
-              )
+                  # Blackmatrix7 *_Domain.txt 的实际格式：
+                  # 每行直接就是一个域名
+                  value = parts[0].strip()
 
-          with open(out, "w", encoding="utf-8") as f:
-              f.write("payload:\n")
+                  if value:
+                      rules.add(value)
 
-              for domain in sorted(domains):
-                  f.write(f'  - "{domain}"\n')
+              return rules
 
-          print(f"ChinaMax Domain rules: {len(domains)}")
-          PY
+          def extract_ip_rules(path):
+              rules = set()
 
-          /tmp/mihomo convert-ruleset domain yaml \
-            /tmp/ChinaMax_Domain.yaml \
-            RULESET/ChinaMax_Domain.mrs
+              for raw in read_lines(path):
+                  line = clean_line(raw)
 
-      - name: Convert ChinaMax IP
-        run: |
-          set -e
-
-          python3 - <<'PY'
-          import ipaddress
-
-          src = "/tmp/ChinaMax_IP.txt"
-          out = "/tmp/ChinaMax_IP.yaml"
-
-          cidrs = set()
-
-          with open(src, "r", encoding="utf-8") as f:
-              for line in f:
-                  line = line.strip()
-
-                  if not line or line.startswith("#"):
+                  if not line:
                       continue
 
                   parts = [x.strip() for x in line.split(",")]
@@ -188,210 +190,186 @@ jobs:
                   else:
                       candidates.append(parts[0])
 
-                  for candidate in candidates:
-                      candidate = candidate.strip()
+                  for value in candidates:
+                      value = value.strip()
 
                       try:
                           network = ipaddress.ip_network(
-                              candidate,
+                              value,
                               strict=False
                           )
-                          cidrs.add(str(network))
+                          rules.add(str(network))
                       except ValueError:
                           continue
 
-          if not cidrs:
-              print("===== ChinaMax IP SOURCE PREVIEW =====")
+              return rules
 
-              with open(src, "r", encoding="utf-8") as f:
-                  for i, line in enumerate(f):
-                      print(repr(line.rstrip()))
+          def extract_classical_ip_rules(path):
+              rules = set()
 
-                      if i >= 50:
-                          break
+              for raw in read_lines(path):
+                  line = clean_line(raw)
 
+                  if not line:
+                      continue
+
+                  match = re.match(
+                      r"^-\s*(IP-CIDR6?|IP-CIDR4)\s*,\s*([^,\s]+)",
+                      line,
+                      re.IGNORECASE
+                  )
+
+                  if not match:
+                      continue
+
+                  value = match.group(2).strip()
+
+                  try:
+                      network = ipaddress.ip_network(
+                          value,
+                          strict=False
+                      )
+                      rules.add(str(network))
+                  except ValueError:
+                      continue
+
+              return rules
+
+          def write_domain_yaml(rules, path):
+              if not rules:
+                  raise RuntimeError(
+                      f"没有提取到 Domain 规则: {path}"
+                  )
+
+              with open(path, "w", encoding="utf-8") as f:
+                  f.write("payload:\n")
+
+                  for rule in sorted(rules):
+                      f.write(
+                          "  - " +
+                          '"' +
+                          rule.replace("\\", "\\\\").replace('"', '\\"') +
+                          '"' +
+                          "\n"
+                      )
+
+          def write_ip_yaml(rules, path):
+              if not rules:
+                  raise RuntimeError(
+                      f"没有提取到 IP/CIDR 规则: {path}"
+                  )
+
+              with open(path, "w", encoding="utf-8") as f:
+                  f.write("payload:\n")
+
+                  for rule in sorted(rules):
+                      f.write(f'  - "{rule}"\n')
+
+          if len(sys.argv) != 4:
+              print(
+                  "Usage: convert.py TYPE INPUT OUTPUT",
+                  file=sys.stderr
+              )
+              sys.exit(2)
+
+          rule_type = sys.argv[1]
+          src = sys.argv[2]
+          out = sys.argv[3]
+
+          if rule_type == "domain":
+              rules = extract_domain_rules(src)
+              write_domain_yaml(rules, out)
+
+          elif rule_type == "ip":
+              rules = extract_ip_rules(src)
+              write_ip_yaml(rules, out)
+
+          elif rule_type == "classical-ip":
+              rules = extract_classical_ip_rules(src)
+              write_ip_yaml(rules, out)
+
+          else:
               raise RuntimeError(
-                  "ChinaMax IP 没有提取到任何有效 CIDR"
+                  f"Unknown rule type: {rule_type}"
               )
 
-          with open(out, "w", encoding="utf-8") as f:
-              f.write("payload:\n")
-
-              for cidr in sorted(cidrs):
-                  f.write(f'  - "{cidr}"\n')
-
-          print(f"ChinaMax IP rules: {len(cidrs)}")
+          print(f"Converted {len(rules)} rules")
           PY
+
+      - name: Convert ChinaMax Domain
+        run: |
+          set -e
+
+          python3 /tmp/convert.py \
+            domain \
+            /tmp/ChinaMax_Domain.txt \
+            /tmp/ChinaMax_Domain.yaml
+
+          /tmp/mihomo convert-ruleset domain yaml \
+            /tmp/ChinaMax_Domain.yaml \
+            RULESET/ChinaMax_Domain.mrs
+
+          test -s RULESET/ChinaMax_Domain.mrs
+
+      - name: Convert ChinaMax IP
+        run: |
+          set -e
+
+          python3 /tmp/convert.py \
+            ip \
+            /tmp/ChinaMax_IP.txt \
+            /tmp/ChinaMax_IP.yaml
 
           /tmp/mihomo convert-ruleset ipcidr yaml \
             /tmp/ChinaMax_IP.yaml \
             RULESET/ChinaMax_IP.mrs
 
+          test -s RULESET/ChinaMax_IP.mrs
+
       - name: Convert Proxy Domain
         run: |
           set -e
 
-          python3 - <<'PY'
-          src = "/tmp/Proxy_Domain.txt"
-          out = "/tmp/Proxy_Domain.yaml"
-
-          domains = set()
-
-          with open(src, "r", encoding="utf-8") as f:
-              for line in f:
-                  line = line.strip()
-
-                  if not line or line.startswith("#"):
-                      continue
-
-                  parts = [x.strip() for x in line.split(",")]
-
-                  if len(parts) >= 2:
-                      rule_type = parts[0].upper()
-
-                      if rule_type == "DOMAIN":
-                          domains.add(parts[1])
-                          continue
-
-                      if rule_type == "DOMAIN-SUFFIX":
-                          domains.add("+" + parts[1])
-                          continue
-
-                      if rule_type == "DOMAIN-KEYWORD":
-                          domains.add("*" + parts[1] + "*")
-                          continue
-
-                  domains.add(parts[0])
-
-          if not domains:
-              raise RuntimeError(
-                  "Proxy Domain 没有提取到任何有效规则"
-              )
-
-          with open(out, "w", encoding="utf-8") as f:
-              f.write("payload:\n")
-
-              for domain in sorted(domains):
-                  f.write(f'  - "{domain}"\n')
-
-          print(f"Proxy Domain rules: {len(domains)}")
-          PY
+          python3 /tmp/convert.py \
+            domain \
+            /tmp/Proxy_Domain.txt \
+            /tmp/Proxy_Domain.yaml
 
           /tmp/mihomo convert-ruleset domain yaml \
             /tmp/Proxy_Domain.yaml \
             RULESET/Proxy_Domain.mrs
 
+          test -s RULESET/Proxy_Domain.mrs
+
       - name: Convert Global Domain
         run: |
           set -e
 
-          python3 - <<'PY'
-          src = "/tmp/Global_Domain.txt"
-          out = "/tmp/Global_Domain.yaml"
-
-          domains = set()
-
-          with open(src, "r", encoding="utf-8") as f:
-              for line in f:
-                  line = line.strip()
-
-                  if not line or line.startswith("#"):
-                      continue
-
-                  parts = [x.strip() for x in line.split(",")]
-
-                  if len(parts) >= 2:
-                      rule_type = parts[0].upper()
-
-                      if rule_type == "DOMAIN":
-                          domains.add(parts[1])
-                          continue
-
-                      if rule_type == "DOMAIN-SUFFIX":
-                          domains.add("+" + parts[1])
-                          continue
-
-                      if rule_type == "DOMAIN-KEYWORD":
-                          domains.add("*" + parts[1] + "*")
-                          continue
-
-                  domains.add(parts[0])
-
-          if not domains:
-              raise RuntimeError(
-                  "Global Domain 没有提取到任何有效规则"
-              )
-
-          with open(out, "w", encoding="utf-8") as f:
-              f.write("payload:\n")
-
-              for domain in sorted(domains):
-                  f.write(f'  - "{domain}"\n')
-
-          print(f"Global Domain rules: {len(domains)}")
-          PY
+          python3 /tmp/convert.py \
+            domain \
+            /tmp/Global_Domain.txt \
+            /tmp/Global_Domain.yaml
 
           /tmp/mihomo convert-ruleset domain yaml \
             /tmp/Global_Domain.yaml \
             RULESET/Global_Domain.mrs
 
+          test -s RULESET/Global_Domain.mrs
+
       - name: Convert Global Classical IP
         run: |
           set -e
 
-          python3 - <<'PY'
-          import re
-          import ipaddress
-
-          src = "/tmp/Global_Classical.yaml"
-          out = "/tmp/Global_Classical_IP.yaml"
-
-          cidrs = set()
-
-          with open(src, "r", encoding="utf-8") as f:
-              for line in f:
-                  line = line.strip()
-
-                  if not line or line.startswith("#"):
-                      continue
-
-                  m = re.match(
-                      r"^-\s*IP-CIDR6?,\s*([^,\s]+)",
-                      line,
-                      re.IGNORECASE
-                  )
-
-                  if not m:
-                      continue
-
-                  candidate = m.group(1).strip()
-
-                  try:
-                      network = ipaddress.ip_network(
-                          candidate,
-                          strict=False
-                      )
-                      cidrs.add(str(network))
-                  except ValueError:
-                      continue
-
-          if not cidrs:
-              raise RuntimeError(
-                  "Global Classical IP 没有提取到任何有效 CIDR"
-              )
-
-          with open(out, "w", encoding="utf-8") as f:
-              f.write("payload:\n")
-
-              for cidr in sorted(cidrs):
-                  f.write(f'  - "{cidr}"\n')
-
-          print(f"Global Classical IP rules: {len(cidrs)}")
-          PY
+          python3 /tmp/convert.py \
+            classical-ip \
+            /tmp/Global_Classical.yaml \
+            /tmp/Global_Classical_IP.yaml
 
           /tmp/mihomo convert-ruleset ipcidr yaml \
             /tmp/Global_Classical_IP.yaml \
             RULESET/Global_Classical_IP.mrs
+
+          test -s RULESET/Global_Classical_IP.mrs
 
       - name: Fetch China ASN
         run: |
@@ -401,14 +379,14 @@ jobs:
           import requests
           import re
 
-          URL = "https://bgp.he.net/country/CN"
+          url = "https://bgp.he.net/country/CN"
 
           headers = {
               "User-Agent": "Mozilla/5.0"
           }
 
           response = requests.get(
-              URL,
+              url,
               headers=headers,
               timeout=60
           )
@@ -420,7 +398,7 @@ jobs:
           asns = set(
               int(x)
               for x in re.findall(
-                  r'\bAS(\d+)\b',
+                  r"\bAS(\d+)\b",
                   html,
                   re.IGNORECASE
               )
@@ -446,7 +424,9 @@ jobs:
               f.write("payload:\n")
 
               for asn in asns:
-                  f.write(f"  - IP-ASN,{asn}\n")
+                  f.write(
+                      f"  - IP-ASN,{asn}\n"
+                  )
 
           print(
               "Generated RULESET/China_ASN.yaml"
