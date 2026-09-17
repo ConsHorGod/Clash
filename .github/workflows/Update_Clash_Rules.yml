@@ -1,10 +1,480 @@
+name: Update Clash Rules
+
+on:
+  push:
+    paths:
+      - "MY_DIRECT.yaml"
+      - "MY_PROXY.yaml"
+      - "MY_REJECT.yaml"
+
+  schedule:
+    - cron: "0 22 * * *"
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          set -e
+
+          sudo apt-get update
+
+          sudo apt-get install -y \
+            python3 \
+            python3-pip \
+            curl \
+            wget \
+            jq
+
+          pip3 install \
+            --disable-pip-version-check \
+            requests \
+            beautifulsoup4 \
+            pyyaml
+
+      - name: Prepare output directory
+        run: |
+          set -e
+
+          mkdir -p RULESET
+
+          rm -f RULESET/*.mrs
+          rm -f RULESET/*.yaml
+
+      - name: Download Blackmatrix7 rules
+        run: |
+          set -e
+
+          curl -fsSL \
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMax/ChinaMax_Domain.txt" \
+            -o /tmp/ChinaMax_Domain.txt
+
+          curl -fsSL \
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/ChinaMax/ChinaMax_IP.txt" \
+            -o /tmp/ChinaMax_IP.txt
+
+          curl -fsSL \
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Proxy/Proxy_Domain.txt" \
+            -o /tmp/Proxy_Domain.txt
+
+          curl -fsSL \
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Global/Global_Domain.txt" \
+            -o /tmp/Global_Domain.txt
+
+          curl -fsSL \
+            "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Global/Global_Classical.yaml" \
+            -o /tmp/Global_Classical.yaml
+
+          echo "========================================"
+          echo "Downloaded Blackmatrix7 rules"
+          echo "========================================"
+
+          wc -l \
+            /tmp/ChinaMax_Domain.txt \
+            /tmp/ChinaMax_IP.txt \
+            /tmp/Proxy_Domain.txt \
+            /tmp/Global_Domain.txt \
+            /tmp/Global_Classical.yaml
+
+      - name: Download Mihomo
+        run: |
+          set -e
+
+          echo "Getting latest Mihomo release..."
+
+          RELEASE_JSON=$(curl -fsSL \
+            "https://api.github.com/repos/MetaCubeX/mihomo/releases/latest")
+
+          VERSION=$(echo "$RELEASE_JSON" | jq -r '.tag_name')
+
+          if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
+            echo "Failed to get Mihomo version"
+            exit 1
+          fi
+
+          echo "Mihomo version: $VERSION"
+
+          ASSET_URL=$(echo "$RELEASE_JSON" \
+            | jq -r '.assets[].browser_download_url' \
+            | grep 'mihomo-linux-amd64-v3-' \
+            | grep '\.gz$' \
+            | head -n 1)
+
+          if [ -z "$ASSET_URL" ]; then
+            echo "Failed to find Mihomo amd64-v3 gzip asset"
+            exit 1
+          fi
+
+          echo "Mihomo asset:"
+          echo "$ASSET_URL"
+
+          wget -q \
+            "$ASSET_URL" \
+            -O /tmp/mihomo.gz
+
+          test -s /tmp/mihomo.gz
+
+          gunzip -f /tmp/mihomo.gz
+
+          chmod +x /tmp/mihomo
+
+          test -x /tmp/mihomo
+
+          echo "Mihomo downloaded successfully."
+
+      - name: Generate converter
+        run: |
+          set -e
+
+          cat > /tmp/convert.py <<'PY'
+          import sys
+          import re
+          import ipaddress
+
+          def read_lines(path):
+              with open(path, "r", encoding="utf-8") as f:
+                  return [x.strip() for x in f]
+
+          def clean_line(line):
+              line = line.strip()
+
+              if not line:
+                  return ""
+
+              if line.startswith("#"):
+                  return ""
+
+              if "#" in line:
+                  line = line.split("#", 1)[0].strip()
+
+              return line
+
+          def extract_domain_rules(path):
+              rules = set()
+
+              for raw in read_lines(path):
+                  line = clean_line(raw)
+
+                  if not line:
+                      continue
+
+                  parts = [
+                      x.strip()
+                      for x in line.split(",")
+                  ]
+
+                  rule_type = parts[0].upper()
+
+                  if rule_type == "DOMAIN" and len(parts) >= 2:
+                      value = parts[1]
+
+                      if value:
+                          rules.add(value)
+
+                      continue
+
+                  if rule_type == "DOMAIN-SUFFIX" and len(parts) >= 2:
+                      value = parts[1]
+
+                      if value:
+                          rules.add(value)
+
+                      continue
+
+                  if rule_type == "DOMAIN-KEYWORD" and len(parts) >= 2:
+                      value = parts[1]
+
+                      if value:
+                          rules.add(value)
+
+                      continue
+
+                  if rule_type in (
+                      "DOMAIN-REGEX",
+                      "PROCESS-NAME",
+                      "PROCESS-PATH",
+                      "IP-CIDR",
+                      "IP-CIDR6",
+                      "IP-CIDR4",
+                      "IP-ASN",
+                      "GEOIP",
+                      "MATCH",
+                      "FINAL"
+                  ):
+                      continue
+
+                  value = parts[0].strip()
+
+                  if value:
+                      rules.add(value)
+
+              return rules
+
+          def extract_ip_rules(path):
+              rules = set()
+
+              for raw in read_lines(path):
+                  line = clean_line(raw)
+
+                  if not line:
+                      continue
+
+                  parts = [
+                      x.strip()
+                      for x in line.split(",")
+                  ]
+
+                  candidates = []
+
+                  if len(parts) >= 2:
+                      rule_type = parts[0].upper()
+
+                      if rule_type in (
+                          "IP-CIDR",
+                          "IP-CIDR6",
+                          "IP-CIDR4"
+                      ):
+                          candidates.append(parts[1])
+                      else:
+                          candidates.append(parts[0])
+                  else:
+                      candidates.append(parts[0])
+
+                  for value in candidates:
+                      value = value.strip()
+
+                      try:
+                          network = ipaddress.ip_network(
+                              value,
+                              strict=False
+                          )
+
+                          rules.add(str(network))
+
+                      except ValueError:
+                          continue
+
+              return rules
+
+          def extract_classical_ip_rules(path):
+              rules = set()
+
+              for raw in read_lines(path):
+                  line = clean_line(raw)
+
+                  if not line:
+                      continue
+
+                  match = re.match(
+                      r"^-\s*(IP-CIDR6?|IP-CIDR4)\s*,\s*([^,\s]+)",
+                      line,
+                      re.IGNORECASE
+                  )
+
+                  if not match:
+                      continue
+
+                  value = match.group(2).strip()
+
+                  try:
+                      network = ipaddress.ip_network(
+                          value,
+                          strict=False
+                      )
+
+                      rules.add(str(network))
+
+                  except ValueError:
+                      continue
+
+              return rules
+
+          def write_domain_yaml(rules, path):
+              if not rules:
+                  raise RuntimeError(
+                      f"没有提取到 Domain 规则: {path}"
+                  )
+
+              with open(
+                  path,
+                  "w",
+                  encoding="utf-8"
+              ) as f:
+
+                  f.write("payload:\n")
+
+                  for rule in sorted(rules):
+                      escaped = (
+                          rule
+                          .replace("\\", "\\\\")
+                          .replace('"', '\\"')
+                      )
+
+                      f.write(
+                          f'  - "{escaped}"\n'
+                      )
+
+          def write_ip_yaml(rules, path):
+              if not rules:
+                  raise RuntimeError(
+                      f"没有提取到 IP/CIDR 规则: {path}"
+                  )
+
+              with open(
+                  path,
+                  "w",
+                  encoding="utf-8"
+              ) as f:
+
+                  f.write("payload:\n")
+
+                  for rule in sorted(rules):
+                      f.write(
+                          f'  - "{rule}"\n'
+                      )
+
+          if len(sys.argv) != 4:
+              print(
+                  "Usage: convert.py TYPE INPUT OUTPUT",
+                  file=sys.stderr
+              )
+
+              sys.exit(2)
+
+          rule_type = sys.argv[1]
+          src = sys.argv[2]
+          out = sys.argv[3]
+
+          if rule_type == "domain":
+
+              rules = extract_domain_rules(src)
+
+              write_domain_yaml(
+                  rules,
+                  out
+              )
+
+          elif rule_type == "ip":
+
+              rules = extract_ip_rules(src)
+
+              write_ip_yaml(
+                  rules,
+                  out
+              )
+
+          elif rule_type == "classical-ip":
+
+              rules = extract_classical_ip_rules(src)
+
+              write_ip_yaml(
+                  rules,
+                  out
+              )
+
+          else:
+
+              raise RuntimeError(
+                  f"Unknown rule type: {rule_type}"
+              )
+
+          print(
+              f"Converted {len(rules)} rules"
+          )
+          PY
+
+      - name: Convert ChinaMax Domain
+        run: |
+          set -e
+
+          python3 /tmp/convert.py \
+            domain \
+            /tmp/ChinaMax_Domain.txt \
+            /tmp/ChinaMax_Domain.yaml
+
+          /tmp/mihomo convert-ruleset domain yaml \
+            /tmp/ChinaMax_Domain.yaml \
+            RULESET/ChinaMax_Domain.mrs
+
+          test -s RULESET/ChinaMax_Domain.mrs
+
+      - name: Convert ChinaMax IP
+        run: |
+          set -e
+
+          python3 /tmp/convert.py \
+            ip \
+            /tmp/ChinaMax_IP.txt \
+            /tmp/ChinaMax_IP.yaml
+
+          /tmp/mihomo convert-ruleset ipcidr yaml \
+            /tmp/ChinaMax_IP.yaml \
+            RULESET/ChinaMax_IP.mrs
+
+          test -s RULESET/ChinaMax_IP.mrs
+
+      - name: Convert Proxy Domain
+        run: |
+          set -e
+
+          python3 /tmp/convert.py \
+            domain \
+            /tmp/Proxy_Domain.txt \
+            /tmp/Proxy_Domain.yaml
+
+          /tmp/mihomo convert-ruleset domain yaml \
+            /tmp/Proxy_Domain.yaml \
+            RULESET/Proxy_Domain.mrs
+
+          test -s RULESET/Proxy_Domain.mrs
+
+      - name: Convert Global Domain
+        run: |
+          set -e
+
+          python3 /tmp/convert.py \
+            domain \
+            /tmp/Global_Domain.txt \
+            /tmp/Global_Domain.yaml
+
+          /tmp/mihomo convert-ruleset domain yaml \
+            /tmp/Global_Domain.yaml \
+            RULESET/Global_Domain.mrs
+
+          test -s RULESET/Global_Domain.mrs
+
+      - name: Convert Global Classical IP
+        run: |
+          set -e
+
+          python3 /tmp/convert.py \
+            classical-ip \
+            /tmp/Global_Classical.yaml \
+            /tmp/Global_Classical_IP.yaml
+
+          /tmp/mihomo convert-ruleset ipcidr yaml \
+            /tmp/Global_Classical_IP.yaml \
+            RULESET/Global_Classical_IP.mrs
+
+          test -s RULESET/Global_Classical_IP.mrs
+
       - name: Prepare MY rules
         run: |
           set -e
 
           python3 - <<'PY'
           import yaml
-          import os
 
           files = [
               "MY_DIRECT.yaml",
@@ -13,21 +483,37 @@
           ]
 
           for src in files:
-              with open(src, "r", encoding="utf-8") as f:
+
+              with open(
+                  src,
+                  "r",
+                  encoding="utf-8"
+              ) as f:
                   data = yaml.safe_load(f)
 
               if not isinstance(data, dict):
-                  raise RuntimeError(f"{src} 不是有效 YAML")
+                  raise RuntimeError(
+                      f"{src} 不是有效 YAML"
+                  )
 
-              payload = data.get("payload", [])
+              payload = data.get(
+                  "payload",
+                  []
+              )
 
               if not isinstance(payload, list):
-                  raise RuntimeError(f"{src} payload 不是列表")
+                  raise RuntimeError(
+                      f"{src} payload 不是列表"
+                  )
 
               clean = []
 
               for rule in payload:
-                  if not isinstance(rule, str):
+
+                  if not isinstance(
+                      rule,
+                      str
+                  ):
                       continue
 
                   rule = rule.strip()
@@ -38,19 +524,28 @@
                   if rule.startswith("#"):
                       continue
 
-                  # 修正用户文件中缺少逗号的 DOMAIN
+                  # 修复原文件中缺少逗号的 DOMAIN
                   if rule == "DOMAINntp.nasa.gov":
                       rule = "DOMAIN,ntp.nasa.gov"
 
                   elif rule == "DOMAINjlxa.wicp.net":
                       rule = "DOMAIN,jlxa.wicp.net"
 
-                  # 只保留 DOMAIN / DOMAIN-SUFFIX
-                  if rule.startswith("DOMAIN,"):
-                      parts = rule.split(",", 1)
+                  if rule.startswith(
+                      "DOMAIN,"
+                  ):
+                      parts = rule.split(
+                          ",",
+                          1
+                      )
 
-                  elif rule.startswith("DOMAIN-SUFFIX,"):
-                      parts = rule.split(",", 1)
+                  elif rule.startswith(
+                      "DOMAIN-SUFFIX,"
+                  ):
+                      parts = rule.split(
+                          ",",
+                          1
+                      )
 
                   else:
                       continue
@@ -58,29 +553,50 @@
                   if len(parts) != 2:
                       continue
 
+                  rule_type = parts[0].strip()
                   value = parts[1].strip()
 
                   if not value:
                       continue
 
+                  if rule_type not in (
+                      "DOMAIN",
+                      "DOMAIN-SUFFIX"
+                  ):
+                      continue
+
                   clean.append(
-                      f"{parts[0]},{value}"
+                      f"{rule_type},{value}"
                   )
+
+              # 去重并保持排序
+              clean = sorted(
+                  set(clean)
+              )
 
               if not clean:
                   raise RuntimeError(
-                      f"{src} 没有找到有效 DOMAIN 规则"
+                      f"{src} 没有找到有效规则"
                   )
 
+              output = (
+                  f"/tmp/{src}"
+              )
+
               with open(
-                  f"/tmp/{src}",
+                  output,
                   "w",
                   encoding="utf-8"
               ) as f:
-                  f.write("payload:\n")
+
+                  f.write(
+                      "payload:\n"
+                  )
 
                   for rule in clean:
-                      f.write(f"  - {rule}\n")
+                      f.write(
+                          f"  - {rule}\n"
+                      )
 
               print(
                   f"{src}: {len(clean)} valid rules"
@@ -88,13 +604,220 @@
           PY
 
           echo
-          echo "===== MY_DIRECT ====="
+          echo "========================================"
+          echo "MY_DIRECT"
+          echo "========================================"
+
           cat /tmp/MY_DIRECT.yaml
 
           echo
-          echo "===== MY_PROXY ====="
+          echo "========================================"
+          echo "MY_PROXY"
+          echo "========================================"
+
           cat /tmp/MY_PROXY.yaml
 
           echo
-          echo "===== MY_REJECT ====="
+          echo "========================================"
+          echo "MY_REJECT"
+          echo "========================================"
+
           cat /tmp/MY_REJECT.yaml
+
+      - name: Convert MY_DIRECT
+        run: |
+          set -e
+
+          /tmp/mihomo convert-ruleset domain yaml \
+            /tmp/MY_DIRECT.yaml \
+            RULESET/MY_DIRECT.mrs
+
+          test -s RULESET/MY_DIRECT.mrs
+
+          echo "MY_DIRECT.mrs generated successfully."
+
+      - name: Convert MY_PROXY
+        run: |
+          set -e
+
+          /tmp/mihomo convert-ruleset domain yaml \
+            /tmp/MY_PROXY.yaml \
+            RULESET/MY_PROXY.mrs
+
+          test -s RULESET/MY_PROXY.mrs
+
+          echo "MY_PROXY.mrs generated successfully."
+
+      - name: Convert MY_REJECT
+        run: |
+          set -e
+
+          /tmp/mihomo convert-ruleset domain yaml \
+            /tmp/MY_REJECT.yaml \
+            RULESET/MY_REJECT.mrs
+
+          test -s RULESET/MY_REJECT.mrs
+
+          echo "MY_REJECT.mrs generated successfully."
+
+      - name: Fetch China ASN
+        run: |
+          set -e
+
+          python3 - <<'PY'
+          import requests
+          import re
+
+          url = "https://bgp.he.net/country/CN"
+
+          headers = {
+              "User-Agent": "Mozilla/5.0"
+          }
+
+          response = requests.get(
+              url,
+              headers=headers,
+              timeout=60
+          )
+
+          response.raise_for_status()
+
+          html = response.text
+
+          asns = set(
+              int(x)
+              for x in re.findall(
+                  r"\bAS(\d+)\b",
+                  html,
+                  re.IGNORECASE
+              )
+          )
+
+          asns = sorted(
+              x
+              for x in asns
+              if 1 <= x <= 4294967295
+          )
+
+          if not asns:
+              raise RuntimeError(
+                  "没有抓取到中国 ASN"
+              )
+
+          print(
+              f"Found {len(asns)} China ASNs"
+          )
+
+          with open(
+              "RULESET/China_ASN.yaml",
+              "w",
+              encoding="utf-8"
+          ) as f:
+
+              f.write(
+                  "payload:\n"
+              )
+
+              for asn in asns:
+                  f.write(
+                      f"  - IP-ASN,{asn}\n"
+                  )
+
+          print(
+              "Generated RULESET/China_ASN.yaml"
+          )
+          PY
+
+      - name: Check output
+        run: |
+          set -e
+
+          echo
+          echo "========================================"
+          echo "RULESET"
+          echo "========================================"
+
+          ls -lh RULESET/
+
+          echo
+          echo "========================================"
+          echo "MRS"
+          echo "========================================"
+
+          ls -lh RULESET/*.mrs
+
+          echo
+          echo "========================================"
+          echo "MY RULE COUNTS"
+          echo "========================================"
+
+          echo -n "MY_DIRECT: "
+          grep -c "^  - " /tmp/MY_DIRECT.yaml
+
+          echo -n "MY_PROXY: "
+          grep -c "^  - " /tmp/MY_PROXY.yaml
+
+          echo -n "MY_REJECT: "
+          grep -c "^  - " /tmp/MY_REJECT.yaml
+
+          echo
+          echo "========================================"
+          echo "China ASN"
+          echo "========================================"
+
+          grep -c "IP-ASN," \
+            RULESET/China_ASN.yaml
+
+          echo
+          echo "========================================"
+          echo "MRS COUNT"
+          echo "========================================"
+
+          find RULESET \
+            -name "*.mrs" \
+            | wc -l
+
+          echo
+          echo "========================================"
+          echo "FILE CHECK"
+          echo "========================================"
+
+          test -s RULESET/ChinaMax_Domain.mrs
+          test -s RULESET/ChinaMax_IP.mrs
+          test -s RULESET/Proxy_Domain.mrs
+          test -s RULESET/Global_Domain.mrs
+          test -s RULESET/Global_Classical_IP.mrs
+
+          test -s RULESET/MY_DIRECT.mrs
+          test -s RULESET/MY_PROXY.mrs
+          test -s RULESET/MY_REJECT.mrs
+
+          test -s RULESET/China_ASN.yaml
+
+          echo
+          echo "All output files are valid."
+
+      - name: Commit changes
+        run: |
+          set -e
+
+          git config \
+            user.name \
+            "github-actions[bot]"
+
+          git config \
+            user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add RULESET/
+
+          if git diff --cached --quiet; then
+            echo "No changes."
+
+            exit 0
+          fi
+
+          git commit \
+            -m "Update Clash rules"
+
+          git push
