@@ -1,4 +1,4 @@
-name: Update MY Rules MRS
+name: Update MY Rules
 
 on:
   push:
