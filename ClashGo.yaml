@@ -196,20 +196,20 @@ rule-anchor:
 #>>>>>>>>>>>>>>>>>>>>>規則集<<<<<<<<<<<<<<<<<<<<
 rule-providers:
   MY_DIRECT:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_DIRECT.mrs"
+    <<: *classical
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_DIRECT.yaml"
   MY_PROXY:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_PROXY.mrs"
+    <<: *classical
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_PROXY.yaml"
   MY_REJECT:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_REJECT.mrs"
+    <<: *classical
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_REJECT.yaml"
   iOS_OTA:
     <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/Clash/refs/heads/main/iOS_OTA.yaml"
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_OTA.yaml"
   iOS_PUSH:
     <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/Clash/refs/heads/main/iOS_PUSH.yaml"
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_PUSH.yaml"
   anti-ad:
     <<: *domain
     url: "https://raw.githubusercontent.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs"
