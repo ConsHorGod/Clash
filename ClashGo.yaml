@@ -215,19 +215,19 @@ rule-providers:
     url: "https://raw.githubusercontent.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs"
   China_ASN:
     <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/ruleset/China_ASN.yaml"
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/China_ASN.yaml"
   ChinaMax_Domain:
     <<: *domain
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/ruleset/ChinaMax_Domain.mrs"
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_Domain.mrs"
   ChinaMax_IP:
     <<: *ipcidr
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/ruleset/ChinaMax_IP.mrs"
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_IP.mrs"
   Global_Domain:
     <<: *domain
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/ruleset/Global_Domain.mrs"
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Domain.mrs"
   Global_IP:
     <<: *ipcidr
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/ruleset/Global_Classical_IP.mrs"
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Classical_IP.mrs"
   TikTok:
     <<: *classical
     url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/TikTok/TikTok_No_Resolve.yaml"
