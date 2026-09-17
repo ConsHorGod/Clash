@@ -1,4 +1,8 @@
 payload:
+  - DST-PORT,123
+  - DOMAIN-SUFFIX,cn
+  - DOMAIN-KEYWORD,-cn
+  - DOMAIN-KEYWORD,cn-
   - DOMAIN-SUFFIX,quantumult.app
   - DOMAIN-SUFFIX,pool.ntp.org
   - DOMAINntp.nasa.gov
