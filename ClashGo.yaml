@@ -61,8 +61,8 @@ dns:
   use-system-hosts: true
   cache-algorithm: arc
   nameserver:
-    - https://dns.alidns.com/dns-query
-    - https://doh.pub/dns-query
+    - "https://dns.alidns.com/dns-query#223.5.5.5"
+    - "https://doh.pub/dns-query#119.29.29.29"
   nameserver-policy:
     "+.lan": system
     "+.local": system
