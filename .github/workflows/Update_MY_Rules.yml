@@ -1,4 +1,4 @@
-name: Update MY Rules MRS
+name: Update_MY_Rules
 
 on:
   push:
@@ -21,8 +21,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download latest Mihomo
-        shell: bash
+      - name: Install dependencies
+        run: |
+          set -e
+          sudo apt-get update
+          sudo apt-get install -y python3 python3-pip curl wget jq
+          pip3 install --disable-pip-version-check requests beautifulsoup4
+
+      - name: Prepare output directory
+        run: |
+          set -e
+          mkdir -p RULESET
+
+      - name: Download Mihomo
         run: |
           set -e
 
@@ -33,14 +44,14 @@ jobs:
             --retry-delay 3 \
             --connect-timeout 15 \
             --max-time 60 \
-            https://api.github.com/repos/MetaCubeX/mihomo/releases/latest \
+            "https://api.github.com/repos/MetaCubeX/mihomo/releases/latest" \
             | jq -r '.assets[].browser_download_url' \
-            | grep '/mihomo-linux-amd64-v3-' \
+            | grep 'mihomo-linux-amd64-v3-' \
             | grep '\.gz$' \
             | head -n 1)
 
           if [ -z "$ASSET_URL" ]; then
-            echo "ERROR: Mihomo Linux AMD64 v3 download URL not found."
+            echo "Failed to find Mihomo Linux amd64 v3 release."
             exit 1
           fi
 
@@ -53,48 +64,61 @@ jobs:
             --connect-timeout 15 \
             --max-time 180 \
             "$ASSET_URL" \
-            -o mihomo.gz
+            -o /tmp/mihomo.gz
 
-          gzip -df mihomo.gz
-          chmod +x mihomo
+          gunzip -f /tmp/mihomo.gz
+          chmod +x /tmp/mihomo
 
           echo "Mihomo version:"
-          ./mihomo version
+          /tmp/mihomo -v
 
-      - name: Convert rules to MRS
-        shell: bash
+      - name: Generate MY MRS
         run: |
           set -e
 
           mkdir -p RULESET
 
-          echo "Converting MY_DIRECT..."
-          ./mihomo convert-ruleset domain yaml \
+          echo "========================================"
+          echo "Convert MY_DIRECT.yaml"
+          echo "========================================"
+
+          /tmp/mihomo convert-ruleset domain yaml \
             MY_DIRECT.yaml \
             RULESET/MY_DIRECT.mrs
 
-          echo "Converting MY_PROXY..."
-          ./mihomo convert-ruleset domain yaml \
+          echo "========================================"
+          echo "Convert MY_PROXY.yaml"
+          echo "========================================"
+
+          /tmp/mihomo convert-ruleset domain yaml \
             MY_PROXY.yaml \
             RULESET/MY_PROXY.mrs
 
-          echo "Converting MY_REJECT..."
-          ./mihomo convert-ruleset domain yaml \
+          echo "========================================"
+          echo "Convert MY_REJECT.yaml"
+          echo "========================================"
+
+          /tmp/mihomo convert-ruleset domain yaml \
             MY_REJECT.yaml \
             RULESET/MY_REJECT.mrs
 
-      - name: Check generated files
-        shell: bash
+      - name: Check MY MRS
         run: |
           set -e
 
-          echo "Generated MRS files:"
+          echo "Generated files:"
+
           ls -lh RULESET/MY_DIRECT.mrs
           ls -lh RULESET/MY_PROXY.mrs
           ls -lh RULESET/MY_REJECT.mrs
 
-      - name: Commit and push
-        shell: bash
+          test -s RULESET/MY_DIRECT.mrs
+          test -s RULESET/MY_PROXY.mrs
+          test -s RULESET/MY_REJECT.mrs
+
+          echo "All MY MRS files are valid."
+
+      - name: Commit changes
         run: |
           set -e
 
