@@ -41,9 +41,22 @@ dns:
   listen: :23453
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
-  fake-ip-filter-mode: blacklist
+  fake-ip-filter-mode: rule
   fake-ip-filter:
-    - '*.lan'
+    - DOMAIN-KEYWORD,github,fake-ip
+    - RULE-SET,iOS_PUSH,real-ip
+    - RULE-SET,iOS_OTA,real-ip
+    - RULE-SET,MY_REJECT,real-ip
+    - RULE-SET,anti-ad,real-ip
+    - RULE-SET,MY_DIRECT,real-ip
+    - RULE-SET,China_ASN,real-ip
+    - RULE-SET,ChinaMax_Domain,real-ip
+    - RULE-SET,Steam,fake-ip
+    - RULE-SET,MY_PROXY,fake-ip
+    - RULE-SET,AI,fake-ip
+    - RULE-SET,TikTok,fake-ip
+    - RULE-SET,Global_Domain,fake-ip
+    - MATCH,fake-ip
   use-hosts: true
   use-system-hosts: true
   cache-algorithm: arc
