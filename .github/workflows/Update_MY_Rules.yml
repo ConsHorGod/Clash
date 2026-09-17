@@ -1,4 +1,4 @@
-name: Update MY Rules
+name: Update MY Rules MRS
 
 on:
   push:
@@ -21,18 +21,44 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download Mihomo
+      - name: Download latest Mihomo
         shell: bash
         run: |
           set -e
 
-          curl -fL --retry 5 --retry-delay 3 --connect-timeout 15 --max-time 180 \
-            "https://github.com/MetaCubeX/mihomo/releases/latest/download/mihomo-linux-amd64-v3.gz" \
+          echo "Getting latest Mihomo release..."
+
+          ASSET_URL=$(curl -fsSL \
+            --retry 5 \
+            --retry-delay 3 \
+            --connect-timeout 15 \
+            --max-time 60 \
+            https://api.github.com/repos/MetaCubeX/mihomo/releases/latest \
+            | jq -r '.assets[].browser_download_url' \
+            | grep '/mihomo-linux-amd64-v3-' \
+            | grep '\.gz$' \
+            | head -n 1)
+
+          if [ -z "$ASSET_URL" ]; then
+            echo "ERROR: Mihomo Linux AMD64 v3 download URL not found."
+            exit 1
+          fi
+
+          echo "Downloading:"
+          echo "$ASSET_URL"
+
+          curl -fL \
+            --retry 5 \
+            --retry-delay 3 \
+            --connect-timeout 15 \
+            --max-time 180 \
+            "$ASSET_URL" \
             -o mihomo.gz
 
           gzip -df mihomo.gz
           chmod +x mihomo
 
+          echo "Mihomo version:"
           ./mihomo version
 
       - name: Convert rules to MRS
@@ -42,14 +68,17 @@ jobs:
 
           mkdir -p RULESET
 
+          echo "Converting MY_DIRECT..."
           ./mihomo convert-ruleset domain yaml \
             MY_DIRECT.yaml \
             RULESET/MY_DIRECT.mrs
 
+          echo "Converting MY_PROXY..."
           ./mihomo convert-ruleset domain yaml \
             MY_PROXY.yaml \
             RULESET/MY_PROXY.mrs
 
+          echo "Converting MY_REJECT..."
           ./mihomo convert-ruleset domain yaml \
             MY_REJECT.yaml \
             RULESET/MY_REJECT.mrs
@@ -59,6 +88,7 @@ jobs:
         run: |
           set -e
 
+          echo "Generated MRS files:"
           ls -lh RULESET/MY_DIRECT.mrs
           ls -lh RULESET/MY_PROXY.mrs
           ls -lh RULESET/MY_REJECT.mrs
