@@ -1,0 +1,76 @@
+name: Update MY Rules MRS
+
+on:
+  push:
+    paths:
+      - "MY_DIRECT.yaml"
+      - "MY_PROXY.yaml"
+      - "MY_REJECT.yaml"
+  schedule:
+    - cron: "0 22 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download latest Mihomo
+        shell: bash
+        run: |
+          set -e
+
+          VERSION=$(curl -fsSL https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | jq -r '.tag_name')
+
+          URL="https://github.com/MetaCubeX/mihomo/releases/download/${VERSION}/mihomo-linux-amd64-${VERSION}.gz"
+
+          curl -fL "$URL" -o mihomo.gz
+          gzip -d mihomo.gz
+          chmod +x mihomo
+
+          ./mihomo version
+
+      - name: Convert rules to MRS
+        shell: bash
+        run: |
+          set -e
+
+          mkdir -p RULESET
+
+          ./mihomo convert-ruleset domain yaml \
+            MY_DIRECT.yaml \
+            RULESET/MY_DIRECT.mrs
+
+          ./mihomo convert-ruleset domain yaml \
+            MY_PROXY.yaml \
+            RULESET/MY_PROXY.mrs
+
+          ./mihomo convert-ruleset domain yaml \
+            MY_REJECT.yaml \
+            RULESET/MY_REJECT.mrs
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          set -e
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add RULESET/MY_DIRECT.mrs
+          git add RULESET/MY_PROXY.mrs
+          git add RULESET/MY_REJECT.mrs
+
+          if git diff --cached --quiet; then
+            echo "No MRS changes."
+            exit 0
+          fi
+
+          git commit -m "Update MY rules MRS"
+          git push
