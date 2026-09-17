@@ -1,6 +1,11 @@
 name: Update Clash Rules
 
 on:
+  push:
+    paths:
+      - "MY_DIRECT.yaml"
+      - "MY_PROXY.yaml"
+      - "MY_REJECT.yaml"
   schedule:
     - cron: "0 22 * * *"
   workflow_dispatch:
@@ -21,7 +26,7 @@ jobs:
           set -e
           sudo apt-get update
           sudo apt-get install -y python3 python3-pip curl wget jq
-          pip3 install --disable-pip-version-check requests beautifulsoup4
+          pip3 install --disable-pip-version-check requests beautifulsoup4 pyyaml
 
       - name: Prepare output directory
         run: |
@@ -61,6 +66,19 @@ jobs:
           wc -l /tmp/Global_Domain.txt
           wc -l /tmp/Global_Classical.yaml
 
+      - name: Check MY rule files
+        run: |
+          set -e
+
+          test -f MY_DIRECT.yaml
+          test -f MY_PROXY.yaml
+          test -f MY_REJECT.yaml
+
+          echo "===== MY rule files ====="
+          wc -l MY_DIRECT.yaml
+          wc -l MY_PROXY.yaml
+          wc -l MY_REJECT.yaml
+
       - name: Download mihomo
         run: |
           set -e
@@ -76,14 +94,27 @@ jobs:
 
           echo "Mihomo version: $VERSION"
 
+          ASSET_URL=$(curl -fsSL \
+            "https://api.github.com/repos/MetaCubeX/mihomo/releases/latest" \
+            | jq -r '.assets[].browser_download_url' \
+            | grep 'mihomo-linux-amd64-v3-' \
+            | grep '\.gz$' \
+            | head -n 1)
+
+          if [ -z "$ASSET_URL" ]; then
+            echo "Failed to find Mihomo Linux amd64 v3 release."
+            exit 1
+          fi
+
+          echo "Downloading:"
+          echo "$ASSET_URL"
+
           wget -q \
-            "https://github.com/MetaCubeX/mihomo/releases/download/${VERSION}/mihomo-linux-amd64-${VERSION}.gz" \
+            "$ASSET_URL" \
             -O /tmp/mihomo.gz
 
           gunzip -f /tmp/mihomo.gz
           chmod +x /tmp/mihomo
-
-          /tmp/mihomo -v
 
       - name: Generate converter
         run: |
@@ -124,21 +155,27 @@ jobs:
                   rule_type = parts[0].upper()
 
                   if rule_type == "DOMAIN" and len(parts) >= 2:
-                      value = parts[1]
+                      value = parts[1].strip()
+
                       if value:
                           rules.add(value)
+
                       continue
 
                   if rule_type == "DOMAIN-SUFFIX" and len(parts) >= 2:
-                      value = parts[1]
+                      value = parts[1].strip()
+
                       if value:
                           rules.add("+" + value)
+
                       continue
 
                   if rule_type == "DOMAIN-KEYWORD" and len(parts) >= 2:
-                      value = parts[1]
+                      value = parts[1].strip()
+
                       if value:
                           rules.add("*" + value + "*")
+
                       continue
 
                   if rule_type in (
@@ -154,8 +191,6 @@ jobs:
                   ):
                       continue
 
-                  # Blackmatrix7 *_Domain.txt 的实际格式：
-                  # 每行直接就是一个域名
                   value = parts[0].strip()
 
                   if value:
@@ -198,7 +233,9 @@ jobs:
                               value,
                               strict=False
                           )
+
                           rules.add(str(network))
+
                       except ValueError:
                           continue
 
@@ -229,11 +266,142 @@ jobs:
                           value,
                           strict=False
                       )
+
                       rules.add(str(network))
+
                   except ValueError:
                       continue
 
               return rules
+
+          def extract_my_domain_rules(path):
+              rules = set()
+
+              with open(path, "r", encoding="utf-8") as f:
+                  for raw in f:
+
+                      line = raw.strip()
+
+                      if not line:
+                          continue
+
+                      if line.startswith("#"):
+                          continue
+
+                      if line.lower() == "payload:":
+                          continue
+
+                      if not re.match(r"^-\s*", line):
+                          continue
+
+                      line = re.sub(
+                          r"^-\s*",
+                          "",
+                          line
+                      ).strip()
+
+                      if not line:
+                          continue
+
+                      if " #" in line:
+                          line = line.split(
+                              " #",
+                              1
+                          )[0].strip()
+
+                      if len(line) >= 2:
+                          if (
+                              (
+                                  line.startswith('"')
+                                  and line.endswith('"')
+                              )
+                              or
+                              (
+                                  line.startswith("'")
+                                  and line.endswith("'")
+                              )
+                          ):
+                              line = line[1:-1].strip()
+
+                      if not line:
+                          continue
+
+                      if line.lower() in (
+                          "null",
+                          "~"
+                      ):
+                          continue
+
+                      parts = [
+                          x.strip()
+                          for x in line.split(",")
+                      ]
+
+                      if not parts:
+                          continue
+
+                      rule_type = parts[0].upper()
+
+                      if rule_type == "DOMAIN":
+                          if len(parts) >= 2:
+                              value = parts[1].strip()
+
+                              if value:
+                                  rules.add(value)
+
+                      elif rule_type == "DOMAIN-SUFFIX":
+                          if len(parts) >= 2:
+                              value = parts[1].strip()
+
+                              if value:
+                                  rules.add("+" + value)
+
+                      elif rule_type == "DOMAIN-KEYWORD":
+                          if len(parts) >= 2:
+                              value = parts[1].strip()
+
+                              if value:
+                                  rules.add("*" + value + "*")
+
+                      elif rule_type in (
+                          "DOMAIN-REGEX",
+                          "IP-CIDR",
+                          "IP-CIDR6",
+                          "IP-ASN",
+                          "GEOIP",
+                          "MATCH",
+                          "FINAL",
+                          "PROCESS-NAME",
+                          "PROCESS-PATH"
+                      ):
+                          continue
+
+                      else:
+                          value = parts[0].strip()
+
+                          if value:
+                              rules.add(value)
+
+              return rules
+
+          def write_text(rules, path):
+              if not rules:
+                  raise RuntimeError(
+                      f"没有提取到有效规则: {path}"
+                  )
+
+              with open(
+                  path,
+                  "w",
+                  encoding="utf-8"
+              ) as f:
+
+                  for rule in sorted(rules):
+                      if rule.strip():
+                          f.write(
+                              rule.strip() +
+                              "\n"
+                          )
 
           def write_domain_yaml(rules, path):
               if not rules:
@@ -241,16 +409,23 @@ jobs:
                       f"没有提取到 Domain 规则: {path}"
                   )
 
-              with open(path, "w", encoding="utf-8") as f:
+              with open(
+                  path,
+                  "w",
+                  encoding="utf-8"
+              ) as f:
+
                   f.write("payload:\n")
 
                   for rule in sorted(rules):
+                      escaped = (
+                          rule
+                          .replace("\\", "\\\\")
+                          .replace('"', '\\"')
+                      )
+
                       f.write(
-                          "  - " +
-                          '"' +
-                          rule.replace("\\", "\\\\").replace('"', '\\"') +
-                          '"' +
-                          "\n"
+                          f'  - "{escaped}"\n'
                       )
 
           def write_ip_yaml(rules, path):
@@ -259,17 +434,25 @@ jobs:
                       f"没有提取到 IP/CIDR 规则: {path}"
                   )
 
-              with open(path, "w", encoding="utf-8") as f:
+              with open(
+                  path,
+                  "w",
+                  encoding="utf-8"
+              ) as f:
+
                   f.write("payload:\n")
 
                   for rule in sorted(rules):
-                      f.write(f'  - "{rule}"\n')
+                      f.write(
+                          f'  - "{rule}"\n'
+                      )
 
           if len(sys.argv) != 4:
               print(
                   "Usage: convert.py TYPE INPUT OUTPUT",
                   file=sys.stderr
               )
+
               sys.exit(2)
 
           rule_type = sys.argv[1]
@@ -288,12 +471,18 @@ jobs:
               rules = extract_classical_ip_rules(src)
               write_ip_yaml(rules, out)
 
+          elif rule_type == "my-domain":
+              rules = extract_my_domain_rules(src)
+              write_text(rules, out)
+
           else:
               raise RuntimeError(
                   f"Unknown rule type: {rule_type}"
               )
 
-          print(f"Converted {len(rules)} rules")
+          print(
+              f"Converted {len(rules)} rules"
+          )
           PY
 
       - name: Convert ChinaMax Domain
@@ -371,6 +560,51 @@ jobs:
 
           test -s RULESET/Global_Classical_IP.mrs
 
+      - name: Convert MY_DIRECT
+        run: |
+          set -e
+
+          python3 /tmp/convert.py \
+            my-domain \
+            MY_DIRECT.yaml \
+            /tmp/MY_DIRECT.txt
+
+          /tmp/mihomo convert-ruleset domain text \
+            /tmp/MY_DIRECT.txt \
+            RULESET/MY_DIRECT.mrs
+
+          test -s RULESET/MY_DIRECT.mrs
+
+      - name: Convert MY_PROXY
+        run: |
+          set -e
+
+          python3 /tmp/convert.py \
+            my-domain \
+            MY_PROXY.yaml \
+            /tmp/MY_PROXY.txt
+
+          /tmp/mihomo convert-ruleset domain text \
+            /tmp/MY_PROXY.txt \
+            RULESET/MY_PROXY.mrs
+
+          test -s RULESET/MY_PROXY.mrs
+
+      - name: Convert MY_REJECT
+        run: |
+          set -e
+
+          python3 /tmp/convert.py \
+            my-domain \
+            MY_REJECT.yaml \
+            /tmp/MY_REJECT.txt
+
+          /tmp/mihomo convert-ruleset domain text \
+            /tmp/MY_REJECT.txt \
+            RULESET/MY_REJECT.mrs
+
+          test -s RULESET/MY_REJECT.mrs
+
       - name: Fetch China ASN
         run: |
           set -e
@@ -414,13 +648,16 @@ jobs:
                   "没有抓取到中国 ASN"
               )
 
-          print(f"Found {len(asns)} China ASNs")
+          print(
+              f"Found {len(asns)} China ASNs"
+          )
 
           with open(
               "RULESET/China_ASN.yaml",
               "w",
               encoding="utf-8"
           ) as f:
+
               f.write("payload:\n")
 
               for asn in asns:
@@ -474,6 +711,9 @@ jobs:
           test -s RULESET/Proxy_Domain.mrs
           test -s RULESET/Global_Domain.mrs
           test -s RULESET/Global_Classical_IP.mrs
+          test -s RULESET/MY_DIRECT.mrs
+          test -s RULESET/MY_PROXY.mrs
+          test -s RULESET/MY_REJECT.mrs
           test -s RULESET/China_ASN.yaml
 
           echo
