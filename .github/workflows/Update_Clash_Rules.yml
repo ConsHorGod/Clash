@@ -54,7 +54,7 @@ jobs:
             "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Global/Global_Classical.yaml" \
             -o /tmp/Global_Classical.yaml
 
-          echo "===== Download complete ====="
+          echo "===== Downloaded files ====="
 
           echo "ChinaMax Domain:"
           wc -l /tmp/ChinaMax_Domain.txt
@@ -91,7 +91,6 @@ jobs:
             -O /tmp/mihomo.gz
 
           gunzip -f /tmp/mihomo.gz
-
           chmod +x /tmp/mihomo
 
           /tmp/mihomo -v
@@ -110,17 +109,34 @@ jobs:
               for line in f:
                   line = line.strip()
 
-                  if not line:
+                  if not line or line.startswith("#"):
                       continue
 
-                  if line.startswith("#"):
-                      continue
+                  parts = [x.strip() for x in line.split(",")]
 
-                  domains.add(line)
+                  if len(parts) >= 2:
+                      rule_type = parts[0].upper()
+
+                      if rule_type == "DOMAIN":
+                          domains.add(parts[1])
+                          continue
+
+                      if rule_type == "DOMAIN-SUFFIX":
+                          domains.add("+" + parts[1])
+                          continue
+
+                      if rule_type == "DOMAIN-KEYWORD":
+                          domains.add("*" + parts[1] + "*")
+                          continue
+
+                  domains.add(parts[0])
 
           if not domains:
-              echo = "ChinaMax Domain is empty"
-              raise RuntimeError(echo)
+              echo "ChinaMax Domain source:"
+              head -30 "$src"
+              raise RuntimeError(
+                  "ChinaMax Domain 没有提取到任何有效规则"
+              )
 
           with open(out, "w", encoding="utf-8") as f:
               f.write("payload:\n")
@@ -135,14 +151,12 @@ jobs:
             /tmp/ChinaMax_Domain.yaml \
             RULESET/ChinaMax_Domain.mrs
 
-          echo "ChinaMax_Domain.mrs generated"
-
       - name: Convert ChinaMax IP
         run: |
           set -e
 
           python3 - <<'PY'
-          import re
+          import ipaddress
 
           src = "/tmp/ChinaMax_IP.txt"
           out = "/tmp/ChinaMax_IP.yaml"
@@ -153,26 +167,49 @@ jobs:
               for line in f:
                   line = line.strip()
 
-                  if not line:
-                      continue
-
-                  if line.startswith("#"):
+                  if not line or line.startswith("#"):
                       continue
 
                   parts = [x.strip() for x in line.split(",")]
 
-                  if len(parts) < 2:
-                      continue
+                  candidates = []
 
-                  rule_type = parts[0].upper()
+                  if len(parts) >= 2:
+                      rule_type = parts[0].upper()
 
-                  if rule_type in ("IP-CIDR", "IP-CIDR6"):
-                      cidr = parts[1]
+                      if rule_type in (
+                          "IP-CIDR",
+                          "IP-CIDR6",
+                          "IP-CIDR4"
+                      ):
+                          candidates.append(parts[1])
+                      else:
+                          candidates.append(parts[0])
+                  else:
+                      candidates.append(parts[0])
 
-                      if cidr:
-                          cidrs.add(cidr)
+                  for candidate in candidates:
+                      candidate = candidate.strip()
+
+                      try:
+                          network = ipaddress.ip_network(
+                              candidate,
+                              strict=False
+                          )
+                          cidrs.add(str(network))
+                      except ValueError:
+                          continue
 
           if not cidrs:
+              print("===== ChinaMax IP SOURCE PREVIEW =====")
+
+              with open(src, "r", encoding="utf-8") as f:
+                  for i, line in enumerate(f):
+                      print(repr(line.rstrip()))
+
+                      if i >= 50:
+                          break
+
               raise RuntimeError(
                   "ChinaMax IP 没有提取到任何有效 CIDR"
               )
@@ -190,8 +227,6 @@ jobs:
             /tmp/ChinaMax_IP.yaml \
             RULESET/ChinaMax_IP.mrs
 
-          echo "ChinaMax_IP.mrs generated"
-
       - name: Convert Proxy Domain
         run: |
           set -e
@@ -206,17 +241,31 @@ jobs:
               for line in f:
                   line = line.strip()
 
-                  if not line:
+                  if not line or line.startswith("#"):
                       continue
 
-                  if line.startswith("#"):
-                      continue
+                  parts = [x.strip() for x in line.split(",")]
 
-                  domains.add(line)
+                  if len(parts) >= 2:
+                      rule_type = parts[0].upper()
+
+                      if rule_type == "DOMAIN":
+                          domains.add(parts[1])
+                          continue
+
+                      if rule_type == "DOMAIN-SUFFIX":
+                          domains.add("+" + parts[1])
+                          continue
+
+                      if rule_type == "DOMAIN-KEYWORD":
+                          domains.add("*" + parts[1] + "*")
+                          continue
+
+                  domains.add(parts[0])
 
           if not domains:
               raise RuntimeError(
-                  "Proxy Domain 没有提取到任何有效域名"
+                  "Proxy Domain 没有提取到任何有效规则"
               )
 
           with open(out, "w", encoding="utf-8") as f:
@@ -232,8 +281,6 @@ jobs:
             /tmp/Proxy_Domain.yaml \
             RULESET/Proxy_Domain.mrs
 
-          echo "Proxy_Domain.mrs generated"
-
       - name: Convert Global Domain
         run: |
           set -e
@@ -248,17 +295,31 @@ jobs:
               for line in f:
                   line = line.strip()
 
-                  if not line:
+                  if not line or line.startswith("#"):
                       continue
 
-                  if line.startswith("#"):
-                      continue
+                  parts = [x.strip() for x in line.split(",")]
 
-                  domains.add(line)
+                  if len(parts) >= 2:
+                      rule_type = parts[0].upper()
+
+                      if rule_type == "DOMAIN":
+                          domains.add(parts[1])
+                          continue
+
+                      if rule_type == "DOMAIN-SUFFIX":
+                          domains.add("+" + parts[1])
+                          continue
+
+                      if rule_type == "DOMAIN-KEYWORD":
+                          domains.add("*" + parts[1] + "*")
+                          continue
+
+                  domains.add(parts[0])
 
           if not domains:
               raise RuntimeError(
-                  "Global Domain 没有提取到任何有效域名"
+                  "Global Domain 没有提取到任何有效规则"
               )
 
           with open(out, "w", encoding="utf-8") as f:
@@ -274,14 +335,13 @@ jobs:
             /tmp/Global_Domain.yaml \
             RULESET/Global_Domain.mrs
 
-          echo "Global_Domain.mrs generated"
-
       - name: Convert Global Classical IP
         run: |
           set -e
 
           python3 - <<'PY'
           import re
+          import ipaddress
 
           src = "/tmp/Global_Classical.yaml"
           out = "/tmp/Global_Classical_IP.yaml"
@@ -292,10 +352,7 @@ jobs:
               for line in f:
                   line = line.strip()
 
-                  if not line:
-                      continue
-
-                  if line.startswith("#"):
+                  if not line or line.startswith("#"):
                       continue
 
                   m = re.match(
@@ -304,8 +361,19 @@ jobs:
                       re.IGNORECASE
                   )
 
-                  if m:
-                      cidrs.add(m.group(1))
+                  if not m:
+                      continue
+
+                  candidate = m.group(1).strip()
+
+                  try:
+                      network = ipaddress.ip_network(
+                          candidate,
+                          strict=False
+                      )
+                      cidrs.add(str(network))
+                  except ValueError:
+                      continue
 
           if not cidrs:
               raise RuntimeError(
@@ -324,8 +392,6 @@ jobs:
           /tmp/mihomo convert-ruleset ipcidr yaml \
             /tmp/Global_Classical_IP.yaml \
             RULESET/Global_Classical_IP.mrs
-
-          echo "Global_Classical_IP.mrs generated"
 
       - name: Fetch China ASN
         run: |
@@ -391,37 +457,36 @@ jobs:
         run: |
           set -e
 
-          echo
           echo "========================================"
-          echo "              RULESET"
+          echo "RULESET"
           echo "========================================"
 
           ls -lh RULESET/
 
           echo
           echo "========================================"
-          echo "                MRS"
+          echo "MRS"
           echo "========================================"
 
           ls -lh RULESET/*.mrs
 
           echo
           echo "========================================"
-          echo "             China ASN"
+          echo "China ASN"
           echo "========================================"
 
           grep -c "IP-ASN," RULESET/China_ASN.yaml
 
           echo
           echo "========================================"
-          echo "              MRS COUNT"
+          echo "MRS COUNT"
           echo "========================================"
 
           find RULESET -name "*.mrs" | wc -l
 
           echo
           echo "========================================"
-          echo "             FILE CHECK"
+          echo "FILE CHECK"
           echo "========================================"
 
           test -s RULESET/ChinaMax_Domain.mrs
@@ -431,6 +496,7 @@ jobs:
           test -s RULESET/Global_Classical_IP.mrs
           test -s RULESET/China_ASN.yaml
 
+          echo
           echo "All output files are valid."
 
       - name: Commit changes
