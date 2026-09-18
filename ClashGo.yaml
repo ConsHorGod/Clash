@@ -1,4 +1,4 @@
-subscribe: https://raw.githubusercontent.com/ConsHorGod/my-config/refs/heads/%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/ClashGo.yaml
+subscribe: https://raw.githubusercontent.com/ConsHorGod/Clash/refs/heads/main/ClashGo.yaml
 mixed-port: 7890
 allow-lan: true
 mode: Rule
