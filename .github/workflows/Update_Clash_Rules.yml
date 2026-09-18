@@ -27,8 +27,14 @@ jobs:
         run: |
           set -e
           mkdir -p RULESET
-          rm -f RULESET/*.mrs
-          rm -f RULESET/*.yaml
+
+          rm -f \
+            RULESET/ChinaMax_Domain.mrs \
+            RULESET/ChinaMax_IP.mrs \
+            RULESET/Proxy_Domain.mrs \
+            RULESET/Global_Domain.mrs \
+            RULESET/Global_Classical_IP.mrs \
+            RULESET/China_ASN.yaml
 
       - name: Download Blackmatrix7 rules
         run: |
@@ -82,8 +88,6 @@ jobs:
 
           gunzip -f /tmp/mihomo.gz
           chmod +x /tmp/mihomo
-
-          /tmp/mihomo -v
 
       - name: Generate converter
         run: |
