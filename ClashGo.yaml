@@ -58,7 +58,7 @@ proxy-groups:
     icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png"
     hidden: false
     type: select
-    url: http://www.gstatic.com/generate_204
+    url: https://www.gstatic.com/generate_204
     interval: 300
     proxies:
       - 國際媒體
@@ -69,7 +69,7 @@ proxy-groups:
     icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ForeignMedia.png"
     hidden: false
     type: select
-    url: http://www.gstatic.com/generate_204
+    url: https://www.gstatic.com/generate_204
     interval: 300
     proxies:
       - XMR(D)香港
@@ -78,7 +78,7 @@ proxy-groups:
     icon: "https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/03CNSoft/steam(1).png"
     hidden: false
     type: select
-    url: http://www.gstatic.com/generate_204
+    url: https://www.gstatic.com/generate_204
     proxies:
       - DIRECT
       - 國際媒體
@@ -100,7 +100,7 @@ proxy-groups:
     icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/AAEX.png"
     hidden: false
     type: select
-    url: http://www.gstatic.com/generate_204
+    url: https://www.gstatic.com/generate_204
     interval: 300
     filter: '^(?!.*(US 0|JP 0|TW 0|过期|客户端|推荐|官网|失联|发布|流量|剩余|群|套餐|客服|费利蒙|硅谷|拉斯维加斯|洛杉矶|RU|圣何塞|圣克拉拉|西雅图|芝加哥|🇭🇰|香港|HK|Hong|川日|东京|大阪|泉日|埼玉|Japan|🇨🇳|🇹🇼|狮|Singapore|🇰🇷|韩国|首尔|KR|Korea)).*$'
     use:
@@ -110,7 +110,7 @@ proxy-groups:
     icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png"
     hidden: false
     type: url-test
-    url: http://www.gstatic.com/generate_204
+    url: https://www.gstatic.com/generate_204
     interval: 300
     filter: '香港'
     use:
@@ -119,7 +119,7 @@ proxy-groups:
     icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png"
     hidden: false
     type: url-test
-    url: http://www.gstatic.com/generate_204
+    url: https://www.gstatic.com/generate_204
     interval: 300
     filter: '日本'
     use:
@@ -128,7 +128,7 @@ proxy-groups:
     icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png"
     hidden: false
     type: url-test
-    url: http://www.gstatic.com/generate_204
+    url: https://www.gstatic.com/generate_204
     interval: 300
     filter: '香港'
     use:
@@ -137,7 +137,7 @@ proxy-groups:
     icon: "https://fastly.jsdelivr.net/gh/Orz-3/mini@master/Color/Rookie.png"
     hidden: false
     type: url-test
-    url: http://www.gstatic.com/generate_204
+    url: https://www.gstatic.com/generate_204
     interval: 300
     use:
       - FNY
@@ -151,7 +151,7 @@ proxy-providers:
     interval: 86400
     health-check:
       enable: true
-      url: http://www.gstatic.com/generate_204
+      url: https://www.gstatic.com/generate_204
       interval: 300
   XMR(D):
     type: http
@@ -160,7 +160,7 @@ proxy-providers:
     interval: 86400
     health-check:
       enable: true
-      url: http://www.gstatic.com/generate_204
+      url: https://www.gstatic.com/generate_204
       interval: 300
   LXY:
     type: http
@@ -169,7 +169,7 @@ proxy-providers:
     interval: 86400
     health-check:
       enable: true
-      url: http://www.gstatic.com/generate_204
+      url: https://www.gstatic.com/generate_204
       interval: 300
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>規則模板<<<<<<<<<<<<<<<<<<<<
@@ -225,8 +225,8 @@ rules:
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
   - RULE-SET,anti-ad,REJECT-DROP,no-resolve
   - RULE-SET,MY_DIRECT,DIRECT,no-resolve
-  - GEOIP,CN,DIRECT,no-resolve
   - GEOSITE,cn,DIRECT,no-resolve
+  - GEOIP,CN,DIRECT,no-resolve
   - RULE-SET,China_ASN,DIRECT,no-resolve
   - RULE-SET,MY_PROXY,國際媒體,no-resolve
   - GEOSITE,category-ai-!cn,XMR(D)日本,no-resolve
