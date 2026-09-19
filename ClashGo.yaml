@@ -215,7 +215,7 @@ rule-providers:
     url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/China_ASN.yaml"
   Global_IP:
     <<: *ipcidr
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_IP.mrs"
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Classical_IP.mrs"
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>分流規則<<<<<<<<<<<<<<<<<<<<
 rules:
