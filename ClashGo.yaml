@@ -225,12 +225,12 @@ rules:
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
   - RULE-SET,anti-ad,REJECT-DROP,no-resolve
   - RULE-SET,MY_DIRECT,DIRECT,no-resolve
-  - GEOIP,CN,DIRECT
+  - GEOIP,CN,DIRECT,no-resolve
   - GEOSITE,cn,DIRECT,no-resolve
-  - RULE-SET,China_ASN,DIRECT
+  - RULE-SET,China_ASN,DIRECT,no-resolve
   - RULE-SET,MY_PROXY,國際媒體,no-resolve
-  - GEOSITE,category-ai-!cn,XMR(D)日本
-  - GEOSITE,tiktok,XMR(D)日本
-  - RULE-SET,Global_IP,國際媒體
-  - GEOSITE,geolocation-!cn,國際媒體
+  - GEOSITE,category-ai-!cn,XMR(D)日本,no-resolve
+  - GEOSITE,tiktok,XMR(D)日本,no-resolve
+  - RULE-SET,Global_IP,國際媒體,no-resolve
+  - GEOSITE,geolocation-!cn,國際媒體,no-resolve
   - MATCH,全球互聯,dns-failed
