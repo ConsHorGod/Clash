@@ -47,8 +47,8 @@ dns:
     - RULE-SET,iOS_OTA,real-ip
     - RULE-SET,MY_REJECT,real-ip
     - RULE-SET,MY_DIRECT,real-ip
+    - GEOSITE,cn,real-ip
     - RULE-SET,China_ASN,real-ip
-    - RULE-SET,ChinaMax_Domain,real-ip
     - MATCH,fake-ip
   use-hosts: true
   use-system-hosts: true
