@@ -221,44 +221,19 @@ rule-providers:
   China_ASN:
     <<: *classical
     url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/China_ASN.yaml"
-  ChinaMax_Domain:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_Domain.mrs"
-  ChinaMax_IP:
-    <<: *ipcidr
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_IP.mrs"
-  Global_Domain:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Domain.mrs"
-  Global_IP:
-    <<: *ipcidr
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Classical_IP.mrs"
-  TikTok:
-    <<: *classical
-    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/TikTok/TikTok_No_Resolve.yaml"
-  AI:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs"
-  Steam:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/steam.mrs"
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>分流規則<<<<<<<<<<<<<<<<<<<<
 rules:
-  - DOMAIN-KEYWORD,github,國際媒體,no-resolve
   - GEOIP,PRIVATE,DIRECT,no-resolve
   - RULE-SET,iOS_PUSH,iOS系統通知,no-resolve
   - RULE-SET,iOS_OTA,iOS系統更新,no-resolve
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
   - RULE-SET,anti-ad,REJECT-DROP,no-resolve
-  - RULE-SET,MY_DIRECT,DIRECT,no-resolve
+  - GEOSITE,cn,DIRECT,no-resolve
+  - GEOIP,CN,DIRECT,no-resolve
   - RULE-SET,China_ASN,DIRECT
-  - RULE-SET,ChinaMax_IP,DIRECT
-  - RULE-SET,ChinaMax_Domain,DIRECT,no-resolve
-  - RULE-SET,Steam,遊戲平台,no-resolve
-  - RULE-SET,MY_PROXY,國際媒體,no-resolve
-  - RULE-SET,AI,XMR(D)日本,no-resolve
-  - RULE-SET,TikTok,XMR(D)日本,no-resolve
-  - RULE-SET,Global_Domain,國際媒體,no-resolve
-  - RULE-SET,Global_IP,國際媒體,no-resolve
+  - GEOSITE,category-ai-!cn,XMR(D)日本,no-resolve
+  - GEOSITE,tiktok,XMR(D)日本,no-resolve
+  - GEOIP,TELEGRAM,國際媒體,no-resolve
+  - GEOSITE,geolocation-!cn,國際媒體,no-resolve
   - MATCH,全球互聯,dns-failed
