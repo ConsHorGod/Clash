@@ -10,6 +10,9 @@ tcp-concurrent: true
 find-process-mode: strict
 block-quic: true
 geodata-mode: true
+geodata-loader: memconservative
+geo-auto-update: true
+geo-update-interval: 24
 geox-url:
   geoip: "https://raw.githubusercontent.com/Loyalsoldier/geoip/release/cn.dat"
   geosite: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
