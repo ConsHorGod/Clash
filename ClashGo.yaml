@@ -222,11 +222,12 @@ rules:
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
   - RULE-SET,anti-ad,REJECT-DROP,no-resolve
   - RULE-SET,MY_DIRECT,DIRECT,no-resolve
-  - GEOSITE,cn,DIRECT
   - GEOIP,CN,DIRECT
+  - GEOSITE,cn,DIRECT,no-resolve
   - RULE-SET,China_ASN,DIRECT
   - RULE-SET,MY_PROXY,國際媒體,no-resolve
   - GEOSITE,category-ai-!cn,XMR(D)日本
   - GEOSITE,tiktok,XMR(D)日本
   - GEOIP,TELEGRAM,國際媒體
+  - GEOSITE,geolocation-!cn,國際媒體
   - MATCH,全球互聯,dns-failed
