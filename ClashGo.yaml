@@ -234,6 +234,6 @@ rules:
   - RULE-SET,MY_PROXY,國際媒體,no-resolve
   - GEOSITE,category-ai-!cn,XMR(D)日本,no-resolve
   - GEOSITE,tiktok,XMR(D)日本,no-resolve
-  - RULE-SET,Global_IP,國際媒體,no-resolve
-  - GEOSITE,geolocation-!cn,國際媒體,no-resolve
+  #- RULE-SET,Global_IP,國際媒體,no-resolve
+  #- GEOSITE,geolocation-!cn,國際媒體,no-resolve
   - MATCH,全球互聯,dns-failed
