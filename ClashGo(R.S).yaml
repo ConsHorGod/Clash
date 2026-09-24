@@ -1,0 +1,275 @@
+subscribe: https://raw.githubusercontent.com/ConsHorGod/Clash/refs/heads/main/ClashGo.yaml
+mixed-port: 7890
+allow-lan: true
+mode: Rule
+log-level: info
+bind-address: '*'
+external-controller: 127.0.0.1:60000
+unified-delay: true
+tcp-concurrent: true
+find-process-mode: strict
+block-quic: true
+geodata-mode: true
+geodata-loader: memconservative
+geo-auto-update: true
+geo-update-interval: 24
+geox-url:
+  geoip: https://raw.githubusercontent.com/Loyalsoldier/geoip/release/cn.dat
+  geosite: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat
+  mmdb: https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-only-cn-private.mmdb
+  asn: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb
+profile:
+  store-selected: true
+  store-fake-ip: true
+tun:
+  enable: true
+  stack: mixed
+  dns-hijack:
+    - any:53
+    - tcp://any:53
+  udp-timeout: 300
+  auto-route: true
+  strict-route: true
+  auto-redirect: false
+  auto-detect-interface: true
+dns:
+  enable: true
+  ipv6: true
+  listen: :23453
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter-mode: blacklist
+  use-hosts: true
+  use-system-hosts: true
+  cache-algorithm: arc
+  nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+proxies: null
+proxy-groups:
+  - name: 全球互聯
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 國際媒體
+      - 其它節點
+      - FNY(救急用)
+      - DIRECT
+  - name: 國際媒體
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ForeignMedia.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - XMR(D)香港
+      - LXY香港
+  - name: 遊戲平台
+    icon: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/03CNSoft/steam(1).png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    proxies:
+      - DIRECT
+      - 國際媒體
+  - name: iOS系統更新
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Puzzle.png
+    hidden: false
+    type: select
+    proxies:
+      - DIRECT
+      - REJECT-DROP
+  - name: iOS系統通知
+    icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/Final.png
+    hidden: false
+    type: select
+    proxies:
+      - DIRECT
+      - 國際媒體
+  - name: 其它節點
+    icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/AAEX.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: "^(?!.*(US 0|JP 0|TW 0|过期|客户端|推荐|官网|失联|发布|流量|剩余|群|套餐|客服|费利蒙|硅谷|拉斯维加斯|洛杉矶|RU|圣何塞|圣克拉拉|西雅图|芝加哥|\U0001F1ED\U0001F1F0|香港|HK|Hong|川日|东京|大阪|泉日|埼玉|Japan|\U0001F1E8\U0001F1F3|\U0001F1F9\U0001F1FC|狮|Singapore|\U0001F1F0\U0001F1F7|韩国|首尔|KR|Korea)).*$"
+    use:
+      - XMR(D)
+      - LXY
+  - name: XMR(D)香港
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+    hidden: false
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: 香港
+    use:
+      - XMR(D)
+  - name: XMR(D)日本
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
+    hidden: false
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: 日本
+    use:
+      - XMR(D)
+  - name: LXY香港
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+    hidden: false
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: 香港
+    use:
+      - LXY
+  - name: FNY(救急用)
+    icon: https://fastly.jsdelivr.net/gh/Orz-3/mini@master/Color/Rookie.png
+    hidden: false
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    use:
+      - FNY
+proxy-providers:
+  FNY:
+    type: http
+    path: ./provide/FNY.yml
+    url: https://388583885.459245.xyz/api/v1/client/subscribe?token=0e79462ce42ab0413ed58d454329934e
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+  XMR(D):
+    type: http
+    path: ./provide/XMR(D).yml
+    url: https://cdn2.xmrth.one/s/9dkc7icn1whs-dd913f47?clash=1
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+  LXY:
+    type: http
+    path: ./provide/LXY.yml
+    url: https://liangxin.xyz/api/v1/liangxin?OwO=548c8c140641cb099ddce75922e0ba6d
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+rule-anchor:
+  classical:
+    type: http
+    interval: 21600
+    behavior: classical
+    format: yaml
+  domain:
+    type: http
+    interval: 21600
+    behavior: domain
+    format: mrs
+  ipcidr:
+    type: http
+    interval: 21600
+    behavior: ipcidr
+    format: mrs
+rule-providers:
+  MY_DIRECT:
+    type: http
+    interval: 21600
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_DIRECT.yaml
+  MY_PROXY:
+    type: http
+    interval: 21600
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_PROXY.yaml
+  MY_REJECT:
+    type: http
+    interval: 21600
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_REJECT.yaml
+  iOS_OTA:
+    type: http
+    interval: 21600
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_OTA.yaml
+  iOS_PUSH:
+    type: http
+    interval: 21600
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_PUSH.yaml
+  anti-ad:
+    type: http
+    interval: 21600
+    behavior: domain
+    format: mrs
+    url: https://raw.githubusercontent.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs
+  ChinaMax_Domain:
+    type: http
+    interval: 21600
+    behavior: domain
+    format: mrs
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_Domain.mrs
+  ChinaMax_IP:
+    type: http
+    interval: 21600
+    behavior: ipcidr
+    format: mrs
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_IP.mrs
+  Global_Domain:
+    type: http
+    interval: 21600
+    behavior: domain
+    format: mrs
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Domain.mrs
+  Global_IP:
+    type: http
+    interval: 21600
+    behavior: ipcidr
+    format: mrs
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Classical_IP.mrs
+  AI_GLOBAL:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs
+  TikTok:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tiktok.mrs
+  China_ASN:
+    type: http
+    interval: 21600
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/China_ASN.yaml
+rules:
+  - GEOIP,PRIVATE,DIRECT,no-resolve
+  - RULE-SET,iOS_PUSH,iOS系統通知,no-resolve
+  - RULE-SET,iOS_OTA,iOS系統更新,no-resolve
+  - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
+  - RULE-SET,anti-ad,REJECT-DROP,no-resolve
+  - RULE-SET,MY_DIRECT,DIRECT,no-resolve
+  - RULE-SET,ChinaMax_Domain,DIRECT,no-resolve
+  - RULE-SET,ChinaMax_IP,DIRECT,no-resolve
+  - RULE-SET,China_ASN,DIRECT,no-resolve
+  - RULE-SET,MY_PROXY,國際媒體,no-resolve
+  - RULE-SET,AI_GLOBAL,XMR(D)日本,no-resolve
+  - RULE-SET,TikTok,XMR(D)日本,no-resolve
+  - RULE-SET,Global_Domain,國際媒體,no-resolve
+  - RULE-SET,Global_IP,國際媒體,no-resolve
+  - MATCH,全球互聯,dns-failed
