@@ -238,4 +238,6 @@ rules:
   - RULE-SET,MY_PROXY,國際媒體,no-resolve
   - GEOSITE,category-ai-!cn,XMR(D)日本,no-resolve
   - GEOSITE,tiktok,XMR(D)日本,no-resolve
+  - GEOSITE,geolocation-!cn,國際媒體
+  - NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),DIRECT
   - MATCH,全球互聯,dns-failed
