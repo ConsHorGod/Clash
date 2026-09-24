@@ -271,7 +271,8 @@ rule-providers:
     format: yaml
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/China_ASN.yaml
 rules:
-  - GEOIP,PRIVATE,DIRECT,no-resolve
+  - RULE-SET,LAN,DIRECT,no-resolve
+  - RULE-SET,LAN_IP,DIRECT,no-resolve
   - RULE-SET,iOS_PUSH,iOS系統通知,no-resolve
   - RULE-SET,iOS_OTA,iOS系統更新,no-resolve
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
