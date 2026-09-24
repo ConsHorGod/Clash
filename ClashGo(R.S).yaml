@@ -186,6 +186,12 @@ rule-anchor:
     behavior: ipcidr
     format: mrs
 rule-providers:
+  LAN:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"
+  LAN_IP:
+    <<: *ipcidr
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"
   MY_DIRECT:
     type: http
     interval: 21600
