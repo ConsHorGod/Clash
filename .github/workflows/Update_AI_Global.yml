@@ -1,80 +1,114 @@
 name: Update AI Global MRS
+
 on:
   schedule:
     - cron: "0 22 * * *"
   workflow_dispatch:
+
 permissions:
   contents: write
+
 jobs:
   update:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y curl wget jq python3
+
       - name: Download latest Mihomo
         shell: bash
         run: |
           set -e
+
           API="https://api.github.com/repos/MetaCubeX/mihomo/releases/latest"
-          URL=$(curl -fsSL "$API" |
+
+          ASSET_URL=$(curl -fsSL \
+            -H "Accept: application/vnd.github+json" \
+            "$API" |
             jq -r '
               .assets[]
-              | select(
-                  (.name | test("linux-amd64"))
-                  and
-                  (.name | endswith(".gz"))
-                )
+              | select(.name | test("^mihomo-linux-amd64(-v[123])?-[^/]+\\.gz$"))
+              | select(.name | contains("compatible") | not)
               | .browser_download_url
             ' |
-            grep -v "compatible" |
-            grep -v "v1-go" |
             head -n 1)
-          if [ -z "$URL" ] || [ "$URL" = "null" ]; then
-            echo "ERROR: Mihomo release not found"
+
+          if [ -z "$ASSET_URL" ] || [ "$ASSET_URL" = "null" ]; then
+            echo "ERROR: Cannot find Mihomo linux-amd64 release asset"
             exit 1
           fi
-          echo "Downloading:"
-          echo "$URL"
-          wget -q "$URL" -O mihomo.gz
-          gzip -d mihomo.gz
-          chmod +x mihomo
-      - name: Download global AI rules
-        run: |
-          mkdir -p /tmp/ai
-          curl -fsSL \
-            "https://raw.githubusercontent.com/TannayeJ/ai-vendor-rules/main/generated/clash/all-ai-global.yaml" \
-            -o /tmp/ai/all-ai-global.yaml
-      - name: Convert to domain rules
+
+          echo "Mihomo asset:"
+          echo "$ASSET_URL"
+
+          wget -q "$ASSET_URL" -O /tmp/mihomo.gz
+
+          gzip -dc /tmp/mihomo.gz > /tmp/mihomo
+
+          chmod +x /tmp/mihomo
+
+          test -x /tmp/mihomo
+
+          echo "Mihomo downloaded successfully"
+
+      - name: Download AI rules
         shell: bash
         run: |
           set -e
-          mkdir -p RULESET
+
+          mkdir -p /tmp/ai
+
+          curl -fsSL \
+            "https://raw.githubusercontent.com/TannayeJ/ai-vendor-rules/main/generated/clash/all-ai-global.yaml" \
+            -o /tmp/ai/all-ai-global.yaml
+
+          test -s /tmp/ai/all-ai-global.yaml
+
+      - name: Build AI domain list
+        shell: bash
+        run: |
+          set -e
+
           python3 <<'PY'
           import re
+
           src = "/tmp/ai/all-ai-global.yaml"
           dst = "/tmp/ai/AI_GLOBAL.yaml"
+
           domains = set()
+
           with open(src, "r", encoding="utf-8") as f:
               for line in f:
                   line = line.strip()
+
                   if not line.startswith("- "):
                       continue
+
                   rule = line[2:].strip()
+
                   if rule.startswith("DOMAIN-SUFFIX,"):
                       domain = rule.split(",", 1)[1].strip().lower()
+
                   elif rule.startswith("DOMAIN,"):
                       domain = rule.split(",", 1)[1].strip().lower()
+
                   else:
                       continue
+
                   if not domain:
                       continue
-                  if any(c in domain for c in "*?[](){}|+^$\\"):
+
+                  if "*" in domain or "?" in domain:
                       continue
+
                   domains.add(domain)
+
           # 排除中国域名
           cn_suffixes = (
               ".cn",
@@ -82,44 +116,56 @@ jobs:
               ".公司",
               ".网络",
           )
-          result = {
-              d for d in domains
-              if not d.endswith(cn_suffixes)
+
+          domains = {
+              domain
+              for domain in domains
+              if not domain.endswith(cn_suffixes)
           }
-          # 生成 Mihomo domain YAML
+
           with open(dst, "w", encoding="utf-8") as f:
               f.write("payload:\n")
-              for domain in sorted(result):
+
+              for domain in sorted(domains):
                   f.write(f"  - DOMAIN-SUFFIX,{domain}\n")
-          print(f"Source domains : {len(domains)}")
-          print(f"Global AI domains : {len(result)}")
+
+          print(f"AI domains: {len(domains)}")
           PY
+
+      - name: Convert to MRS
+        shell: bash
+        run: |
+          set -e
+
+          mkdir -p RULESET
+
           rm -f RULESET/AI_GLOBAL.mrs
-          ./mihomo convert-ruleset \
+
+          /tmp/mihomo convert-ruleset \
             domain \
             yaml \
             /tmp/ai/AI_GLOBAL.yaml \
             RULESET/AI_GLOBAL.mrs
-      - name: Verify MRS
-        shell: bash
-        run: |
-          set -e
-          if [ ! -s RULESET/AI_GLOBAL.mrs ]; then
-            echo "ERROR: AI_GLOBAL.mrs was not generated"
-            exit 1
-          fi
-          echo "AI_GLOBAL.mrs:"
+
+          test -s RULESET/AI_GLOBAL.mrs
+
           ls -lh RULESET/AI_GLOBAL.mrs
+
       - name: Commit changes
         shell: bash
         run: |
           set -e
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git add RULESET/AI_GLOBAL.mrs
+
           if git diff --cached --quiet; then
             echo "No changes"
             exit 0
           fi
+
           git commit -m "Update AI Global MRS"
+
           git push
