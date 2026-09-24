@@ -47,7 +47,6 @@ dns:
   fake-ip-filter:
     - RULE-SET,iOS_PUSH,real-ip
     - RULE-SET,iOS_OTA,real-ip
-    - RULE-SET,MY_REJECT,real-ip
     - RULE-SET,MY_DIRECT,real-ip
     - RULE-SET,ChinaMax_Domain,real-ip
   nameserver:
