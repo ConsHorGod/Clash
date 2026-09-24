@@ -203,10 +203,10 @@ rule-anchor:
 #>>>>>>>>>>>>>>>>>>>>>規則集<<<<<<<<<<<<<<<<<<<<
 rule-providers:
   LAN:
-    <<: domain
+    <<: *domain
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"
   LAN_IP:
-    <<: ipcidr
+    <<: *ipcidr
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"
   MY_DIRECT:
     <<: *classical
