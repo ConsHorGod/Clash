@@ -279,4 +279,5 @@ rules:
   - RULE-SET,TikTok,XMR(D)日本,no-resolve
   - RULE-SET,Global_Domain,國際媒體,no-resolve
   - RULE-SET,Global_IP,國際媒體,no-resolve
+  - NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),DIRECT
   - MATCH,全球互聯,dns-failed
