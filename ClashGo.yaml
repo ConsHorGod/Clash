@@ -232,7 +232,6 @@ rule-providers:
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>分流規則<<<<<<<<<<<<<<<<<<<<
 rules:
-rules:
   - RULE-SET,LAN,DIRECT,no-resolve
   - RULE-SET,LAN_IP,DIRECT,no-resolve
   - RULE-SET,iOS_PUSH,iOS系統通知,no-resolve
