@@ -40,17 +40,30 @@ tun:
 #>>>>>>>>>>>>>>>>>>>>>DNS模組<<<<<<<<<<<<<<<<<<<<
 dns:
   enable: true
-  ipv6: true
-  listen: :23453
-  enhanced-mode: fake-ip
-  fake-ip-range: 198.18.0.1/16
-  fake-ip-filter-mode: blacklist
+  cache-algorithm: arc
+  prefer-h3: false
   use-hosts: true
   use-system-hosts: true
-  cache-algorithm: arc
+  respect-rules: false
+  listen: 0.0.0.0:1053
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter-mode: rule
+  fake-ip-filter:
+    - RULE-SET,iOS_PUSH,real-ip
+    - RULE-SET,iOS_OTA,real-ip
+    - RULE-SET,MY_REJECT,real-ip
+    - RULE-SET,anti-ad,real-ip
+    - RULE-SET,MY_DIRECT,real-ip
+    - GEOSITE,cn,real-ip
+    - RULE-SET,MY_PROXY,fake-ip
+    - GEOSITE,category-ai-!cn,fake-ip
+    - GEOSITE,tiktok,fake-ip
+    - MATCH,fake-ip
   nameserver:
-    - https://dns.alidns.com/dns-query
-    - https://doh.pub/dns-query
+    - 223.5.5.5
+    - 119.29.29.29
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>代理節點<<<<<<<<<<<<<<<<<<<<
 proxies:
