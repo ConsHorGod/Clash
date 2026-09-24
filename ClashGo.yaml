@@ -216,9 +216,6 @@ rule-providers:
   China_ASN:
     <<: *classical
     url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/China_ASN.yaml"
-  Global_IP:
-    <<: *ipcidr
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Classical_IP.mrs"
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>分流規則<<<<<<<<<<<<<<<<<<<<
 rules:
@@ -234,6 +231,4 @@ rules:
   - RULE-SET,MY_PROXY,國際媒體,no-resolve
   - GEOSITE,category-ai-!cn,XMR(D)日本,no-resolve
   - GEOSITE,tiktok,XMR(D)日本,no-resolve
-  #- RULE-SET,Global_IP,國際媒體,no-resolve
-  #- GEOSITE,geolocation-!cn,國際媒體,no-resolve
   - MATCH,全球互聯,dns-failed
