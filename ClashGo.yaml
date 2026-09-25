@@ -246,8 +246,8 @@ rules:
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
   - RULE-SET,anti-ad,REJECT-DROP,no-resolve
   - RULE-SET,MY_DIRECT,DIRECT,no-resolve
-  - RULE-SET,ChinaMax,DIRECT,no-resolve
-  - RULE-SET,ChinaMax_IP,DIRECT,no-resolve
+  - RULE-SET,China,DIRECT,no-resolve
+  - RULE-SET,China_IP,DIRECT,no-resolve
   #- GEOSITE,cn,DIRECT,no-resolve
   #- GEOIP,CN,DIRECT,no-resolve
   - RULE-SET,China_ASN,DIRECT,no-resolve
