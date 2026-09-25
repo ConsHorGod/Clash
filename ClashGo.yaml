@@ -46,12 +46,14 @@ dns:
   fake-ip-range: 198.18.0.1/16 
   fake-ip-filter-mode: rule
   fake-ip-filter:
-    - DOMAIN,388583885.459245.xyz,real-ip
-    - DOMAIN-KEYWORD,xmrth,real-ip
     - RULE-SET,iOS_PUSH,real-ip
     - RULE-SET,iOS_OTA,real-ip
     - RULE-SET,MY_DIRECT,real-ip
     - GEOSITE,cn,real-ip
+    - DOMAIN,388583885.459245.xyz,real-ip
+    - DOMAIN-KEYWORD,xmrth,real-ip
+    - DOMAIN,s-dywrwizazu.cn-shanghai.fcapp.run,real-ip
+    - DOMAIN,liangxin.xyz,real-ip
   nameserver:
     - system
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
