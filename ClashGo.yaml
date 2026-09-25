@@ -226,7 +226,7 @@ rule-providers:
     url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_IP.mrs"
   Global_Domain:
     <<: *domain
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Dmoain.mrs"
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Domain.mrs"
   Global_IP:
     <<: *ipcidr
     url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_IP.mrs"
