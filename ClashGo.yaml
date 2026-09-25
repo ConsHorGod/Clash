@@ -70,6 +70,7 @@ proxy-groups:
     interval: 300
     proxies:
       - 主機場(HK)
+      - 主機場(HK直連)
       - 副機場(HK)
       - 其它機場(HK)
       - 其它節點
@@ -114,7 +115,16 @@ proxy-groups:
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
-    filter: '香港|HK'
+    filter: '香港'
+    use:
+      - 主機場
+  - name: 主機場(HK直連)
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png"
+    hidden: false
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: 'HK'
     use:
       - 主機場
   - name: 副機場(HK)
