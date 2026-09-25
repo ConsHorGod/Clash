@@ -98,15 +98,16 @@ proxy-groups:
       - DIRECT
       - REJECT-DROP
   - name: 其它節點
-    icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/AAEX.png"
+    icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/AAEX.png
     hidden: false
     type: select
     url: https://www.gstatic.com/generate_204
     interval: 300
-    filter: '^(?!.*(US 0|JP 0|TW 0|过期|客户端|推荐|官网|失联|发布|流量|剩余|群|套餐|客服|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|🇭🇰|香港|HK|Hong|川日|东京|大阪|泉日|埼玉|Japan|🇨🇳|🇹🇼)).*$'
+    filter: "^(?!.*(US 0|JP 0|TW 0|过期|客户端|推荐|官网|失联|发布|流量|剩余|群|套餐|客服|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|香港|HK|Hong|川日|东京|大阪|泉日|埼玉|Japan|日本|JP)).*$"
     use:
       - 主機場
       - 副機場
+      - 其它機場
   - name: 主機場(HK)
     icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png"
     hidden: false
