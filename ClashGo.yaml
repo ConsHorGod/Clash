@@ -124,7 +124,7 @@ proxy-groups:
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
-    filter: 'HK'
+    filter: 'HK 0'
     use:
       - 主機場
   - name: 副機場(HK)
