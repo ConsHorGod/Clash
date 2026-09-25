@@ -218,13 +218,13 @@ rule-providers:
   China_ASN:
     <<: *classical
     url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/China_ASN.yaml"
-  ChinaMax_Domain:
+  China:
     <<: *domain
     url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_Domain.mrs"
-  ChinaMax_IP:
+  China_IP:
     <<: *ipcidr
     url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_IP.mrs"
-  Global_Domain:
+  Global:
     <<: *domain
     url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Domain.mrs"
   Global_IP:
@@ -246,7 +246,7 @@ rules:
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
   - RULE-SET,anti-ad,REJECT-DROP,no-resolve
   - RULE-SET,MY_DIRECT,DIRECT,no-resolve
-  - RULE-SET,ChinaMax_Domain,DIRECT,no-resolve
+  - RULE-SET,ChinaMax,DIRECT,no-resolve
   - RULE-SET,ChinaMax_IP,DIRECT,no-resolve
   #- GEOSITE,cn,DIRECT,no-resolve
   #- GEOIP,CN,DIRECT,no-resolve
@@ -254,7 +254,7 @@ rules:
   - RULE-SET,MY_PROXY,全球互聯,no-resolve
   - RULE-SET,AI,XMR(D)日本,no-resolve
   - RULE-SET,TikTok,XMR(D)日本,no-resolve
-  - RULE-SET,Global_Domain,全球互聯,no-resolve
+  - RULE-SET,Global,全球互聯,no-resolve
   - RULE-SET,Global_IP,全球互聯,no-resolve
   #- GEOSITE,geolocation-!cn,全球互聯,no-resolve
   - NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),DIRECT
