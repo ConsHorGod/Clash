@@ -51,7 +51,6 @@ dns:
     - RULE-SET,iOS_OTA,real-ip
     - RULE-SET,MY_DIRECT,real-ip
     - GEOSITE,cn,real-ip
-    - MATCH,fake-ip
   nameserver:
     - system
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
