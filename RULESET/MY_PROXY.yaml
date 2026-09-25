@@ -1,6 +1,6 @@
 payload:
   - DOMAIN-SUFFIX,liangxin1.xyz # 良心云机场
-  - DOMAIN-KEYWORD,xmrth # XMRth机场
+  - DOMAIN-SUFFIX,xmrth.com # XMRth机场
   - DOMAIN-KEYWORD,github # 全球開發者平台
   - DOMAIN-SUFFIX,services.googleapis.cn # Google_Play_Store
   - DOMAIN-SUFFIX,xn--ngstr-lra8j.com # Google_Play_Store
