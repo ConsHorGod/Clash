@@ -275,8 +275,8 @@ rules:
   #- GEOIP,CN,DIRECT,no-resolve
   - RULE-SET,China_ASN,DIRECT,no-resolve
   - RULE-SET,MY_PROXY,全球互聯,no-resolve
-  - RULE-SET,AI,XMR(D)日本,no-resolve
-  - RULE-SET,TikTok,XMR(D)日本,no-resolve
+  - RULE-SET,AI,主機場(JP),no-resolve
+  - RULE-SET,TikTok,主機場(JP),no-resolve
   - RULE-SET,Global,全球互聯,no-resolve
   - RULE-SET,Global_IP,全球互聯,no-resolve
   #- GEOSITE,geolocation-!cn,全球互聯,no-resolve
