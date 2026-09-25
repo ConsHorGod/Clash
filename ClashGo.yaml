@@ -67,10 +67,11 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     proxies:
-      - XMR(D)香港
-      - LXY香港
+      - 主機場(HK)
+      - 副機場(HK)
+      - 其它機場(HK)
       - 其它節點
-      - FNY(救急用)
+      - 急救機場
       - DIRECT
   - name: 遊戲平台
     icon: "https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/03CNSoft/steam(1).png"
@@ -102,68 +103,90 @@ proxy-groups:
     interval: 300
     filter: '^(?!.*(US 0|JP 0|TW 0|过期|客户端|推荐|官网|失联|发布|流量|剩余|群|套餐|客服|费利蒙|硅谷|拉斯维加斯|洛杉矶|RU|圣何塞|圣克拉拉|西雅图|芝加哥|🇭🇰|香港|HK|Hong|川日|东京|大阪|泉日|埼玉|Japan|🇨🇳|🇹🇼|狮|Singapore|🇰🇷|韩国|首尔|KR|Korea)).*$'
     use:
-      - XMR(D)
-      - LXY
-  - name: XMR(D)香港
+      - 主機場
+      - 副機場
+  - name: 主機場(HK)
     icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png"
     hidden: false
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
-    filter: '香港'
+    filter: '香港|HK'
     use:
-      - XMR(D)
-  - name: XMR(D)日本
+      - 主機場
+  - name: 副機場(HK)
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png"
+    hidden: false
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: '香港|HK'
+    use:
+      - 副機場
+  - name: 其它機場(HK)
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png"
+    hidden: false
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: '香港|HK'
+    use:
+      - 其它機場
+  - name: 主機場(JP)
     icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png"
     hidden: false
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
-    filter: '日本'
+    filter: '日本|JP'
     use:
-      - XMR(D)
-  - name: LXY香港
-    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png"
-    hidden: false
-    type: url-test
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    filter: '香港'
-    use:
-      - "LXY"
-  - name: FNY(救急用)
+      - 主機場
+  - name: 急救機場
     icon: "https://fastly.jsdelivr.net/gh/Orz-3/mini@master/Color/Rookie.png"
     hidden: false
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
     use:
-      - FNY
+      - 急救機場
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>機場訂閱<<<<<<<<<<<<<<<<<<<<
 proxy-providers:
-  FNY:
+  主機場:
     type: http
-    path: ./provide/FNY.yml
-    url: https://388583885.459245.xyz/api/v1/client/subscribe?token=0e79462ce42ab0413ed58d454329934e
-    interval: 86400
-    health-check:
-      enable: true
-      url: https://www.gstatic.com/generate_204
-      interval: 300
-  XMR(D):
-    type: http
-    path: ./provide/XMR(D).yml
+    path: ./provide/主機場.yml
+#↓↓"url填寫機場訂閱"↓↓#
     url: https://cdn2.xmrth.one/s/9dkc7icn1whs-dd913f47?clash=1
     interval: 86400
     health-check:
       enable: true
       url: https://www.gstatic.com/generate_204
       interval: 300
-  LXY:
+  副機場:
     type: http
-    path: ./provide/LXY.yml
+    path: ./provide/副機場.yml
+#↓↓"url填寫機場訂閱"↓↓#
     url: https://liangxin.xyz/api/v1/liangxin?OwO=548c8c140641cb099ddce75922e0ba6d
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+  急救機場:
+    type: http
+    path: ./provide/急救機場.yml
+#↓↓"url填寫機場訂閱"↓↓#
+    url: https://388583885.459245.xyz/api/v1/client/subscribe?token=0e79462ce42ab0413ed58d454329934e
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+  其它機場:
+    type: http
+    path: ./provide/其它機場.yml
+#↓↓"url填寫機場訂閱"↓↓#
+    url: https://s-dywrwizazu.cn-shanghai.fcapp.run/okz/sub?token=2116038c67612b59720bea6872c43c02
     interval: 86400
     health-check:
       enable: true
