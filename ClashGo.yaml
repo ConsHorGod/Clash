@@ -67,19 +67,11 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     proxies:
-      - 國際媒體
+      - XMR(D)香港
+      - LXY香港
       - 其它節點
       - FNY(救急用)
       - DIRECT
-  - name: 國際媒體
-    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ForeignMedia.png"
-    hidden: false
-    type: select
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    proxies:
-      - XMR(D)香港
-      - LXY香港
   - name: 遊戲平台
     icon: "https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/03CNSoft/steam(1).png"
     hidden: false
@@ -87,21 +79,21 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     proxies:
       - DIRECT
-      - 國際媒體
-  - name: iOS系統更新
+      - 全球互聯
+  - name: iOS通知
+    icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/Final.png"
+    hidden: false
+    type: select
+    proxies:
+      - DIRECT
+      - 全球互聯
+  - name: iOS更新
     icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Puzzle.png"
     hidden: false
     type: select
     proxies:
       - DIRECT
       - REJECT-DROP
-  - name: iOS系統通知
-    icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/Final.png"
-    hidden: false
-    type: select
-    proxies:
-      - DIRECT
-      - 國際媒體
   - name: 其它節點
     icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/AAEX.png"
     hidden: false
@@ -204,6 +196,9 @@ rule-providers:
   LAN_IP:
     <<: *ipcidr
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"
+  anti-ad:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs"
   MY_DIRECT:
     <<: *classical
     url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_DIRECT.yaml"
@@ -219,28 +214,48 @@ rule-providers:
   iOS_PUSH:
     <<: *classical
     url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_PUSH.yaml"
-  anti-ad:
-    <<: *domain
-    url: "https://raw.githubusercontent.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs"
+
   China_ASN:
     <<: *classical
     url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/China_ASN.yaml"
+  ChinaMax_Domain:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_Domain.mrs"
+  ChinaMax_IP:
+    <<: *ipcidr
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_IP.mrs"
+  Global_Domain:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Dmoain.mrs"
+  Global_IP:
+    <<: *ipcidr
+    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_IP.mrs"
+  AI:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/mihomo-ruleset/ai.mrs"
+  TikTok:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/mihomo-ruleset/tiktok.mrs"
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>分流規則<<<<<<<<<<<<<<<<<<<<
 rules:
   - RULE-SET,LAN,DIRECT,no-resolve
   - RULE-SET,LAN_IP,DIRECT,no-resolve
-  - RULE-SET,iOS_PUSH,iOS系統通知,no-resolve
-  - RULE-SET,iOS_OTA,iOS系統更新,no-resolve
+  - RULE-SET,iOS_PUSH,iOS通知,no-resolve
+  - RULE-SET,iOS_OTA,iOS更新,no-resolve
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
   - RULE-SET,anti-ad,REJECT-DROP,no-resolve
   - RULE-SET,MY_DIRECT,DIRECT,no-resolve
-  - GEOSITE,cn,DIRECT,no-resolve
-  - GEOIP,CN,DIRECT,no-resolve
+  - RULE-SET,ChinaMax_Domain,DIRECT,no-resolve
+  - RULE-SET,ChinaMax_IP,DIRECT,no-resolve
+  #- GEOSITE,cn,DIRECT,no-resolve
+  #- GEOIP,CN,DIRECT,no-resolve
   - RULE-SET,China_ASN,DIRECT,no-resolve
-  - RULE-SET,MY_PROXY,國際媒體,no-resolve
-  - GEOSITE,category-ai-!cn,XMR(D)日本,no-resolve
-  - GEOSITE,tiktok,XMR(D)日本,no-resolve
-  - GEOSITE,geolocation-!cn,國際媒體
+  - RULE-SET,MY_PROXY,全球互聯,no-resolve
+  - RULE-SET,AI,XMR(D)日本,no-resolve
+  - RULE-SET,TikTok,XMR(D)日本,no-resolve
+  - RULE-SET,Global_Domain,全球互聯,no-resolve
+  - RULE-SET,Global_IP,全球互聯,no-resolve
+  #- GEOSITE,geolocation-!cn,全球互聯,no-resolve
   - NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),DIRECT
   - MATCH,全球互聯,dns-failed
