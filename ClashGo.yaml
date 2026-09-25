@@ -50,10 +50,10 @@ dns:
     - RULE-SET,iOS_OTA,real-ip
     - RULE-SET,MY_DIRECT,real-ip
     - GEOSITE,cn,real-ip
-    - DOMAIN,388583885.459245.xyz,real-ip
-    - DOMAIN-KEYWORD,xmrth,real-ip
-    - DOMAIN,s-dywrwizazu.cn-shanghai.fcapp.run,real-ip
-    - DOMAIN,liangxin.xyz,real-ip
+    - DOMAIN,cdn2.xmrth.one,real-ip #主機場订阅
+    - DOMAIN,liangxin.xyz,real-ip #副機場订阅
+    - DOMAIN,388583885.459245.xyz,real-ip #急救機場订阅
+    - DOMAIN,s-dywrwizazu.cn-shanghai.fcapp.run,real-ip #其它機場订阅
   nameserver:
     - system
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
