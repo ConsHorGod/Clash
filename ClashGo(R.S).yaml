@@ -193,82 +193,43 @@ rule-providers:
     <<: *ipcidr
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"
   MY_DIRECT:
-    type: http
-    interval: 21600
-    behavior: classical
-    format: yaml
+    <<: *classical
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_DIRECT.yaml
   MY_PROXY:
-    type: http
-    interval: 21600
-    behavior: classical
-    format: yaml
+    <<: *classical
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_PROXY.yaml
   MY_REJECT:
-    type: http
-    interval: 21600
-    behavior: classical
-    format: yaml
+    <<: *classical
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_REJECT.yaml
   iOS_OTA:
-    type: http
-    interval: 21600
-    behavior: classical
-    format: yaml
+    <<: *classical
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_OTA.yaml
   iOS_PUSH:
-    type: http
-    interval: 21600
-    behavior: classical
-    format: yaml
+    <<: *classical
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_PUSH.yaml
   anti-ad:
-    type: http
-    interval: 21600
-    behavior: domain
-    format: mrs
+    <<: *domain
     url: https://raw.githubusercontent.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs
   ChinaMax_Domain:
-    type: http
-    interval: 21600
-    behavior: domain
-    format: mrs
+    <<: *domain
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_Domain.mrs
   ChinaMax_IP:
-    type: http
-    interval: 21600
-    behavior: ipcidr
-    format: mrs
+    <<: *ipcidr
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_IP.mrs
   Global_Domain:
-    type: http
-    interval: 21600
-    behavior: domain
-    format: mrs
+    <<: *domain
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Domain.mrs
   Global_IP:
-    type: http
-    interval: 21600
-    behavior: ipcidr
-    format: mrs
+    <<: *ipcidr
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Classical_IP.mrs
   AI_GLOBAL:
-    type: http
-    behavior: domain
-    format: mrs
-    interval: 86400
+    <<: *domain
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs
   TikTok:
-    type: http
-    behavior: domain
-    format: mrs
-    interval: 86400
+    <<: *domain
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tiktok.mrs
   China_ASN:
-    type: http
-    interval: 21600
-    behavior: classical
-    format: yaml
+    <<: *classical
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/China_ASN.yaml
 rules:
   - RULE-SET,LAN,DIRECT,no-resolve
