@@ -49,7 +49,7 @@ dns:
     - RULE-SET,iOS_PUSH,real-ip
     - RULE-SET,iOS_OTA,real-ip
     - RULE-SET,MY_DIRECT,real-ip
-    #- GEOSITE,cn,real-ip
+#    - GEOSITE,cn,real-ip
     - RULE-SET,China,real-ip
     - RULE-SET,China_ASN,real-ip
 #   >>>>>>↓↓"以下是填寫機場訂閱DOMAIN"↓↓<<<<<<
@@ -172,7 +172,7 @@ proxy-providers:
   主機場:
     type: http
     path: ./provide/主機場.yml
-#↓↓"url填寫機場訂閱"↓↓#
+#>>>>>>⚠️url填寫機場訂閱⚠️<<<<<<#
     url: https://cdn2.xmrth.one/s/9dkc7icn1whs-dd913f47?clash=1
     interval: 86400
     health-check:
@@ -182,7 +182,7 @@ proxy-providers:
   副機場:
     type: http
     path: ./provide/副機場.yml
-#↓↓"url填寫機場訂閱"↓↓#
+#>>>>>>⚠️url填寫機場訂閱⚠️<<<<<<#
     url: https://liangxin.xyz/api/v1/liangxin?OwO=548c8c140641cb099ddce75922e0ba6d
     interval: 86400
     health-check:
@@ -192,7 +192,7 @@ proxy-providers:
   急救機場:
     type: http
     path: ./provide/急救機場.yml
-#↓↓"url填寫機場訂閱"↓↓#
+#>>>>>>⚠️url填寫機場訂閱⚠️<<<<<<#
     url: https://388583885.459245.xyz/api/v1/client/subscribe?token=0e79462ce42ab0413ed58d454329934e
     interval: 86400
     health-check:
@@ -202,7 +202,7 @@ proxy-providers:
   其它機場:
     type: http
     path: ./provide/其它機場.yml
-#↓↓"url填寫機場訂閱"↓↓#
+#>>>>>>⚠️url填寫機場訂閱⚠️<<<<<<#
     url: https://s-dywrwizazu.cn-shanghai.fcapp.run/okz/sub?token=2116038c67612b59720bea6872c43c02
     interval: 86400
     health-check:
