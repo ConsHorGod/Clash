@@ -50,7 +50,7 @@ dns:
     - RULE-SET,iOS_OTA,real-ip
     - RULE-SET,MY_DIRECT,real-ip
 #    - GEOSITE,cn,real-ip
-    - RULE-SET,CN,real-ip
+    - RULE-SET,CN_Domain,real-ip
     - RULE-SET,CN_ASN,real-ip
   nameserver:
     - https://dns.alidns.com/dns-query
