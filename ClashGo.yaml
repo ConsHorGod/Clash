@@ -57,8 +57,6 @@ dns:
     - DOMAIN,liangxin.xyz,real-ip #副機場订阅
     - DOMAIN,388583885.459245.xyz,real-ip #急救機場订阅
     - DOMAIN,s-dywrwizazu.cn-shanghai.fcapp.run,real-ip #其它機場订阅
-  default-nameserver:
-    - system
   nameserver:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
