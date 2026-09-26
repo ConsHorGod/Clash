@@ -249,17 +249,16 @@ rule-providers:
   iOS_PUSH:
     <<: *classical
     url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_PUSH.yaml"
-
-  China_ASN:
+  CN_ASN:
     <<: *classical
     url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/China_ASN.yaml"
-  China:
+  CN_Domain:
     <<: *domain
     url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_Domain.mrs"
-  China_IP:
+  CN_IP:
     <<: *ipcidr
     url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_IP.mrs"
-  Global:
+  Global_Domain:
     <<: *domain
     url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Domain.mrs"
   Global_IP:
@@ -281,16 +280,16 @@ rules:
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
   - RULE-SET,anti-ad,REJECT-DROP,no-resolve
   - RULE-SET,MY_DIRECT,DIRECT,no-resolve
-  - RULE-SET,China,DIRECT,no-resolve
-  - RULE-SET,China_IP,DIRECT,no-resolve
+  - RULE-SET,CN_Domain,DIRECT,no-resolve
+  - RULE-SET,CN_IP,DIRECT,no-resolve
   #- GEOSITE,cn,DIRECT,no-resolve
   #- GEOIP,CN,DIRECT,no-resolve
   - RULE-SET,MY_PROXY,全球互聯,no-resolve
   - RULE-SET,AI,主機場(JP),no-resolve
   - RULE-SET,TikTok,主機場(JP),no-resolve
-  - RULE-SET,Global,全球互聯,no-resolve
+  - RULE-SET,Global_Domain,全球互聯,no-resolve
   - RULE-SET,Global_IP,全球互聯,no-resolve
   #- GEOSITE,geolocation-!cn,全球互聯,no-resolve
-  - RULE-SET,China_ASN,DIRECT,no-resolve
+  - RULE-SET,CN_ASN,DIRECT,no-resolve
   - NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),DIRECT
   - MATCH,全球互聯,dns-failed
