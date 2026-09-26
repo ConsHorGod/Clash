@@ -59,6 +59,9 @@ dns:
     - DOMAIN,s-dywrwizazu.cn-shanghai.fcapp.run,real-ip #其它機場订阅
   default-nameserver:
     - system
+  nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>代理節點<<<<<<<<<<<<<<<<<<<<
 proxies:
