@@ -58,11 +58,7 @@ dns:
     - DOMAIN,388583885.459245.xyz,real-ip #急救機場订阅
     - DOMAIN,s-dywrwizazu.cn-shanghai.fcapp.run,real-ip #其它機場订阅
   default-nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
-  nameserver:
-    - https://dns.alidns.com/dns-query
-    - https://doh.pub/dns-query
+    - system
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>代理節點<<<<<<<<<<<<<<<<<<<<
 proxies:
