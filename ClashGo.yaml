@@ -1,25 +1,19 @@
 subscribe: https://raw.githubusercontent.com/ConsHorGod/Clash/refs/heads/main/ClashGo.yaml
 mixed-port: 7890
 allow-lan: true
-mode: Rule
 log-level: info
 bind-address: "*"
 external-controller: 127.0.0.1:60000
 unified-delay: true
 tcp-concurrent: true
-find-process-mode: strict
 block-quic: true
 geodata-mode: true
-geodata-loader: memconservative
 geo-auto-update: true
-geo-update-interval: 24
 geox-url:
   geoip: "https://raw.githubusercontent.com/Loyalsoldier/geoip/release/cn.dat"
   geosite: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
   mmdb: "https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-only-cn-private.mmdb"
   asn: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
-#>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
-#>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 profile:
   store-selected: true
   store-fake-ip: true
