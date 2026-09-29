@@ -43,8 +43,8 @@ dns:
     - RULE-SET,iOS_PUSH,real-ip
     - RULE-SET,iOS_OTA,real-ip
     - RULE-SET,MY_DIRECT,real-ip
-#    - GEOSITE,cn,real-ip
-    - RULE-SET,CN_Domain,real-ip
+    - GEOSITE,cn,real-ip
+    #- RULE-SET,CN_Domain,real-ip
     - RULE-SET,CN_ASN,real-ip
   nameserver:
     - https://dns.alidns.com/dns-query
@@ -264,10 +264,10 @@ rules:
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
   - RULE-SET,anti-ad,REJECT-DROP,no-resolve
   - RULE-SET,MY_DIRECT,DIRECT,no-resolve
-  - RULE-SET,CN_Domain,DIRECT,no-resolve
-  - RULE-SET,CN_IP,DIRECT,no-resolve
-  #- GEOSITE,cn,DIRECT,no-resolve
-  #- GEOIP,CN,DIRECT,no-resolve
+  #- RULE-SET,CN_Domain,DIRECT,no-resolve
+  #- RULE-SET,CN_IP,DIRECT,no-resolve
+  - GEOSITE,cn,DIRECT,no-resolve
+  - GEOIP,CN,DIRECT,no-resolve
   - RULE-SET,MY_PROXY,全球互聯,no-resolve
   - RULE-SET,AI,主機場(JP),no-resolve
   - RULE-SET,TikTok,主機場(JP),no-resolve
