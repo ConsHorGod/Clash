@@ -273,9 +273,9 @@ rules:
   - GEOSITE,category-ai-!cn,主機場(JP),no-resolve
   #- RULE-SET,TikTok,主機場(JP),no-resolve
   - GEOSITE,tiktok,主機場(JP),no-resolve
-  - RULE-SET,Global_Domain,全球互聯,no-resolve
-  - RULE-SET,Global_IP,全球互聯,no-resolve
-  #- GEOSITE,geolocation-!cn,全球互聯,no-resolve
+  #- RULE-SET,Global_Domain,全球互聯,no-resolve
+  #- RULE-SET,Global_IP,全球互聯,no-resolve
+  - GEOSITE,geolocation-!cn,全球互聯,no-resolve
   - RULE-SET,CN_ASN,DIRECT,no-resolve
   - NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),DIRECT
   - MATCH,全球互聯,dns-failed
