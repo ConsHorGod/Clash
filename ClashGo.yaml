@@ -48,13 +48,6 @@ dns:
     - RULE-SET,CN_ASN,real-ip
 #>>>>>>>>>>默認DNS<<<<<<<<<<
   nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
-#>>>>>>>>>>直連DNS<<<<<<<<<<
-  direct-nameserver:
-    - system
-#>>>>>>>>>>節點DNS<<<<<<<<<<
-  proxy-server-nameserver:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
