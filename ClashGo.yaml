@@ -40,6 +40,7 @@ dns:
   fake-ip-range: 198.18.0.1/16 
   fake-ip-filter-mode: rule
   fake-ip-filter:
+    - RULE-SET,LAN,real-ip
     - RULE-SET,iOS_PUSH,real-ip
     - RULE-SET,iOS_OTA,real-ip
     - RULE-SET,MY_DIRECT,real-ip
