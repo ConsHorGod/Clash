@@ -95,16 +95,6 @@ proxy-groups:
     proxies:
       - DIRECT
       - REJECT-DROP
-  - name: YouTube
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
-    hidden: false
-    type: select
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    proxies:
-      - 主機場(HK)
-      - 副機場(HK)
-      - 主機場(JP)
   - name: Google
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
     hidden: false
@@ -114,6 +104,25 @@ proxy-groups:
     proxies:
       - 主機場(HK)
       - 副機場(HK)
+  - name: YouTube
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 主機場(HK)
+      - 主機場(JP)
+      - 主機場(US)
+  - name: TikTok
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 主機場(JP)
+      - 主機場(US)
   - name: Twitter
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
     hidden: false
@@ -122,7 +131,7 @@ proxy-groups:
     interval: 300
     proxies:
       - 主機場(HK)
-      - 副機場(HK)
+      - 主機場(US)
       - 主機場(JP)
   - name: 遊戲平台
     icon: "https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/03CNSoft/steam(1).png"
@@ -318,7 +327,7 @@ rules:
   #- RULE-SET,AI,主機場(JP),no-resolve
   - GEOSITE,category-ai-!cn,主機場(JP),no-resolve
   #- RULE-SET,TikTok,主機場(JP),no-resolve
-  - GEOSITE,tiktok,主機場(JP),no-resolve
+  - GEOSITE,tiktok,TikTok,no-resolve
   #- RULE-SET,Global_Domain,全球互聯,no-resolve
   #- RULE-SET,Global_IP,全球互聯,no-resolve
   - GEOSITE,youtube,YouTube,no-resolve
