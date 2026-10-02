@@ -106,6 +106,16 @@ proxy-groups:
       - 主機場(HK)
       - 主機場(JP)
       - 主機場(US)
+  - name: Reddit
+    icon: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/04ProxySoft/reddit(1).png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 主機場(HK)
+      - 主機場(JP)
+      - 主機場(US)
   - name: Telegram
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
     hidden: false
@@ -351,6 +361,7 @@ rules:
   - GEOSITE,tiktok,TikTok,no-resolve
   #- RULE-SET,Global_Domain,全球互聯,no-resolve
   #- RULE-SET,Global_IP,全球互聯,no-resolve
+  - GEOSITE,reddit,Reddit,no-resolve
   - GEOSITE,youtube,Google,no-resolve
   - GEOSITE,google,Google,no-resolve
   - GEOIP,GOOGLE,Google,no-resolve
