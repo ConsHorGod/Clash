@@ -124,7 +124,7 @@ proxy-groups:
       - 主機場(JP)
       - 主機場(US)
   - name: AI
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Bot.png
     hidden: false
     type: select
     url: https://www.gstatic.com/generate_204
@@ -196,6 +196,15 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     filter: '日本|JP'
+    use:
+      - 主機場
+  - name: 主機場(US)
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png"
+    hidden: false
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: '美国|US'
     use:
       - 主機場
   - name: 急救機場
