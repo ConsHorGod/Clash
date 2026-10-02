@@ -10,7 +10,7 @@ block-quic: true
 geodata-mode: true
 geo-auto-update: true
 geox-url:
-  geoip: "https://raw.githubusercontent.com/Loyalsoldier/geoip/release/cn.dat"
+  geoip: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip.dat"
   geosite: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
   mmdb: "https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-only-cn-private.mmdb"
   asn: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
