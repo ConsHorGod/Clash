@@ -81,14 +81,6 @@ proxy-groups:
       - 其它節點
       - 急救機場
       - DIRECT
-  - name: 遊戲平台
-    icon: "https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/03CNSoft/steam(1).png"
-    hidden: false
-    type: select
-    url: https://www.gstatic.com/generate_204
-    proxies:
-      - DIRECT
-      - 全球互聯
   - name: iOS通知
     icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/Final.png"
     hidden: false
@@ -103,6 +95,43 @@ proxy-groups:
     proxies:
       - DIRECT
       - REJECT-DROP
+  - name: YouTube
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 主機場(HK)
+      - 副機場(HK)
+      - 主機場(JP)
+  - name: Google
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 主機場(HK)
+      - 副機場(HK)
+  - name: Twitter
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 主機場(HK)
+      - 副機場(HK)
+      - 主機場(JP)
+  - name: 遊戲平台
+    icon: "https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/03CNSoft/steam(1).png"
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    proxies:
+      - DIRECT
+      - 全球互聯
   - name: 其它節點
     icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/AAEX.png
     hidden: false
@@ -292,7 +321,9 @@ rules:
   - GEOSITE,tiktok,主機場(JP),no-resolve
   #- RULE-SET,Global_Domain,全球互聯,no-resolve
   #- RULE-SET,Global_IP,全球互聯,no-resolve
-  - GEOIP,twitter,主機場(JP),no-resolve
+  - GEOSITE,youtube,YouTube,no-resolve
+  - GEOSITE,google,Google,no-resolve
+  - GEOSITE,twitter,Twitter,no-resolve
   - GEOIP,telegram,全球互聯,no-resolve
   - GEOSITE,geolocation-!cn,全球互聯,no-resolve
   - RULE-SET,CN_ASN,DIRECT,no-resolve
