@@ -44,6 +44,7 @@ dns:
     - RULE-SET,iOS_PUSH(DOMAIN),real-ip
     - RULE-SET,iOS_OTA,real-ip
     - RULE-SET,MY_DIRECT,real-ip
+    - GEOSITE,apple,real-ip
     - GEOSITE,cn,real-ip
     #- RULE-SET,CN_Domain,real-ip
     - RULE-SET,CN_ASN,real-ip
@@ -338,6 +339,7 @@ rules:
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
   - RULE-SET,anti-ad,REJECT-DROP,no-resolve
   - RULE-SET,MY_DIRECT,DIRECT,no-resolve
+  - GEOSITE,apple,DIRECT,no-resolve
   #- RULE-SET,CN_Domain,DIRECT,no-resolve
   - GEOSITE,cn,DIRECT,no-resolve
   #- RULE-SET,CN_IP,DIRECT,no-resolve
