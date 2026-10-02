@@ -180,6 +180,24 @@ proxy-groups:
     filter: '香港|HK'
     use:
       - 副機場
+  - name: 主機場(JP)
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png"
+    hidden: false
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: '日本'
+    use:
+      - 主機場
+  - name: 主機場(US)
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png"
+    hidden: false
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: '美国'
+    use:
+      - 主機場
   - name: 其它機場(HK)
     icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png"
     hidden: false
@@ -189,24 +207,6 @@ proxy-groups:
     filter: '香港|HK'
     use:
       - 其它機場
-  - name: 主機場(JP)
-    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png"
-    hidden: false
-    type: url-test
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    filter: '日本|JP'
-    use:
-      - 主機場
-  - name: 主機場(US)
-    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png"
-    hidden: false
-    type: url-test
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    filter: '美国|US'
-    use:
-      - 主機場
   - name: 急救機場
     icon: "https://fastly.jsdelivr.net/gh/Orz-3/mini@master/Color/Rookie.png"
     hidden: false
