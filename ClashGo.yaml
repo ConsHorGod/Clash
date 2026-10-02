@@ -103,15 +103,6 @@ proxy-groups:
     interval: 300
     proxies:
       - 主機場(HK)
-      - 副機場(HK)
-  - name: YouTube
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
-    hidden: false
-    type: select
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    proxies:
-      - 主機場(HK)
       - 主機場(JP)
       - 主機場(US)
   - name: TikTok
@@ -349,7 +340,7 @@ rules:
   - GEOSITE,tiktok,TikTok,no-resolve
   #- RULE-SET,Global_Domain,全球互聯,no-resolve
   #- RULE-SET,Global_IP,全球互聯,no-resolve
-  - GEOSITE,youtube,YouTube,no-resolve
+  - GEOSITE,youtube,Google,no-resolve
   - GEOSITE,google,Google,no-resolve
   - GEOSITE,twitter,Twitter,no-resolve
   - GEOIP,telegram,全球互聯,no-resolve
