@@ -4,6 +4,8 @@ allow-lan: true
 log-level: info
 bind-address: "*"
 external-controller: 127.0.0.1:60000
+inbound-mptcp: true
+inbound-tfo: true
 unified-delay: true
 tcp-concurrent: true
 block-quic: true
@@ -21,7 +23,7 @@ profile:
 #>>>>>>>>>>>>>>>>>>>>>隧道<<<<<<<<<<<<<<<<<<<<
 tun:
   enable: true
-  stack: mixed
+  stack: system
   dns-hijack:
     - any:53
     - tcp://any:53
