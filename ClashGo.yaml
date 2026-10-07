@@ -53,11 +53,11 @@ dns:
     "rule-set:LAN":
       - system
     "rule-set:iOS_PUSH(DOMAIN)":
-      - system
+      - 223.5.5.5
     "rule-set:iOS_OTA":
-      - system
+      - 223.5.5.5
     "geosite:apple":
-      - system
+      - 223.5.5.5
     "geosite:tencent":
       - 119.29.29.29
     "geosite:alibaba":
