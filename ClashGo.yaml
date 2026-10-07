@@ -10,10 +10,10 @@ block-quic: true
 geodata-mode: true
 geo-auto-update: true
 geox-url:
-  geoip: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat"
-  geosite: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
-  mmdb: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country.mmdb"
-  asn: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
+  geoip: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat
+  geosite: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat
+  mmdb: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country.mmdb
+  asn: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb
 profile:
   store-selected: true
   store-fake-ip: true
@@ -71,7 +71,7 @@ proxies:
 #>>>>>>>>>>>>>>>>>>>>>策略組<<<<<<<<<<<<<<<<<<<<
 proxy-groups:
   - name: 全球互聯
-    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png"
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png
     hidden: false
     type: select
     url: https://www.gstatic.com/generate_204
@@ -84,14 +84,14 @@ proxy-groups:
       - 急救機場
       - DIRECT
   - name: iOS通知
-    icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/Final.png"
+    icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/Final.png
     hidden: false
     type: select
     proxies:
       - DIRECT
       - 全球互聯
   - name: iOS更新
-    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Puzzle.png"
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Puzzle.png
     hidden: false
     type: select
     proxies:
@@ -156,7 +156,7 @@ proxy-groups:
       - 主機場(US)
       - 主機場(JP)
   - name: 遊戲平台
-    icon: "https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/03CNSoft/steam(1).png"
+    icon: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/03CNSoft/steam(1).png
     hidden: false
     type: select
     url: https://www.gstatic.com/generate_204
@@ -175,7 +175,7 @@ proxy-groups:
       - 副機場
       - 其它機場
   - name: 主機場(HK)
-    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png"
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
     hidden: false
     type: url-test
     url: https://www.gstatic.com/generate_204
@@ -184,7 +184,7 @@ proxy-groups:
     use:
       - 主機場
   - name: 副機場(HK)
-    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png"
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
     hidden: false
     type: url-test
     url: https://www.gstatic.com/generate_204
@@ -193,7 +193,7 @@ proxy-groups:
     use:
       - 副機場
   - name: 主機場(JP)
-    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png"
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
     hidden: false
     type: url-test
     url: https://www.gstatic.com/generate_204
@@ -202,7 +202,7 @@ proxy-groups:
     use:
       - 主機場
   - name: 主機場(US)
-    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png"
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
     hidden: false
     type: url-test
     url: https://www.gstatic.com/generate_204
@@ -211,7 +211,7 @@ proxy-groups:
     use:
       - 主機場
   - name: 其它機場(HK)
-    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png"
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
     hidden: false
     type: url-test
     url: https://www.gstatic.com/generate_204
@@ -220,7 +220,7 @@ proxy-groups:
     use:
       - 其它機場
   - name: 急救機場
-    icon: "https://fastly.jsdelivr.net/gh/Orz-3/mini@master/Color/Rookie.png"
+    icon: https://fastly.jsdelivr.net/gh/Orz-3/mini@master/Color/Rookie.png
     hidden: false
     type: url-test
     url: https://www.gstatic.com/generate_204
@@ -293,52 +293,52 @@ rule-anchor:
 rule-providers:
   LAN:
     <<: *domain
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"
   LAN_IP:
     <<: *ipcidr
-    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"
   anti-ad:
     <<: *domain
-    url: "https://raw.githubusercontent.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs"
+    url: https://raw.githubusercontent.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs"
   MY_DIRECT:
     <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_DIRECT.yaml"
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_DIRECT.yaml"
   MY_PROXY:
     <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_PROXY.yaml"
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_PROXY.yaml"
   MY_REJECT:
     <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_REJECT.yaml"
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_REJECT.yaml"
   iOS_OTA:
     <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_OTA.yaml"
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_OTA.yaml"
   iOS_PUSH(DOMAIN):
     <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_PUSH(DOMAIN).yaml"
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_PUSH(DOMAIN).yaml"
   iOS_PUSH(IP):
     <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_PUSH(IP).yaml"
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_PUSH(IP).yaml"
   CN_ASN:
     <<: *classical
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/China_ASN.yaml"
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/China_ASN.yaml"
   CN_Domain:
     <<: *domain
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_Domain.mrs"
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_Domain.mrs"
   CN_IP:
     <<: *ipcidr
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_IP.mrs"
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_IP.mrs"
   Global_Domain:
     <<: *domain
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Domain.mrs"
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Domain.mrs"
   Global_IP:
     <<: *ipcidr
-    url: "https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_IP.mrs"
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_IP.mrs"
   AI:
     <<: *domain
-    url: "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/mihomo-ruleset/ai.mrs"
+    url: https://raw.githubusercontent.com/DustinWin/ruleset_geodata/mihomo-ruleset/ai.mrs"
   TikTok:
     <<: *domain
-    url: "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/mihomo-ruleset/tiktok.mrs"
+    url: https://raw.githubusercontent.com/DustinWin/ruleset_geodata/mihomo-ruleset/tiktok.mrs"
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>分流規則<<<<<<<<<<<<<<<<<<<<
 rules:
