@@ -329,9 +329,9 @@ rule-providers:
   LAN_IP:
     <<: *ipcidr
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs
-  anti-ad:
-    <<: *domain
-    url: https://raw.githubusercontent.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs
+  AWAvenue-Ads:
+    <<: *claasical
+    url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash-Classical.yaml
   MY_DIRECT:
     <<: *classical
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_DIRECT.yaml
@@ -374,35 +374,35 @@ rule-providers:
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>分流規則<<<<<<<<<<<<<<<<<<<<
 rules:
-  - RULE-SET,LAN,DIRECT,no-resolve
+  - RULE-SET,LAN,DIRECT
   - RULE-SET,LAN_IP,DIRECT,no-resolve
-  - RULE-SET,iOS_PUSH(DOMAIN),iOS通知,no-resolve
+  - RULE-SET,iOS_PUSH(DOMAIN),iOS通知
   - RULE-SET,iOS_PUSH(IP),iOS通知,no-resolve
-  - RULE-SET,iOS_OTA,iOS更新,no-resolve
+  - RULE-SET,iOS_OTA,iOS更新
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
-  - RULE-SET,anti-ad,REJECT-DROP,no-resolve
-  - RULE-SET,MY_DIRECT,DIRECT,no-resolve
-  - GEOSITE,apple,DIRECT,no-resolve
+  - RULE-SET,AWAvenue-Ads,REJECT-DROP,no-resolve
+  - RULE-SET,MY_DIRECT,DIRECT
+  - GEOSITE,apple,DIRECT
   #- RULE-SET,CN_Domain,DIRECT,no-resolve
-  - GEOSITE,cn,DIRECT,no-resolve
+  - GEOSITE,cn,DIRECT
   #- RULE-SET,CN_IP,DIRECT,no-resolve
   - GEOIP,CN,DIRECT,no-resolve
-  - RULE-SET,MY_PROXY,全球互聯,no-resolve
+  - RULE-SET,MY_PROXY,全球互聯
   #- RULE-SET,AI,AI,no-resolve
-  - GEOSITE,category-ai-!cn,AI,no-resolve
+  - GEOSITE,category-ai-!cn,AI
   #- RULE-SET,TikTok,TikTok,no-resolve
-  - GEOSITE,tiktok,TikTok,no-resolve
+  - GEOSITE,tiktok,TikTok
   #- RULE-SET,Global_Domain,全球互聯,no-resolve
   #- RULE-SET,Global_IP,全球互聯,no-resolve
-  - GEOSITE,reddit,Reddit,no-resolve
-  - GEOSITE,youtube,Google,no-resolve
-  - GEOSITE,google,Google,no-resolve
+  - GEOSITE,reddit,Reddit
+  - GEOSITE,youtube,Google
+  - GEOSITE,google,Google
   - GEOIP,GOOGLE,Google,no-resolve
-  - GEOSITE,twitter,Twitter,no-resolve
+  - GEOSITE,twitter,Twitter
   - GEOIP,TWITTER,Twitter,no-resolve
-  - GEOSITE,telegram,Telegram,no-resolve
+  - GEOSITE,telegram,Telegram
   - GEOIP,TELEGRAM,Telegram,no-resolve
-  - GEOSITE,geolocation-!cn,全球互聯,no-resolve
-  - RULE-SET,CN_ASN,DIRECT,no-resolve
+  - GEOSITE,geolocation-!cn,全球互聯
+  - RULE-SET,CN_ASN,DIRECT
   #- NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),DIRECT
   - MATCH,全球互聯,dns-failed
