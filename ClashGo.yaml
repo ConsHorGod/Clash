@@ -36,6 +36,7 @@ dns:
   enable: true
   ipv6: true
   listen: :23453
+  prefer-h3: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16 
   fake-ip-filter-mode: rule
