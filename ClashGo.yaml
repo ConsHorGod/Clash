@@ -49,22 +49,53 @@ dns:
     - GEOSITE,cn,real-ip
     #- RULE-SET,CN_Domain,real-ip
     - RULE-SET,CN_ASN,real-ip
-#>>>>>>>>>>用於解析DNS服務器的IP地址
-  default-nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
-#>>>>>>>>>>DNS服務器
-  nameserver:
-    - https://dns.alidns.com/dns-query
-    - https://doh.pub/dns-query
-#>>>>>>>>>>用於解析DIRECT出站域名的DNS服務器
-  direct-nameserver:
-    - https://dns.alidns.com/dns-query
-    - https://doh.pub/dns-query
-#>>>>>>>>>>用於解析代理節點的DNS服務器
-  proxy-server-nameserver:
-    - https://cloudflare-dns.com/dns-query
-    - https://dns.google/dns-query
+  nameserver-policy:
+    "rule-set:LAN":
+      - system
+    "rule-set:iOS_PUSH(DOMAIN)":
+      - system
+    "rule-set:iOS_OTA":
+      - system
+    "geosite:apple":
+      - system
+    "geosite:tencent":
+      - 119.29.29.29
+    "geosite:alibaba":
+      - 223.5.5.5
+    "rule-set:MY_DIRECT":
+      - 119.29.29.29
+      - 223.5.5.5
+    "geosite:cn":
+      - 119.29.29.29
+      - 223.5.5.5
+    "rule-set:MY_PROXY":
+      - tls://1.1.1.1:853
+      - tls://8.8.8.8:853
+    "geosite:category-ai-!cn":
+      - tls://1.1.1.1:853
+      - tls://8.8.8.8:853
+    "geosite:tiktok":
+      - tls://1.1.1.1:853
+      - tls://8.8.8.8:853
+    "geosite:reddit":
+      - tls://1.1.1.1:853
+      - tls://8.8.8.8:853
+    "geosite:youtube":
+      - tls://8.8.8.8:853
+    "geosite:google":
+      - tls://8.8.8.8:853
+    "geosite:twitter":
+      - tls://1.1.1.1:853
+      - tls://8.8.8.8:853
+    "geosite:telegram":
+      - tls://1.1.1.1:853
+      - tls://8.8.8.8:853
+    "geosite:geolocation-!cn":
+      - tls://1.1.1.1:853
+      - tls://8.8.8.8:853
+    "*":
+      - tls://1.1.1.1:853
+      - tls://8.8.8.8:853
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>代理節點<<<<<<<<<<<<<<<<<<<<
 proxies:
