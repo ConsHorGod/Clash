@@ -243,6 +243,14 @@ proxy-groups:
     interval: 300
     use:
       - 急救機場
+  - name: 國內直連
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/CN.png
+    hidden: true
+    type: url-test
+    url: http://mirrors.aliyun.com/generate_204
+    interval: 300
+    use:
+      - DIRECT
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>機場訂閱<<<<<<<<<<<<<<<<<<<<
 proxy-providers:
