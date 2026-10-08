@@ -49,53 +49,37 @@ dns:
     - GEOSITE,cn,real-ip
     #- RULE-SET,CN_Domain,real-ip
     - RULE-SET,CN_ASN,real-ip
+  nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  direct-nameserver:
+    - system
   nameserver-policy:
-    "rule-set:LAN":
-      - system
-    "rule-set:iOS_PUSH(DOMAIN)":
-      - 223.5.5.5
-    "rule-set:iOS_OTA":
-      - 223.5.5.5
-    "geosite:apple":
-      - 223.5.5.5
-    "geosite:tencent":
-      - 119.29.29.29
-    "geosite:alibaba":
-      - 223.5.5.5
-    "rule-set:MY_DIRECT":
-      - 119.29.29.29
-      - 223.5.5.5
-    "geosite:cn":
-      - 119.29.29.29
-      - 223.5.5.5
     "rule-set:MY_PROXY":
-      - tls://1.1.1.1:853
-      - tls://8.8.8.8:853
+      - 1.1.1.1
+      - 8.8.8.8
     "geosite:category-ai-!cn":
-      - tls://1.1.1.1:853
-      - tls://8.8.8.8:853
+      - 1.1.1.1
+      - 8.8.8.8
     "geosite:tiktok":
-      - tls://1.1.1.1:853
-      - tls://8.8.8.8:853
+      - 1.1.1.1
+      - 8.8.8.8
     "geosite:reddit":
-      - tls://1.1.1.1:853
-      - tls://8.8.8.8:853
+      - 1.1.1.1
+      - 8.8.8.8
     "geosite:youtube":
-      - tls://8.8.8.8:853
+      - 8.8.8.8
     "geosite:google":
-      - tls://8.8.8.8:853
+      - 8.8.8.8
     "geosite:twitter":
-      - tls://1.1.1.1:853
-      - tls://8.8.8.8:853
+      - 1.1.1.1
+      - 8.8.8.8
     "geosite:telegram":
-      - tls://1.1.1.1:853
-      - tls://8.8.8.8:853
+      - 1.1.1.1
+      - 8.8.8.8
     "geosite:geolocation-!cn":
-      - tls://1.1.1.1:853
-      - tls://8.8.8.8:853
-    "*":
-      - tls://1.1.1.1:853
-      - tls://8.8.8.8:853
+      - 1.1.1.1
+      - 8.8.8.8
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>代理節點<<<<<<<<<<<<<<<<<<<<
 proxies:
