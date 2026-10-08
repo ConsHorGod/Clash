@@ -246,10 +246,10 @@ proxy-groups:
   - name: 國內直連
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/CN.png
     hidden: true
-    type: url-test
+    type: select
     url: http://mirrors.aliyun.com/generate_204
     interval: 300
-    use:
+    proxies:
       - DIRECT
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>機場訂閱<<<<<<<<<<<<<<<<<<<<
@@ -375,16 +375,16 @@ rules:
   - RULE-SET,AWAvenue-Ads,REJECT-DROP,no-resolve
   - RULE-SET,MY_DIRECT,國內直連
   - GEOSITE,apple,國內直連
-  #- RULE-SET,CN_Domain,國內直連,no-resolve
+  #- RULE-SET,CN_Domain,國內直連
   - GEOSITE,cn,國內直連
   #- RULE-SET,CN_IP,國內直連,no-resolve
   - GEOIP,CN,國內直連,no-resolve
   - RULE-SET,MY_PROXY,全球互聯
-  #- RULE-SET,AI,AI,no-resolve
+  #- RULE-SET,AI,AI
   - GEOSITE,category-ai-!cn,AI
-  #- RULE-SET,TikTok,TikTok,no-resolve
+  #- RULE-SET,TikTok,TikTok
   - GEOSITE,tiktok,TikTok
-  #- RULE-SET,Global_Domain,全球互聯,no-resolve
+  #- RULE-SET,Global_Domain,全球互聯
   #- RULE-SET,Global_IP,全球互聯,no-resolve
   - GEOSITE,reddit,Reddit
   - GEOSITE,youtube,Google
