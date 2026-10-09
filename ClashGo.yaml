@@ -44,14 +44,25 @@ dns:
     - RULE-SET,LAN,real-ip
     - RULE-SET,iOS_PUSH(DOMAIN),real-ip
     - RULE-SET,iOS_OTA,real-ip
-    - RULE-SET,MY_DIRECT,real-ip
+    #- RULE-SET,MY_DIRECT,real-ip
     - GEOSITE,apple,real-ip
-    - GEOSITE,cn,real-ip
+    #- GEOSITE,cn,real-ip
     #- RULE-SET,CN_Domain,real-ip
-    - RULE-SET,CN_ASN,real-ip
+    #- RULE-SET,CN_ASN,real-ip
   nameserver:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
+  direct-nameserver:
+    - system
+  nameserver-policy:
+    'rule-set:LAN':
+    - system
+    'rule-set:iOS_PUSH(DOMAIN)':
+    - system
+    'rule-set:iOS_OTA':
+    - system
+    'geosite:apple':
+    - system
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>代理節點<<<<<<<<<<<<<<<<<<<<
 proxies:
