@@ -1,9 +1,12 @@
 subscribe: https://raw.githubusercontent.com/ConsHorGod/Clash/refs/heads/main/ClashGo.yaml
 mixed-port: 7890
 allow-lan: true
-log-level: info
-bind-address: "*"
-external-controller: 127.0.0.1:60000
+log-level: silent
+bind-address: '*'
+find-process-mode: 'always'
+keep-alive-interval: 15
+keep-alive-idle: 600
+external-controller: 127.0.0.1:9990
 unified-delay: true
 tcp-concurrent: true
 block-quic: true
