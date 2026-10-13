@@ -24,7 +24,7 @@ profile:
 #>>>>>>>>>>>>>>>>>>>>>隧道<<<<<<<<<<<<<<<<<<<<
 tun:
   enable: true
-  stack: system
+  stack: mixed
   dns-hijack:
     - any:53
     - tcp://any:53
@@ -53,8 +53,7 @@ dns:
     #- RULE-SET,CN_Domain,real-ip
     #- RULE-SET,CN_ASN,real-ip
   default-nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
+    - system
   nameserver:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
