@@ -108,6 +108,7 @@ proxy-groups:
     interval: 300
     proxies:
       - 主機場(HK)
+      - 主機場直連(HK)
       - 主機場(JP)
       - 主機場(US)
   - name: Telegram
@@ -118,6 +119,7 @@ proxy-groups:
     interval: 300
     proxies:
       - 主機場(HK)
+      - 主機場直連(HK)
       - 副機場(HK)
   - name: TikTok
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
@@ -146,6 +148,7 @@ proxy-groups:
     interval: 300
     proxies:
       - 主機場(HK)
+      - 主機場直連(HK)
       - 主機場(US)
       - 主機場(JP)
   - name: 遊戲平台
@@ -174,6 +177,15 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     filter: '香港'
+    use:
+      - 主機場
+  - name: 主機場直連(HK)
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+    hidden: false
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: 'HK'
     use:
       - 主機場
   - name: 副機場(HK)
