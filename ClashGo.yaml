@@ -253,16 +253,16 @@ proxy-providers:
       enable: true
       url: https://www.gstatic.com/generate_204
       interval: 300
-  副機場:
-    type: http
-    path: ./provide/副機場.yml
+  #副機場:
+    #type: http
+    #path: ./provide/副機場.yml
 #>>>>>>⚠️url填寫機場訂閱⚠️<<<<<<#
-    url: https://liangxin.xyz/api/v1/liangxin?OwO=548c8c140641cb099ddce75922e0ba6d
-    interval: 86400
-    health-check:
-      enable: true
-      url: https://www.gstatic.com/generate_204
-      interval: 300
+    #url: https://liangxin.xyz/api/v1/liangxin?OwO=548c8c140641cb099ddce75922e0ba6d
+    #interval: 86400
+    #health-check:
+      #enable: true
+      #url: https://www.gstatic.com/generate_204
+      #interval: 300
   急救機場:
     type: http
     path: ./provide/急救機場.yml
@@ -310,9 +310,9 @@ rule-providers:
   LAN_IP:
     <<: *ipcidr
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs
-  AWAvenue-Ads:
-    <<: *classical
-    url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash-Classical.yaml
+  Block-Ads:
+    <<: *domaon
+    url: https://anti-ad.net/mihomo.mrs
   MY_DIRECT:
     <<: *classical
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_DIRECT.yaml
@@ -361,7 +361,7 @@ rules:
   - RULE-SET,iOS_PUSH(IP),iOS通知,no-resolve
   - RULE-SET,iOS_OTA,iOS更新
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
-  - RULE-SET,AWAvenue-Ads,REJECT-DROP,no-resolve
+  - RULE-SET,Block-Ads,REJECT-DROP,no-resolve
   - RULE-SET,MY_DIRECT,國內直連
   - GEOSITE,apple,國內直連
   - RULE-SET,CN_Domain,國內直連
