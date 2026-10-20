@@ -253,16 +253,16 @@ proxy-providers:
       enable: true
       url: https://www.gstatic.com/generate_204
       interval: 300
-  #副機場:
-    #type: http
-    #path: ./provide/副機場.yml
+  副機場:
+    type: http
+    path: ./provide/副機場.yml
 #>>>>>>⚠️url填寫機場訂閱⚠️<<<<<<#
-    #url: https://liangxin.xyz/api/v1/liangxin?OwO=548c8c140641cb099ddce75922e0ba6d
-    #interval: 86400
-    #health-check:
-      #enable: true
-      #url: https://www.gstatic.com/generate_204
-      #interval: 300
+    url: *https://liangxin.xyz/api/v1/liangxin?OwO=548c8c140641cb099ddce75922e0ba6d
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
   急救機場:
     type: http
     path: ./provide/急救機場.yml
