@@ -310,7 +310,7 @@ rule-providers:
   LAN_IP:
     <<: *ipcidr
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs
-  Block-Ads:
+  ADBLOCK:
     <<: *domaon
     url: https://anti-ad.net/mihomo.mrs
   MY_DIRECT:
@@ -361,7 +361,7 @@ rules:
   - RULE-SET,iOS_PUSH(IP),iOS通知,no-resolve
   - RULE-SET,iOS_OTA,iOS更新
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
-  - RULE-SET,Block-Ads,REJECT-DROP,no-resolve
+  - RULE-SET,ADBLOCK,REJECT-DROP,no-resolve
   - RULE-SET,MY_DIRECT,國內直連
   - GEOSITE,apple,國內直連
   - RULE-SET,CN_Domain,國內直連
