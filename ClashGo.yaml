@@ -79,10 +79,10 @@ proxy-groups:
   - name: iOS通知
     icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/Final.png
     hidden: false
-    type: select
+    type: fallback
     proxies:
-      - 國內直連
       - 全球互聯
+      - 國內直連
   - name: iOS更新
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Puzzle.png
     hidden: false
@@ -257,7 +257,7 @@ proxy-providers:
     type: http
     path: ./provide/副機場.yml
 #>>>>>>⚠️url填寫機場訂閱⚠️<<<<<<#
-    url: https://liangxin.xyz/api/v1/liangxin?OwO=548c8c140641cb099ddce75922e0ba6d
+    url: https://liangxin.xyz/api/v1/liangxin?OwO=548c8c140641cb099ddce75922e0ba6d=
     interval: 86400
     health-check:
       enable: true
