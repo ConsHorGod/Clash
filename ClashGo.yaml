@@ -47,13 +47,11 @@ dns:
     - RULE-SET,LAN,real-ip
     - RULE-SET,iOS_PUSH(DOMAIN),real-ip
     - RULE-SET,iOS_OTA,real-ip
-    #- RULE-SET,MY_DIRECT,real-ip
     - GEOSITE,apple,real-ip
+    #- RULE-SET,MY_DIRECT,real-ip
     #- GEOSITE,cn,real-ip
     #- RULE-SET,CN_Domain,real-ip
     #- RULE-SET,CN_ASN,real-ip
-  default-nameserver:
-    - system
   nameserver:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
