@@ -188,14 +188,14 @@ proxy-groups:
     filter: '^(?!.*?香港).*HK'
     use:
       - 主機場
-  - name: 副機場(HK)
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
-    hidden: false
-    type: url-test
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    filter: '香港|HK'
-    use:
+  #- name: 副機場(HK)
+    #icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+    #hidden: false
+    #type: url-test
+    #url: https://www.gstatic.com/generate_204
+    #interval: 300
+    #filter: '香港|HK'
+    #use:
       #- 副機場
   - name: 主機場(JP)
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
