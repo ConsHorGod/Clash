@@ -69,7 +69,7 @@ proxy-groups:
     interval: 300
     proxies:
       - 主機場(HK)
-      #- 副機場(HK)
+      - 副機場(HK)
       - 其它機場(HK)
       - 其它節點
       - 急救機場
@@ -118,7 +118,7 @@ proxy-groups:
     proxies:
       - 主機場(HK)
       - 主機場直連(HK)
-      #- 副機場(HK)
+      - 副機場(HK)
   - name: TikTok
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
     hidden: false
@@ -166,7 +166,7 @@ proxy-groups:
     filter: "^(?!.*(US 0|JP 0|TW 0|过期|客户端|推荐|官网|失联|发布|流量|剩余|群|套餐|客服|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|香港|HK|Hong|川日|东京|大阪|泉日|埼玉|Japan|日本|JP)).*$"
     use:
       - 主機場
-      #- 副機場
+      - 副機場
       - 其它機場
   - name: 主機場(HK)
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
@@ -186,15 +186,15 @@ proxy-groups:
     filter: '^(?!.*?香港).*HK'
     use:
       - 主機場
-  #- name: 副機場(HK)
-    #icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
-    #hidden: false
-    #type: url-test
-    #url: https://www.gstatic.com/generate_204
-    #interval: 300
-    #filter: '香港|HK'
-    #use:
-      #- 副機場
+  - name: 副機場(HK)
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+    hidden: false
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: '香港|HK'
+    use:
+      - 副機場
   - name: 主機場(JP)
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
     hidden: false
@@ -255,7 +255,7 @@ proxy-providers:
     type: http
     path: ./provide/副機場.yml
 #>>>>>>⚠️url填寫機場訂閱⚠️<<<<<<#
-    url: https://liangxin.xyz/api/v1/liangxin?OwO=548c8c140641cb099ddce75922e0ba6d=
+    url: https://liangxin.xyz/api/v1/liangxin?OwO=548c8c140641cb099ddce75922e0ba6d
     interval: 86400
     health-check:
       enable: true
