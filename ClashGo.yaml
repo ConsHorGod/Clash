@@ -309,8 +309,8 @@ rule-providers:
     <<: *ipcidr
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs
   ADBLOCK:
-    <<: *domain
-    url: https://anti-ad.net/mihomo.mrs
+    <<: *classical
+    url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash-Classical.yaml
   MY_DIRECT:
     <<: *classical
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_DIRECT.yaml
