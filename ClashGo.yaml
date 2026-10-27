@@ -98,6 +98,7 @@ proxy-groups:
       - 主機場(HK)
       - 主機場(JP)
       - 主機場(US)
+      - 全球互聯
   - name: Reddit
     icon: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/04ProxySoft/reddit(1).png
     hidden: false
@@ -109,6 +110,7 @@ proxy-groups:
       - 主機場直連(HK)
       - 主機場(JP)
       - 主機場(US)
+      - 全球互聯
   - name: Telegram
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
     hidden: false
@@ -128,6 +130,8 @@ proxy-groups:
     proxies:
       - 主機場(JP)
       - 主機場(US)
+      - 副機場(JP)
+      - 副機場(US)
   - name: AI
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Bot.png
     hidden: false
@@ -137,7 +141,8 @@ proxy-groups:
     proxies:
       - 主機場(JP)
       - 主機場(US)
-      - 主機場(HK)
+      - 副機場(JP)
+      - 副機場(US)
   - name: Twitter
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
     hidden: false
@@ -149,6 +154,7 @@ proxy-groups:
       - 主機場直連(HK)
       - 主機場(US)
       - 主機場(JP)
+      - 全球互聯
   - name: 遊戲平台
     icon: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/03CNSoft/steam(1).png
     hidden: false
@@ -163,7 +169,7 @@ proxy-groups:
     type: select
     url: https://www.gstatic.com/generate_204
     interval: 300
-    filter: "^(?!.*(US 0|JP 0|TW 0|过期|客户端|推荐|官网|失联|发布|流量|剩余|群|套餐|客服|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|香港|HK|Hong|川日|东京|大阪|泉日|埼玉|Japan|日本|JP)).*$"
+    filter: ^(?!.*(US 0|JP 0|TW 0|过期|客户端|推荐|官网|失联|发布|流量|剩余|群|套餐|客服|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|香港|HK|Hong|川日|东京|大阪|泉日|埼玉|Japan|日本|JP)).*$
     use:
       - 主機場
       - 副機場
@@ -174,7 +180,7 @@ proxy-groups:
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
-    filter: '香港'
+    filter: 香港
     use:
       - 主機場
   - name: 主機場直連(HK)
@@ -183,7 +189,7 @@ proxy-groups:
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
-    filter: '^(?!.*?香港).*HK'
+    filter: ^(?!.*?香港).*HK
     use:
       - 主機場
   - name: 副機場(HK)
@@ -192,7 +198,7 @@ proxy-groups:
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
-    filter: '香港|HK'
+    filter: 香港|HK
     use:
       - 副機場
   - name: 主機場(JP)
@@ -201,18 +207,36 @@ proxy-groups:
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
-    filter: '日本'
+    filter: 日本
     use:
       - 主機場
+  - name: 副機場(JP)
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+    hidden: false
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: 日本|JP
+    use:
+      - 副機場
   - name: 主機場(US)
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
     hidden: false
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
-    filter: '美国'
+    filter: 美国
     use:
       - 主機場
+  - name: 副機場(US)
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+    hidden: false
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: 美国|US
+    use:
+      - 副機場
   - name: 其它機場(HK)
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
     hidden: false
