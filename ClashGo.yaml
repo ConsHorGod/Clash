@@ -419,10 +419,10 @@ rules:
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
   - RULE-SET,MY_DIRECT,國內直連
   - GEOSITE,apple,國內直連
-  #- RULE-SET,CN_Domain,國內直連
-  - GEOSITE,cn,國內直連
-  #- RULE-SET,CN_IP,國內直連,no-resolve
-  - GEOIP,CN,國內直連,no-resolve
+  - RULE-SET,CN_Domain,國內直連
+  #- GEOSITE,cn,國內直連
+  - RULE-SET,CN_IP,國內直連,no-resolve
+  #- GEOIP,CN,國內直連,no-resolve
   - RULE-SET,MY_PROXY,全球互聯
   #- RULE-SET,AI,AI
   - GEOSITE,category-ai-!cn,AI
@@ -436,9 +436,9 @@ rules:
   - GEOIP,TWITTER,Twitter,no-resolve
   - GEOSITE,telegram,Telegram
   - GEOIP,TELEGRAM,Telegram,no-resolve
-  #- RULE-SET,Global_Domain,全球互聯
-  #- RULE-SET,Global_IP,全球互聯,no-resolve
-  - GEOSITE,geolocation-!cn,全球互聯
+  - RULE-SET,Global_Domain,全球互聯
+  - RULE-SET,Global_IP,全球互聯,no-resolve
+  #- GEOSITE,geolocation-!cn,全球互聯
   - RULE-SET,CN_ASN,國內直連
   #- NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),國內直連
   - MATCH,全球互聯,dns-failed
