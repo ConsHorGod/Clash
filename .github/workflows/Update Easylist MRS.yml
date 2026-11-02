@@ -1,0 +1,73 @@
+
+name: Update Easylist MRS
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 22 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Download Mihomo
+        shell: bash
+        run: |
+          set -e
+
+          API="https://api.github.com/repos/MetaCubeX/mihomo/releases/latest"
+
+          ASSET_URL=$(curl -fsSL "$API" | jq -r '
+            [.assets[]
+            | select(.name | test("^mihomo-linux-amd64-compatible-.*\\.gz$"))]
+            | first
+            | .browser_download_url // empty
+          ')
+
+          if [ -z "$ASSET_URL" ]; then
+            echo "找不到 Mihomo Linux AMD64 compatible 版本"
+            exit 1
+          fi
+
+          curl -fL "$ASSET_URL" -o mihomo.gz
+          gzip -dc mihomo.gz > mihomo
+          chmod +x mihomo
+
+      - name: Convert Easylist to MRS
+        run: |
+          set -e
+
+          python Scripts/easylist_to_mrs.py
+
+          ./mihomo convert-ruleset \
+            domain text \
+            RULESET/Easylist.domain.txt \
+            RULESET/Easylist.mrs
+
+          test -s RULESET/Easylist.mrs
+
+      - name: Commit MRS
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add RULESET/Easylist.mrs
+
+          if ! git diff --cached --quiet; then
+            git commit -m "Update Easylist MRS"
+            git push
+          else
+            echo "MRS 没有变化"
+          fi
