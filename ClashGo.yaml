@@ -35,6 +35,7 @@ tun:
 # DNS 配置
 dns:
   enable: true
+  listen: :23453
   cache-algorithm: arc
   prefer-h3: false
   use-hosts: true
