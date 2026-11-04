@@ -36,26 +36,44 @@ tun:
 dns:
   enable: true
   cache-algorithm: arc
-  listen: 23453
-  ipv6: true
-  respect-rules: true
+  prefer-h3: false
   use-hosts: true
   use-system-hosts: true
+  ipv6: true
+  respect-rules: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
-  fake-ip-filter-mode: rule
+  fake-ip-filter-mode: blacklist
   fake-ip-filter:
-    - RULE-SET,LAN,real-ip
-    - RULE-SET,iOS_PUSH(DOMAIN),real-ip
-    - RULE-SET,iOS_OTA,real-ip
-    - GEOSITE,apple,real-ip
-    #- RULE-SET,MY_DIRECT,real-ip
-    #- GEOSITE,cn,real-ip
-    #- RULE-SET,CN_Domain,real-ip
-    #- RULE-SET,CN_ASN,real-ip
-  nameserver:
-    - https://223.5.5.5/dns-query
+    - "*.lan"
+    - "*.local"
+    - "*.localhost"
+    - "localhost"
+    - "+.stun.*"
+    - "+.stun.*.*"
+    - "time.apple.com"
+    - "time.windows.com"
+    - "time.nist.gov"
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  proxy-server-nameserver:
+    - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
+  nameserver:
+    - https://cloudflare-dns.com/dns-query#全球互聯
+    - https://dns.google/dns-query#全球互聯
+  direct-nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  direct-nameserver-follow-policy: true
+  nameserver-policy:
+    "geosite:apple":
+      - https://dns.alidns.com/dns-query#DIRECT
+      - https://doh.pub/dns-query#DIRECT
+    "geosite:cn":
+      - https://dns.alidns.com/dns-query#DIRECT
+      - https://doh.pub/dns-query#DIRECT
 # 嗅探配置
 sniffer:
   enable: true
@@ -414,10 +432,10 @@ rules:
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
   - RULE-SET,MY_DIRECT,國內直連
   - GEOSITE,apple,國內直連
-  - RULE-SET,CN_Domain,國內直連
-  #- GEOSITE,cn,國內直連
+  #- RULE-SET,CN_Domain,國內直連
+  - GEOSITE,cn,國內直連
   - RULE-SET,CN_IP,國內直連,no-resolve
-  #- GEOIP,CN,國內直連,no-resolve
+  - GEOIP,CN,國內直連,no-resolve
   - RULE-SET,MY_PROXY,全球互聯
   #- RULE-SET,AI,AI
   - GEOSITE,category-ai-!cn,AI
@@ -431,9 +449,9 @@ rules:
   - GEOIP,TWITTER,Twitter,no-resolve
   - GEOSITE,telegram,Telegram
   - GEOIP,TELEGRAM,Telegram,no-resolve
-  - RULE-SET,Global_Domain,全球互聯
-  - RULE-SET,Global_IP,全球互聯,no-resolve
-  #- GEOSITE,geolocation-!cn,全球互聯
+  #- RULE-SET,Global_Domain,全球互聯
+  #- RULE-SET,Global_IP,全球互聯,no-resolve
+  - GEOSITE,geolocation-!cn,全球互聯
   - RULE-SET,CN_ASN,國內直連
   #- NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),國內直連
   - MATCH,全球互聯,dns-failed
