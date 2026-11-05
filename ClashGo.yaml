@@ -232,7 +232,7 @@ proxy-groups:
       - 其它機場
   - name: 主機場(HK)
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
-    hidden: false
+    hidden: true
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
@@ -241,7 +241,7 @@ proxy-groups:
       - 主機場
   - name: 主機場直連(HK)
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
-    hidden: false
+    hidden: true
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
@@ -250,7 +250,7 @@ proxy-groups:
       - 主機場
   - name: 副機場(HK)
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
-    hidden: false
+    hidden: true
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
@@ -259,7 +259,7 @@ proxy-groups:
       - 副機場
   - name: 主機場(JP)
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
-    hidden: false
+    hidden: true
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
@@ -268,7 +268,7 @@ proxy-groups:
       - 主機場
   - name: 副機場(JP)
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
-    hidden: false
+    hidden: true
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
@@ -277,7 +277,7 @@ proxy-groups:
       - 副機場
   - name: 主機場(US)
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
-    hidden: false
+    hidden: true
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
@@ -286,7 +286,7 @@ proxy-groups:
       - 主機場
   - name: 副機場(US)
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
-    hidden: false
+    hidden: true
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
@@ -295,7 +295,7 @@ proxy-groups:
       - 副機場
   - name: 其它機場(HK)
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
-    hidden: false
+    hidden: true
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
