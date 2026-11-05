@@ -63,16 +63,23 @@ dns:
     - https://cloudflare-dns.com/dns-query#全球互聯
     - https://dns.google/dns-query#全球互聯
   direct-nameserver:
-    - https://dns.alidns.com/dns-query
-    - https://doh.pub/dns-query
+    - system
   direct-nameserver-follow-policy: true
   nameserver-policy:
-    "geosite:apple":
-      - https://dns.alidns.com/dns-query#DIRECT
-      - https://doh.pub/dns-query#DIRECT
-    "geosite:cn":
-      - https://dns.alidns.com/dns-query#DIRECT
-      - https://doh.pub/dns-query#DIRECT
+    "RULE-SET:LAN":
+      - system
+    "RULE-SET:iOS_OTA":
+      - system
+    "RULE-SET:iOS_PUSH(DOMAIN)":
+      - system
+    "RULE-SET:MY_DIRECT":
+      - system
+    "GEOSITE:apple":
+      - system
+    "GEOSITE:cn":
+      - system
+    "RULE-SET:CN_ASN":
+      - system
 # 嗅探配置
 sniffer:
   enable: true
