@@ -60,8 +60,8 @@ dns:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
   nameserver:
-    - https://cloudflare-dns.com/dns-query#全球互聯
-    - https://dns.google/dns-query#全球互聯
+    - https://cloudflare-dns.com/dns-query
+    - https://dns.google/dns-query
   direct-nameserver:
     - system
   direct-nameserver-follow-policy: true
@@ -304,7 +304,7 @@ proxy-groups:
       - 其它機場
   - name: 急救機場
     icon: https://fastly.jsdelivr.net/gh/Orz-3/mini@master/Color/Rookie.png
-    hidden: false
+    hidden: true
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
