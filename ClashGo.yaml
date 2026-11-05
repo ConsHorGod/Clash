@@ -76,7 +76,7 @@ dns:
       - system
     "GEOSITE:apple":
       - system
-    "GEOSITE:cn":
+    "RULE-SET:CN_Domain":
       - system
     "RULE-SET:CN_ASN":
       - system
@@ -438,8 +438,8 @@ rules:
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
   - RULE-SET,MY_DIRECT,國內直連
   - GEOSITE,apple,國內直連
-  #- RULE-SET,CN_Domain,國內直連
-  - GEOSITE,cn,國內直連
+  - RULE-SET,CN_Domain,國內直連
+  #- GEOSITE,cn,國內直連
   - RULE-SET,CN_IP,國內直連,no-resolve
   #- GEOIP,CN,國內直連,no-resolve
   - RULE-SET,MY_PROXY,全球互聯
