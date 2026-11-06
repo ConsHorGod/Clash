@@ -63,15 +63,10 @@ dns:
     - https://cloudflare-dns.com/dns-query
     - https://dns.google/dns-query
   direct-nameserver:
-    - system
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
   direct-nameserver-follow-policy: true
   nameserver-policy:
-    "dns.alidns.com":
-      - 223.5.5.5
-      - 223.6.6.6
-    "doh.pub":
-      - 119.29.29.29
-      - 120.53.53.53
     "RULE-SET:LAN":
       - system
     "RULE-SET:iOS_OTA":
