@@ -66,20 +66,30 @@ dns:
     - system
   direct-nameserver-follow-policy: true
   nameserver-policy:
+    "dns.alidns.com":
+      - 223.5.5.5
+    "doh.pub":
+      - 119.29.29.29
     "RULE-SET:LAN":
       - system
     "RULE-SET:iOS_OTA":
-      - system
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
     "RULE-SET:iOS_PUSH(DOMAIN)":
-      - system
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
     "RULE-SET:MY_DIRECT":
-      - system
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
     "GEOSITE:apple":
-      - system
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
     "RULE-SET:CN_Domain":
-      - system
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
     "RULE-SET:CN_ASN":
-      - system
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
 # 嗅探配置
 sniffer:
   enable: true
