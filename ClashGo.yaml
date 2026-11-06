@@ -68,8 +68,10 @@ dns:
   nameserver-policy:
     "dns.alidns.com":
       - 223.5.5.5
+      - 223.6.6.6
     "doh.pub":
       - 119.29.29.29
+      - 120.53.53.53
     "RULE-SET:LAN":
       - system
     "RULE-SET:iOS_OTA":
