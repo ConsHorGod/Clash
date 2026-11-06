@@ -389,9 +389,6 @@ rule-anchor:
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>規則集<<<<<<<<<<<<<<<<<<<<
 rule-providers:
-  Anti-AD:
-    <<: *domain
-    url: https://raw.githubusercontent.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs
   LAN:
     <<: *domain
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs
@@ -425,12 +422,6 @@ rule-providers:
   CN_IP:
     <<: *ipcidr
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_IP.mrs
-  Global_Domain:
-    <<: *domain
-    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_Domain.mrs
-  Global_IP:
-    <<: *ipcidr
-    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/Global_IP.mrs
   AI:
     <<: *domain
     url: https://raw.githubusercontent.com/DustinWin/ruleset_geodata/mihomo-ruleset/ai.mrs
@@ -446,7 +437,6 @@ rules:
   - RULE-SET,iOS_PUSH(IP),iOS通知,no-resolve
   - RULE-SET,iOS_OTA,iOS更新
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
-  - RULE-SET,Anti-AD,廣告過濾,no-resolve
   - RULE-SET,MY_DIRECT,國內直連
   - GEOSITE,apple,國內直連
   - RULE-SET,CN_Domain,國內直連
@@ -458,17 +448,8 @@ rules:
   - GEOSITE,category-ai-!cn,AI
   #- RULE-SET,TikTok,TikTok
   - GEOSITE,tiktok,TikTok
-  - GEOSITE,reddit,Reddit
-  - GEOSITE,youtube,Google
-  - GEOSITE,google,Google
-  - GEOIP,GOOGLE,Google,no-resolve
-  - GEOSITE,twitter,Twitter
-  - GEOIP,TWITTER,Twitter,no-resolve
   - GEOSITE,telegram,Telegram
   - GEOIP,TELEGRAM,Telegram,no-resolve
-  - RULE-SET,Global_Domain,全球互聯
-  - RULE-SET,Global_IP,全球互聯,no-resolve
-  #- GEOSITE,geolocation-!cn,全球互聯
   - RULE-SET,CN_ASN,國內直連
   #- NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),國內直連
   - MATCH,全球互聯,dns-failed
