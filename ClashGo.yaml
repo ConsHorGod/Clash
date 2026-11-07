@@ -25,7 +25,7 @@ profile:
 # 入站
 tun:
   enable: true
-  stack: system
+  stack: gvisor
   strict-route: true
   dns-hijack: ["any:53", "tcp://any:53"]
   mtu: 1500
