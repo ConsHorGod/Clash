@@ -32,6 +32,9 @@ tun:
   auto-route: true
   auto-redirect: false
   auto-detect-interface: true
+  loopback-address:
+    - 127.0.0.1
+    - "::1"
 # DNS 配置
 dns:
   enable: true
