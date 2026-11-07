@@ -151,29 +151,6 @@ proxy-groups:
     proxies:
       - 國內直連
       - REJECT-DROP
-  - name: Google
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
-    hidden: false
-    type: select
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    proxies:
-      - 主機場(HK)
-      - 主機場(JP)
-      - 主機場(US)
-      - 全球互聯
-  - name: Reddit
-    icon: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/04ProxySoft/reddit(1).png
-    hidden: false
-    type: select
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    proxies:
-      - 主機場(HK)
-      - 主機場直連(HK)
-      - 主機場(JP)
-      - 主機場(US)
-      - 全球互聯
   - name: Telegram
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
     hidden: false
@@ -206,26 +183,6 @@ proxy-groups:
       - 主機場(US)
       - 副機場(JP)
       - 副機場(US)
-  - name: Twitter
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
-    hidden: false
-    type: select
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    proxies:
-      - 主機場(HK)
-      - 主機場直連(HK)
-      - 主機場(US)
-      - 主機場(JP)
-      - 全球互聯
-  - name: 遊戲平台
-    icon: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/03CNSoft/steam(1).png
-    hidden: false
-    type: select
-    url: https://www.gstatic.com/generate_204
-    proxies:
-      - DIRECT
-      - 全球互聯
   - name: 廣告過濾
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AdBlack.png
     hidden: false
