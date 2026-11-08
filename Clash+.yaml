@@ -50,9 +50,6 @@ dns:
   fake-ip-filter:
     - RULE-SET,LAN,real-ip
     - RULE-SET,MY_DIRECT,real-ip
-    - RULE-SET,iOS_PUSH(DOMAIN),real-ip
-    - RULE-SET,iOS_OTA,real-ip
-    - GEOSITE,apple,real-ip
     - RULE-SET,CN_Domain,real-ip
     - RULE-SET,CN_ASN,real-ip
   default-nameserver:
@@ -71,16 +68,7 @@ dns:
   nameserver-policy:
     "RULE-SET:LAN":
       - system
-    "RULE-SET:iOS_OTA":
-      - https://dns.alidns.com/dns-query
-      - https://doh.pub/dns-query
-    "RULE-SET:iOS_PUSH(DOMAIN)":
-      - https://dns.alidns.com/dns-query
-      - https://doh.pub/dns-query
     "RULE-SET:MY_DIRECT":
-      - https://dns.alidns.com/dns-query
-      - https://doh.pub/dns-query
-    "GEOSITE:apple":
       - https://dns.alidns.com/dns-query
       - https://doh.pub/dns-query
     "RULE-SET:CN_Domain":
@@ -139,20 +127,6 @@ proxy-groups:
       - 其它節點
       - 急救機場
       - 國內直連
-  - name: iOS通知
-    icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/Final.png
-    hidden: false
-    type: fallback
-    proxies:
-      - 全球互聯
-      - 國內直連
-  - name: iOS更新
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Puzzle.png
-    hidden: false
-    type: select
-    proxies:
-      - 國內直連
-      - REJECT-DROP
   - name: Telegram
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
     hidden: false
@@ -369,15 +343,6 @@ rule-providers:
   MY_REJECT:
     <<: *classical
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_REJECT.yaml
-  iOS_OTA:
-    <<: *classical
-    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_OTA.yaml
-  iOS_PUSH(DOMAIN):
-    <<: *classical
-    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_PUSH(DOMAIN).yaml
-  iOS_PUSH(IP):
-    <<: *classical
-    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_PUSH(IP).yaml
   CN_ASN:
     <<: *classical
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/China_ASN.yaml
@@ -398,13 +363,9 @@ rule-providers:
 rules:
   - RULE-SET,LAN,國內直連
   - RULE-SET,LAN_IP,DIRECT,no-resolve
-  - RULE-SET,iOS_PUSH(DOMAIN),iOS通知
-  - RULE-SET,iOS_PUSH(IP),iOS通知,no-resolve
-  - RULE-SET,iOS_OTA,iOS更新
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
   - RULE-SET,anti-ad,廣告過濾,no-resolve
   - RULE-SET,MY_DIRECT,國內直連
-  - GEOSITE,apple,國內直連
   - RULE-SET,CN_Domain,國內直連
   #- GEOSITE,cn,國內直連
   - RULE-SET,CN_IP,國內直連,no-resolve
