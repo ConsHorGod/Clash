@@ -1,0 +1,421 @@
+mixed-port: 7890
+allow-lan: true
+log-level: silent
+bind-address: '*'
+find-process-mode: 'always'
+keep-alive-interval: 15
+keep-alive-idle: 600
+external-controller: 127.0.0.1:9990
+unified-delay: true
+tcp-concurrent: true
+block-quic: true
+geodata-mode: true
+geo-auto-update: true
+geox-url:
+  geoip: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat
+  geosite: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat
+  mmdb: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country.mmdb
+  asn: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb
+profile:
+  store-selected: true
+  store-fake-ip: true
+#>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
+#>>>>>>>>>>>>>>>>>>>>>隧道<<<<<<<<<<<<<<<<<<<<
+# 入站
+tun:
+  enable: true
+  stack: MIPS
+  strict-route: true
+  dns-hijack: ["any:53", "tcp://any:53"]
+  mtu: 1500
+  auto-route: true
+  auto-redirect: false
+  auto-detect-interface: true
+  loopback-address:
+    - 127.0.0.1
+    - "::1"
+# DNS 配置
+dns:
+  enable: true
+  listen: :23453
+  cache-algorithm: arc
+  prefer-h3: false
+  use-hosts: true
+  use-system-hosts: true
+  ipv6: true
+  respect-rules: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter-mode: rule
+  fake-ip-filter:
+    - RULE-SET,LAN,real-ip
+    - RULE-SET,MY_DIRECT,real-ip
+    - RULE-SET,iOS_PUSH(DOMAIN),real-ip
+    - RULE-SET,iOS_OTA,real-ip
+    - GEOSITE,apple,real-ip
+    - RULE-SET,CN_Domain,real-ip
+    - RULE-SET,CN_ASN,real-ip
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  proxy-server-nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  nameserver:
+    - https://cloudflare-dns.com/dns-query
+    - https://dns.google/dns-query
+  direct-nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  direct-nameserver-follow-policy: true
+  nameserver-policy:
+    "RULE-SET:LAN":
+      - system
+    "RULE-SET:iOS_OTA":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+    "RULE-SET:iOS_PUSH(DOMAIN)":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+    "RULE-SET:MY_DIRECT":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+    "GEOSITE:apple":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+    "RULE-SET:CN_Domain":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+    "RULE-SET:CN_ASN":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+# 嗅探配置
+sniffer:
+  enable: true
+  parse-pure-ip: true  # 处理纯 IP 请求
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+  skip-domain:
+    - "Mijia Cloud"
+    - "+.push.apple.com"
+  skip-src-address:
+    - 192.168.50.0/24
+  skip-dst-address:
+    # telegram ip
+    - 91.105.192.0/23
+    - 91.108.4.0/22
+    - 91.108.8.0/21
+    - 91.108.16.0/21
+    - 91.108.56.0/22
+    - 95.161.64.0/20
+    - 149.154.160.0/20
+    - 185.76.151.0/24
+    - 2001:67c:4e8::/48
+    - 2001:b28:f23c::/47
+    - 2001:b28:f23f::/48
+    - 2a0a:f280:203::/48
+#>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
+#>>>>>>>>>>>>>>>>>>>>>代理節點<<<<<<<<<<<<<<<<<<<<
+proxies:
+#>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
+#>>>>>>>>>>>>>>>>>>>>>策略組<<<<<<<<<<<<<<<<<<<<
+proxy-groups:
+  - name: 全球互聯
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 主機場(HK)
+      - 副機場(HK)
+      - 其它機場(HK)
+      - 其它節點
+      - 急救機場
+      - 國內直連
+  - name: iOS通知
+    icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/Final.png
+    hidden: false
+    type: fallback
+    proxies:
+      - 全球互聯
+      - 國內直連
+  - name: iOS更新
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Puzzle.png
+    hidden: false
+    type: select
+    proxies:
+      - 國內直連
+      - REJECT-DROP
+  - name: Telegram
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 主機場(HK)
+      - 主機場直連(HK)
+      - 副機場(HK)
+  - name: TikTok
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 主機場(JP)
+      - 主機場(US)
+      - 副機場(JP)
+      - 副機場(US)
+  - name: AI
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Bot.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 主機場(JP)
+      - 主機場(US)
+      - 副機場(JP)
+      - 副機場(US)
+  - name: 廣告過濾
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AdBlack.png
+    hidden: false
+    type: select
+    proxies:
+      - DIRECT
+      - REJECT-DROP
+  - name: 其它節點
+    icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/AAEX.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: ^(?!.*(US 0|JP 0|TW 0|过期|客户端|推荐|官网|失联|发布|流量|剩余|群|套餐|客服|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|香港|HK|Hong|川日|东京|大阪|泉日|埼玉|Japan|日本|JP)).*$
+    use:
+      - 主機場
+      - 副機場
+      - 其它機場
+  - name: 主機場(HK)
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+    hidden: true
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: 香港
+    use:
+      - 主機場
+  - name: 主機場直連(HK)
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+    hidden: true
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: ^(?!.*?香港).*HK
+    use:
+      - 主機場
+  - name: 副機場(HK)
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+    hidden: true
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: 香港|HK
+    use:
+      - 副機場
+  - name: 主機場(JP)
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
+    hidden: true
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: 日本
+    use:
+      - 主機場
+  - name: 副機場(JP)
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+    hidden: true
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: 日本|JP
+    use:
+      - 副機場
+  - name: 主機場(US)
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
+    hidden: true
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: 美国
+    use:
+      - 主機場
+  - name: 副機場(US)
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+    hidden: true
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: 美国|US
+    use:
+      - 副機場
+  - name: 其它機場(HK)
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+    hidden: true
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: '香港|HK'
+    use:
+      - 其它機場
+  - name: 急救機場
+    icon: https://fastly.jsdelivr.net/gh/Orz-3/mini@master/Color/Rookie.png
+    hidden: true
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    use:
+      - 急救機場
+  - name: 國內直連
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/CN.png
+    hidden: true
+    type: select
+    url: http://mirrors.aliyun.com/generate_204
+    interval: 300
+    proxies:
+      - DIRECT
+#>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
+#>>>>>>>>>>>>>>>>>>>>>機場訂閱<<<<<<<<<<<<<<<<<<<<
+proxy-providers:
+  主機場:
+    type: http
+    path: ./provide/主機場.yml
+    url: #>>>>>>⚠️url填寫機場訂閱⚠️<<<<<<#
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+  副機場:
+    type: http
+    path: ./provide/副機場.yml
+    url: #>>>>>>⚠️url填寫機場訂閱⚠️<<<<<<#
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+  急救機場:
+    type: http
+    path: ./provide/急救機場.yml
+    url: #>>>>>>⚠️url填寫機場訂閱⚠️<<<<<<#
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+  其它機場:
+    type: http
+    path: ./provide/其它機場.yml
+    url: #>>>>>>⚠️url填寫機場訂閱⚠️<<<<<<#
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+#>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
+#>>>>>>>>>>>>>>>>>>>>>規則模板<<<<<<<<<<<<<<<<<<<<
+rule-anchor:
+  classical: &classical
+    type: http
+    interval: 21600
+    behavior: classical
+    format: yaml
+  domain: &domain
+    type: http
+    interval: 21600
+    behavior: domain
+    format: mrs
+  ipcidr: &ipcidr
+    type: http
+    interval: 21600
+    behavior: ipcidr
+    format: mrs
+#>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
+#>>>>>>>>>>>>>>>>>>>>>規則集<<<<<<<<<<<<<<<<<<<<
+rule-providers:
+  anti-ad:
+    <<: *domain
+    url: https://raw.githubusercontent.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs
+  LAN:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs
+  LAN_IP:
+    <<: *ipcidr
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs
+  MY_DIRECT:
+    <<: *classical
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_DIRECT.yaml
+  MY_PROXY:
+    <<: *classical
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_PROXY.yaml
+  MY_REJECT:
+    <<: *classical
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/MY_REJECT.yaml
+  iOS_OTA:
+    <<: *classical
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_OTA.yaml
+  iOS_PUSH(DOMAIN):
+    <<: *classical
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_PUSH(DOMAIN).yaml
+  iOS_PUSH(IP):
+    <<: *classical
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/iOS_PUSH(IP).yaml
+  CN_ASN:
+    <<: *classical
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/China_ASN.yaml
+  CN_Domain:
+    <<: *domain
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_Domain.mrs
+  CN_IP:
+    <<: *ipcidr
+    url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_IP.mrs
+  AI:
+    <<: *domain
+    url: https://raw.githubusercontent.com/DustinWin/ruleset_geodata/mihomo-ruleset/ai.mrs
+  TikTok:
+    <<: *domain
+    url: https://raw.githubusercontent.com/DustinWin/ruleset_geodata/mihomo-ruleset/tiktok.mrs
+#>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
+#>>>>>>>>>>>>>>>>>>>>>分流規則<<<<<<<<<<<<<<<<<<<<
+rules:
+  - RULE-SET,LAN,國內直連
+  - RULE-SET,LAN_IP,DIRECT,no-resolve
+  - RULE-SET,iOS_PUSH(DOMAIN),iOS通知
+  - RULE-SET,iOS_PUSH(IP),iOS通知,no-resolve
+  - RULE-SET,iOS_OTA,iOS更新
+  - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
+  - RULE-SET,anti-ad,廣告過濾,no-resolve
+  - RULE-SET,MY_DIRECT,國內直連
+  - GEOSITE,apple,國內直連
+  - RULE-SET,CN_Domain,國內直連
+  #- GEOSITE,cn,國內直連
+  - RULE-SET,CN_IP,國內直連,no-resolve
+  #- GEOIP,CN,國內直連,no-resolve
+  - RULE-SET,MY_PROXY,全球互聯
+  #- RULE-SET,AI,AI
+  - GEOSITE,category-ai-!cn,AI
+  #- RULE-SET,TikTok,TikTok
+  - GEOSITE,tiktok,TikTok
+  - GEOSITE,telegram,Telegram
+  - GEOIP,TELEGRAM,Telegram,no-resolve
+  - RULE-SET,CN_ASN,國內直連
+  #- NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),國內直連
+  - MATCH,全球互聯,dns-failed
