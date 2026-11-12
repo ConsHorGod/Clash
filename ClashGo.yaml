@@ -310,7 +310,7 @@ proxy-providers:
     type: http
     path: ./provide/副機場.yml
 #>>>>>>⚠️url填寫機場訂閱⚠️<<<<<<#
-    url: https://liangxin.xyz/api/v1/liangxin?OwO=548c8c140641cb099ddce75922e0ba6d
+    url: https://7777699.xyz/api/v1/owo?OwO=ff5559c5c1f27896b8ee030ba0bdf968
     interval: 86400
     health-check:
       enable: true
