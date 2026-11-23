@@ -158,16 +158,28 @@ proxy-groups:
     proxies:
       - 國內直連
       - REJECT-DROP
-  - name: Telegram
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
+  - name: Google
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
     hidden: false
     type: select
     url: https://www.gstatic.com/generate_204
     interval: 300
     proxies:
       - 主機場(HK)
-      - 主機場直連(HK)
-      - 副機場(HK)
+      - 主機場(JP)
+      - 主機場(US)
+      - 全球互聯
+  - name: Reddit
+    icon: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/04ProxySoft/reddit(1).png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 主機場(HK)
+      - 主機場(JP)
+      - 主機場(US)
+      - 全球互聯
   - name: TikTok
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
     hidden: false
@@ -179,6 +191,31 @@ proxy-groups:
       - 主機場(US)
       - 副機場(JP)
       - 副機場(US)
+  - name: Telegram
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 主機場(HK)
+      - 主機場直連(HK)
+      - 副機場(HK)
+      - 全球互聯
+  - name: Twitter
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 主機場(HK)
+      - 主機場(JP)
+      - 主機場(US)
+      - 副機場(HK)
+      - 副機場(JP)
+      - 副機場(US)
+      - 全球互聯
   - name: AI
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Bot.png
     hidden: false
@@ -282,7 +319,7 @@ proxy-groups:
       - 其它機場
   - name: 急救機場
     icon: https://fastly.jsdelivr.net/gh/Orz-3/mini@master/Color/Rookie.png
-    hidden: true
+    hidden: false
     type: url-test
     url: https://www.gstatic.com/generate_204
     interval: 300
