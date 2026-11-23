@@ -323,7 +323,7 @@ proxy-providers:
     type: http
     path: ./provide/急救機場.yml
 #>>>>>>⚠️url填寫機場訂閱⚠️<<<<<<#
-    url: https://388583885.459245.xyz/api/v1/client/subscribe?token=0e79462ce42ab0413ed58d454329934e
+    url: https://sadvac.908970.xyz/api/v1/client/subscribe?token=0e79462ce42ab0413ed58d454329934e
     interval: 86400
     health-check:
       enable: true
