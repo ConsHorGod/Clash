@@ -177,8 +177,7 @@ proxy-groups:
     interval: 300
     proxies:
       - 主機場(HK)
-      - 主機場(JP)
-      - 主機場(US)
+      - 副機場(HK)
       - 全球互聯
   - name: TikTok
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
