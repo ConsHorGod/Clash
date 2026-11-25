@@ -187,9 +187,28 @@ proxy-groups:
     interval: 300
     proxies:
       - 主機場(JP)
+      - 主機場(JP直連)
       - 主機場(US)
+      - 主機場(US直連)
       - 副機場(JP)
       - 副機場(US)
+  - name: YouTube
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 主機場(HK)
+      - 主機場(HK直連)
+      - 主機場(JP)
+      - 主機場(JP直連)
+      - 主機場(US)
+      - 主機場(US直連)
+      - 副機場(HK)
+      - 副機場(JP)
+      - 副機場(US)
+      - 全球互聯
   - name: Telegram
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
     hidden: false
@@ -198,7 +217,7 @@ proxy-groups:
     interval: 300
     proxies:
       - 主機場(HK)
-      - 主機場直連(HK)
+      - 主機場(HK直連)
       - 副機場(HK)
       - 全球互聯
   - name: Twitter
@@ -209,8 +228,11 @@ proxy-groups:
     interval: 300
     proxies:
       - 主機場(HK)
+      - 主機場(HK直連)
       - 主機場(JP)
+      - 主機場(JP直連)
       - 主機場(US)
+      - 主機場(US直連)
       - 副機場(HK)
       - 副機場(JP)
       - 副機場(US)
@@ -253,7 +275,7 @@ proxy-groups:
     filter: 香港
     use:
       - 主機場
-  - name: 主機場直連(HK)
+  - name: 主機場(HK直連)
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
     hidden: true
     type: url-test
@@ -280,6 +302,15 @@ proxy-groups:
     filter: 日本
     use:
       - 主機場
+  - name: 主機場(JP直連)
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
+    hidden: true
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: JP 0
+    use:
+      - 主機場
   - name: 副機場(JP)
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
     hidden: true
@@ -296,6 +327,15 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     filter: 美国
+    use:
+      - 主機場
+  - name: 主機場(US直連)
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
+    hidden: true
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    filter: US 0
     use:
       - 主機場
   - name: 副機場(US)
@@ -462,7 +502,7 @@ rules:
   - GEOSITE,tiktok,TikTok
   - GEOSITE,telegram,Telegram
   - GEOIP,TELEGRAM,Telegram,no-resolve
-  - GEOSITE,youtube,Google
+  - GEOSITE,youtube,YouTube
   - GEOSITE,google,Google
   - GEOIP,GOOGLE,Google,no-resolve
   - GEOSITE,twitter,Twitter
