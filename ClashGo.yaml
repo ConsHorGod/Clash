@@ -88,12 +88,33 @@ dns:
     "RULE-SET:CN_Domain":
       - https://dns.alidns.com/dns-query
       - https://doh.pub/dns-query
-    #"GEOSITE:cn":
-      #- https://dns.alidns.com/dns-query
-      #- https://doh.pub/dns-query
     "RULE-SET:CN_ASN":
       - https://dns.alidns.com/dns-query
       - https://doh.pub/dns-query
+    "RULE-SET:MY_PROXY":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
+    "GEOSITE:reddit":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
+    "GEOSITE:category-ai-!cn":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
+    "GEOSITE:tiktok":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
+    "GEOSITE:telegram":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
+    "GEOSITE:youtube":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
+    "GEOSITE:google":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
+    "GEOSITE:twitter":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
 # 嗅探配置
 sniffer:
   enable: true
@@ -169,29 +190,6 @@ proxy-groups:
       - 主機場(JP)
       - 主機場(US)
       - 全球互聯
-  - name: Reddit
-    icon: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/04ProxySoft/reddit(1).png
-    hidden: false
-    type: select
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    proxies:
-      - 主機場(HK)
-      - 副機場(HK)
-      - 全球互聯
-  - name: TikTok
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
-    hidden: false
-    type: select
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-    proxies:
-      - 主機場(JP)
-      - 主機場(JP直連)
-      - 主機場(US)
-      - 主機場(US直連)
-      - 副機場(JP)
-      - 副機場(US)
   - name: YouTube
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
     hidden: false
@@ -220,6 +218,29 @@ proxy-groups:
       - 主機場(HK直連)
       - 副機場(HK)
       - 全球互聯
+  - name: Reddit
+    icon: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/04ProxySoft/reddit(1).png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 主機場(HK)
+      - 副機場(HK)
+      - 全球互聯
+  - name: TikTok
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 主機場(JP)
+      - 主機場(JP直連)
+      - 主機場(US)
+      - 主機場(US直連)
+      - 副機場(JP)
+      - 副機場(US)
   - name: Twitter
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
     hidden: false
