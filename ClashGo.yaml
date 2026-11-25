@@ -493,6 +493,12 @@ rule-providers:
   CN_IP:
     <<: *ipcidr
     url: https://raw.githubusercontent.com/ConsHorGod/MY_RULE/main/RULESET/ChinaMax_IP.mrs
+  Global_Domain:
+    <<: *domain
+    url: https://github.com/ConsHorGod/Clash/raw/refs/heads/main/RULESET/Global_Domain.mrs
+  Global_IP:
+    <<: *ipcidr
+    url: https://github.com/ConsHorGod/Clash/raw/refs/heads/main/RULESET/Global_IP.mrs
   #AI:
     #<<: *domain
     #url: https://raw.githubusercontent.com/DustinWin/ruleset_geodata/mihomo-ruleset/ai.mrs
@@ -528,6 +534,8 @@ rules:
   - GEOIP,GOOGLE,Google,no-resolve
   - GEOSITE,twitter,Twitter
   - GEOIP,TWITTER,Twitter,no-resolve
+  - RULE-SET,Global_Domain,全球互聯,no-resolve
+  - RULE-SET,Global_IP,全球互聯,no-resolve
   - RULE-SET,CN_ASN,國內直連
   #- NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),國內直連
   - MATCH,全球互聯,dns-failed
