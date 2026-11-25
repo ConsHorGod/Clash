@@ -115,6 +115,9 @@ dns:
     "GEOSITE:twitter":
       - https://cloudflare-dns.com/dns-query
       - https://dns.google/dns-query
+    "RULE-SET:Global_Domain":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
 # 嗅探配置
 sniffer:
   enable: true
@@ -152,7 +155,16 @@ proxies:
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>策略組<<<<<<<<<<<<<<<<<<<<
 proxy-groups:
-  - name: 全球互聯
+  - name: 最終出站
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Final.png
+    hidden: false
+    type: select
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 國際代理
+      - 國內直連
+  - name: 國際代理
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png
     hidden: false
     type: select
@@ -164,13 +176,12 @@ proxy-groups:
       - 其它機場(HK)
       - 其它節點
       - 急救機場
-      - 國內直連
   - name: iOS通知
     icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/Final.png
     hidden: false
     type: fallback
     proxies:
-      - 全球互聯
+      - 國際代理
       - 國內直連
   - name: iOS更新
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Puzzle.png
@@ -189,7 +200,7 @@ proxy-groups:
       - 主機場(HK)
       - 主機場(JP)
       - 主機場(US)
-      - 全球互聯
+      - 國際代理
   - name: YouTube
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
     hidden: false
@@ -206,7 +217,7 @@ proxy-groups:
       - 副機場(HK)
       - 副機場(JP)
       - 副機場(US)
-      - 全球互聯
+      - 國際代理
   - name: Telegram
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
     hidden: false
@@ -217,7 +228,7 @@ proxy-groups:
       - 主機場(HK)
       - 主機場(HK直連)
       - 副機場(HK)
-      - 全球互聯
+      - 國際代理
   - name: Reddit
     icon: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/04ProxySoft/reddit(1).png
     hidden: false
@@ -227,7 +238,7 @@ proxy-groups:
     proxies:
       - 主機場(HK)
       - 副機場(HK)
-      - 全球互聯
+      - 國際代理
   - name: TikTok
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
     hidden: false
@@ -257,7 +268,7 @@ proxy-groups:
       - 副機場(HK)
       - 副機場(JP)
       - 副機場(US)
-      - 全球互聯
+      - 國際代理
   - name: AI
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Bot.png
     hidden: false
@@ -521,7 +532,7 @@ rules:
   #- GEOIP,CN,國內直連,no-resolve
   - RULE-SET,CN_Domain,國內直連
   #- GEOSITE,cn,國內直連
-  - RULE-SET,MY_PROXY,全球互聯
+  - RULE-SET,MY_PROXY,國際代理
   - GEOSITE,reddit,Reddit
   #- RULE-SET,AI,AI
   - GEOSITE,category-ai-!cn,AI
@@ -534,8 +545,8 @@ rules:
   - GEOIP,GOOGLE,Google,no-resolve
   - GEOSITE,twitter,Twitter
   - GEOIP,TWITTER,Twitter,no-resolve
-  - RULE-SET,Global_Domain,全球互聯,no-resolve
-  - RULE-SET,Global_IP,全球互聯,no-resolve
+  - RULE-SET,Global_Domain,國際代理,no-resolve
+  - RULE-SET,Global_IP,國際代理,no-resolve
   - RULE-SET,CN_ASN,國內直連
   #- NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),國內直連
-  - MATCH,全球互聯,dns-failed
+  - MATCH,最終出站,dns-failed
