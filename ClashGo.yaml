@@ -89,7 +89,7 @@ proxies:
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>策略組<<<<<<<<<<<<<<<<<<<<
 proxy-groups:
-- name: 國際互联
+- name: 國際互聯
   icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png
   hidden: false
   type: select
