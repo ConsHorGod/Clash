@@ -74,23 +74,17 @@ dns:
     "RULE-SET:LAN":
       - system
     "RULE-SET:iOS_OTA":
-      - https://dns.alidns.com/dns-query
-      - https://doh.pub/dns-query
+      - system
     "RULE-SET:iOS_PUSH(DOMAIN)":
-      - https://dns.alidns.com/dns-query
-      - https://doh.pub/dns-query
+      - system
     "RULE-SET:MY_DIRECT":
-      - https://dns.alidns.com/dns-query
-      - https://doh.pub/dns-query
+      - system
     "GEOSITE:apple":
-      - https://dns.alidns.com/dns-query
-      - https://doh.pub/dns-query
+      - system
     "RULE-SET:CN_Domain":
-      - https://dns.alidns.com/dns-query
-      - https://doh.pub/dns-query
+      - system
     "RULE-SET:CN_ASN":
-      - https://dns.alidns.com/dns-query
-      - https://doh.pub/dns-query
+      - system
     "GEOSITE:reddit":
       - https://cloudflare-dns.com/dns-query
       - https://dns.google/dns-query
@@ -104,10 +98,8 @@ dns:
       - https://cloudflare-dns.com/dns-query
       - https://dns.google/dns-query
     "GEOSITE:youtube":
-      - https://cloudflare-dns.com/dns-query
       - https://dns.google/dns-query
     "GEOSITE:google":
-      - https://cloudflare-dns.com/dns-query
       - https://dns.google/dns-query
     "GEOSITE:twitter":
       - https://cloudflare-dns.com/dns-query
