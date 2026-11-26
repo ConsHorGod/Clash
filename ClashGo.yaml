@@ -548,7 +548,7 @@ rules:
   - GEOIP,GOOGLE,Google,no-resolve
   - GEOSITE,twitter,Twitter
   - GEOIP,TWITTER,Twitter,no-resolve
-  - RULE-SET,Global_Domain,國際代理,no-resolve
+  - RULE-SET,Global_Domain,國際代理
   - RULE-SET,Global_IP,國際代理,no-resolve
   - RULE-SET,CN_ASN,國內直連
   #- NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),國內直連
