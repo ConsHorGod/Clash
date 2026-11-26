@@ -172,8 +172,14 @@ proxy-groups:
     interval: 300
     proxies:
       - 主機場(HK)
+      - 主機場(HK直連)
+      - 主機場(JP)
+      - 主機場(JP直連)
+      - 主機場(US)
+      - 主機場(US直連)
       - 副機場(HK)
-      - 其它機場(HK)
+      - 副機場(JP)
+      - 副機場(US)
       - 其它節點
       - 急救機場
   - name: iOS通知
