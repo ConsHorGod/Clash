@@ -91,6 +91,30 @@ dns:
     "RULE-SET:CN_ASN":
       - https://dns.alidns.com/dns-query
       - https://doh.pub/dns-query
+    "GEOSITE:reddit":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
+    "GEOSITE:category-ai-!cn":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
+    "GEOSITE:tiktok":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
+    "GEOSITE:telegram":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
+    "GEOSITE:youtube":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
+    "GEOSITE:google":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
+    "GEOSITE:twitter":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
+    "GEOSITE:Global_Domain":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
 # 嗅探配置
 sniffer:
   enable: true
