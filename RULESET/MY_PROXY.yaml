@@ -1,6 +1,4 @@
 payload:
-  - DOMAIN,dns.google
-  - DOMAIN,cloudflare-dns.com
   - DOMAIN,unpkg.com
   - DOMAIN-KEYWORD,github # 全球開發者平台
   - DOMAIN-SUFFIX,liangxin1.xyz # 良心云机场
