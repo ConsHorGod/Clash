@@ -112,7 +112,7 @@ dns:
     "GEOSITE:twitter":
       - https://cloudflare-dns.com/dns-query
       - https://dns.google/dns-query
-    "GEOSITE:Global_Domain":
+    "RULE-SET:Global_Domain":
       - https://cloudflare-dns.com/dns-query
       - https://dns.google/dns-query
 # 嗅探配置
