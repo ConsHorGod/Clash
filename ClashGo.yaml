@@ -160,7 +160,7 @@ proxy-groups:
     interval: 300
     proxies:
       - 國際代理
-      - 國內直連
+      - DIRECT
   - name: 國際代理
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png
     hidden: false
@@ -185,13 +185,13 @@ proxy-groups:
     type: fallback
     proxies:
       - 國際代理
-      - 國內直連
+      - DIRECT
   - name: iOS更新
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Puzzle.png
     hidden: false
     type: select
     proxies:
-      - 國內直連
+      - DIRECT
       - REJECT-DROP
   - name: Google
     icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
@@ -399,14 +399,6 @@ proxy-groups:
     interval: 300
     use:
       - 急救機場
-  - name: 國內直連
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/CN.png
-    hidden: true
-    type: select
-    url: http://mirrors.aliyun.com/generate_204
-    interval: 300
-    proxies:
-      - DIRECT
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>機場訂閱<<<<<<<<<<<<<<<<<<<<
 proxy-providers:
@@ -522,19 +514,19 @@ rule-providers:
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>分流規則<<<<<<<<<<<<<<<<<<<<
 rules:
-  - RULE-SET,LAN,國內直連
+  - RULE-SET,LAN,DIRECT
   - RULE-SET,LAN_IP,DIRECT,no-resolve
   - RULE-SET,iOS_PUSH(DOMAIN),iOS通知
   - RULE-SET,iOS_PUSH(IP),iOS通知,no-resolve
   - RULE-SET,iOS_OTA,iOS更新
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
   #- RULE-SET,anti-ad,廣告攔截,no-resolve
-  - RULE-SET,MY_DIRECT,國內直連
-  - GEOSITE,apple,國內直連
-  - RULE-SET,CN_IP,國內直連,no-resolve
-  #- GEOIP,CN,國內直連,no-resolve
-  - RULE-SET,CN_Domain,國內直連
-  #- GEOSITE,cn,國內直連
+  - RULE-SET,MY_DIRECT,DIRECT
+  - GEOSITE,apple,DIRECT
+  - RULE-SET,CN_IP,DIRECT,no-resolve
+  #- GEOIP,CN,DIRECT,no-resolve
+  - RULE-SET,CN_Domain,DIRECT
+  #- GEOSITE,cn,DIRECT
   - RULE-SET,MY_PROXY,國際代理
   - GEOSITE,reddit,Reddit
   #- RULE-SET,AI,AI
@@ -550,6 +542,6 @@ rules:
   - GEOIP,TWITTER,Twitter,no-resolve
   - RULE-SET,Global_Domain,國際代理
   - RULE-SET,Global_IP,國際代理,no-resolve
-  - RULE-SET,CN_ASN,國內直連
-  #- NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),國內直連
+  - RULE-SET,CN_ASN,DIRECT
+  #- NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),DIRECT
   - MATCH,最終出站,dns-failed
