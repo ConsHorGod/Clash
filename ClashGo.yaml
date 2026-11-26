@@ -519,6 +519,8 @@ rules:
   #- GEOIP,CN,DIRECT,no-resolve
   - RULE-SET,CN_Domain,DIRECT
   #- GEOSITE,cn,DIRECT
+  - DOMAIN,dns.google,國際代理
+  - DOMAIN,cloudflare-dns.com,國際代理
   - RULE-SET,MY_PROXY,國際代理
   - GEOSITE,reddit,Reddit
   #- RULE-SET,AI,AI
