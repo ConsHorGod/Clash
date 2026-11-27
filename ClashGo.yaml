@@ -54,7 +54,7 @@ dns:
   nameserver-policy:
     "RULE-SET:LAN": ["system"]
     "RULE-SET:iOS_OTA": ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"]
-    "RULE-SET:iOS_PUSH(DOMAIN)": ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"]
+    "RULE-SET:iOS_PUSH(DOMAIN)": ["https://cloudflare-dns.com/dns-query", "https://dns.google/dns-query"]
     "RULE-SET:MY_DIRECT": ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"]
     "GEOSITE:apple": ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"]
     "RULE-SET:CN_Domain": ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"]
