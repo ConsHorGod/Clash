@@ -1,4 +1,3 @@
-subscribe: https://raw.githubusercontent.com/ConsHorGod/Clash/refs/heads/main/ClashGo.yaml
 mixed-port: 7890
 allow-lan: true
 log-level: silent
