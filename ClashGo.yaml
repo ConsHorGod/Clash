@@ -63,8 +63,8 @@ dns:
     "GEOSITE:category-ai-!cn": ["https://cloudflare-dns.com/dns-query", "https://dns.google/dns-query"]
     "GEOSITE:tiktok": ["https://cloudflare-dns.com/dns-query", "https://dns.google/dns-query"]
     "GEOSITE:telegram": ["https://cloudflare-dns.com/dns-query", "https://dns.google/dns-query"]
-    "GEOSITE:youtube": ["https://dns.google/dns-query"]
-    "GEOSITE:google": ["https://dns.google/dns-query"]
+    "GEOSITE:youtube": ["https://cloudflare-dns.com/dns-query", "https://dns.google/dns-query"]
+    "GEOSITE:google": ["https://cloudflare-dns.com/dns-query", "https://dns.google/dns-query"]
     "GEOSITE:twitter": ["https://cloudflare-dns.com/dns-query", "https://dns.google/dns-query"]
     "RULE-SET:Global_Domain": ["https://cloudflare-dns.com/dns-query", "https://dns.google/dns-query"]
 # 嗅探配置
