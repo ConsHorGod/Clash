@@ -53,12 +53,12 @@ dns:
   direct-nameserver-follow-policy: true
   nameserver-policy:
     "RULE-SET:LAN": ["system"]
-    "RULE-SET:iOS_OTA": ["system"]
-    "RULE-SET:iOS_PUSH(DOMAIN)": ["system"]
-    "RULE-SET:MY_DIRECT": ["system"]
-    "GEOSITE:apple": ["system"]
-    "RULE-SET:CN_Domain": ["system"]
-    "RULE-SET:CN_ASN": ["system"]
+    "RULE-SET:iOS_OTA": ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"]
+    "RULE-SET:iOS_PUSH(DOMAIN)": ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"]
+    "RULE-SET:MY_DIRECT": ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"]
+    "GEOSITE:apple": ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"]
+    "RULE-SET:CN_Domain": ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"]
+    "RULE-SET:CN_ASN": ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"]
     "GEOSITE:reddit": ["https://cloudflare-dns.com/dns-query", "https://dns.google/dns-query"]
     "GEOSITE:category-ai-!cn": ["https://cloudflare-dns.com/dns-query", "https://dns.google/dns-query"]
     "GEOSITE:tiktok": ["https://cloudflare-dns.com/dns-query", "https://dns.google/dns-query"]
