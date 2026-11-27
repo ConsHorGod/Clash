@@ -146,11 +146,11 @@ proxy-groups:
   url: https://www.gstatic.com/generate_204
   interval: 300
   proxies: [主機場(JP), 主機場(US), 副機場(JP), 副機場(US)]
-#- name: 廣告攔截
-  #icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AdBlack.png
-  #hidden: false
-  #type: select
-  #proxies: [DIRECT, REJECT-DROP]
+- name: AD_Block
+  icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AdBlack.png
+  hidden: false
+  type: select
+  proxies: [DIRECT, REJECT-DROP]
 - name: 其它節點
   icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/AAEX.png
   hidden: false
@@ -310,9 +310,9 @@ rule-anchor:
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>規則集<<<<<<<<<<<<<<<<<<<<
 rule-providers:
-  #anti-ad:
-    #<<: *domain
-    #url: https://raw.githubusercontent.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs
+  AD_Block:
+    <<: *domain
+    url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs
   LAN:
     <<: *domain
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs
@@ -371,7 +371,7 @@ rules:
   - RULE-SET,iOS_PUSH(IP),iOS_PUSH,no-resolve
   - RULE-SET,iOS_OTA,iOS_OTA
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
-  #- RULE-SET,anti-ad,廣告攔截,no-resolve
+  - RULE-SET,AD_Block,AD_Block,no-resolve
   - RULE-SET,MY_DIRECT,DIRECT
   - GEOSITE,apple,DIRECT
   - RULE-SET,CN_IP,DIRECT,no-resolve
