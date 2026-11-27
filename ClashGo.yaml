@@ -84,73 +84,71 @@ proxy-groups:
   icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png
   hidden: false
   type: select
-  url: https://www.gstatic.com/generate_204
-  interval: 300
-  proxies: [主機場(HK), 主機場(HK直連), 主機場(JP), 主機場(JP直連), 主機場(US), 主機場(US直連), 副機場(HK), 副機場(JP), 副機場(US), 其它節點, 急救機場, DIRECT]
-- name: iOS_PUSH
+  proxies: [主機場(HK), 主機場(HK直連), 主機場(JP), 主機場(JP直連), 主機場(US), 主機場(US直連), 副機場(HK), 副機場(JP), 副機場(US), 其它節點, 急救機場, 國內直連]
+- name: 通知推送
   icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/Final.png
   hidden: false
   type: fallback
-  proxies: [國際互聯, DIRECT]
-- name: iOS_OTA
+  proxies: [國際互聯, 國內直連]
+- name: 系統更新
   icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Puzzle.png
   hidden: false
   type: select
-  proxies: [DIRECT, REJECT-DROP]
-- name: Google
+  proxies: [國內直連, REJECT-DROP]
+- name: 谷歌引擎
   icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
   hidden: false
   type: select
   url: https://www.gstatic.com/generate_204
   interval: 300
   proxies: [主機場(HK), 主機場(JP), 主機場(US), 國際互聯]
-- name: YouTube
+- name: 油管視頻
   icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
   hidden: false
   type: select
   url: https://www.gstatic.com/generate_204
   interval: 300
   proxies: [主機場(HK), 主機場(HK直連), 主機場(JP), 主機場(JP直連), 主機場(US), 主機場(US直連), 副機場(HK), 副機場(JP), 副機場(US), 國際互聯]
-- name: Telegram
+- name: 飛機電報
   icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
   hidden: false
   type: select
   url: https://www.gstatic.com/generate_204
   interval: 300
   proxies: [主機場(HK), 主機場(HK直連), 副機場(HK), 國際互聯]
-- name: Reddit
+- name: 自由論壇
   icon: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/04ProxySoft/reddit(1).png
   hidden: false
   type: select
   url: https://www.gstatic.com/generate_204
   interval: 300
   proxies: [主機場(HK), 副機場(HK), 國際互聯]
-- name: TikTok
+- name: 國際抖音
   icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
   hidden: false
   type: select
   url: https://www.gstatic.com/generate_204
   interval: 300
   proxies: [主機場(JP), 主機場(JP直連), 主機場(US), 主機場(US直連), 副機場(JP), 副機場(US)]
-- name: Twitter
+- name: 推特社交
   icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
   hidden: false
   type: select
   url: https://www.gstatic.com/generate_204
   interval: 300
   proxies: [主機場(HK), 主機場(HK直連), 主機場(JP), 主機場(JP直連), 主機場(US), 主機場(US直連), 副機場(HK), 副機場(JP), 副機場(US), 國際互聯]
-- name: AI
+- name: 人工智能
   icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Bot.png
   hidden: false
   type: select
   url: https://www.gstatic.com/generate_204
   interval: 300
   proxies: [主機場(JP), 主機場(US), 副機場(JP), 副機場(US)]
-- name: AD_Block
+- name: 廣告攔截
   icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AdBlack.png
   hidden: false
   type: select
-  proxies: [DIRECT, REJECT-DROP]
+  proxies: [國內直連, REJECT-DROP]
 - name: 其它節點
   icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/AAEX.png
   hidden: false
@@ -246,6 +244,13 @@ proxy-groups:
   url: https://www.gstatic.com/generate_204
   interval: 300
   use: [急救機場]
+- name: 國內直連
+  icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/CN.png
+  hidden: true
+  type: select
+  url: http://mirrors.aliyun.com/generate_204
+  interval: 300
+  proxies: [DIRECT]
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>機場訂閱<<<<<<<<<<<<<<<<<<<<
 proxy-providers:
@@ -361,38 +366,38 @@ rule-providers:
 #>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<
 #>>>>>>>>>>>>>>>>>>>>>分流規則<<<<<<<<<<<<<<<<<<<<
 rules:
-  - DOMAIN,dns.alidns.com,DIRECT
-  - DOMAIN,doh.pub,DIRECT
+  - DOMAIN,dns.alidns.com,國內直連
+  - DOMAIN,doh.pub,國內直連
   - DOMAIN,dns.google,國際互聯
   - DOMAIN,cloudflare-dns.com,國際互聯
-  - RULE-SET,LAN,DIRECT
-  - RULE-SET,LAN_IP,DIRECT,no-resolve
-  - RULE-SET,iOS_PUSH(DOMAIN),iOS_PUSH
-  - RULE-SET,iOS_PUSH(IP),iOS_PUSH,no-resolve
-  - RULE-SET,iOS_OTA,iOS_OTA
+  - RULE-SET,LAN,國內直連
+  - RULE-SET,LAN_IP,國內直連,no-resolve
+  - RULE-SET,iOS_PUSH(DOMAIN),通知推送
+  - RULE-SET,iOS_PUSH(IP),通知推送,no-resolve
+  - RULE-SET,iOS_OTA,系統更新
   - RULE-SET,MY_REJECT,REJECT-DROP,no-resolve
-  - RULE-SET,AD_Block,AD_Block,no-resolve
-  - RULE-SET,MY_DIRECT,DIRECT
-  - GEOSITE,apple,DIRECT
-  - RULE-SET,CN_IP,DIRECT,no-resolve
-  #- GEOIP,CN,DIRECT,no-resolve
-  - RULE-SET,CN_Domain,DIRECT
-  #- GEOSITE,cn,DIRECT
+  - RULE-SET,AD_Block,廣告攔截,no-resolve
+  - RULE-SET,MY_DIRECT,國內直連
+  - GEOSITE,apple,國內直連
+  - RULE-SET,CN_IP,國內直連,no-resolve
+  #- GEOIP,CN,國內直連,no-resolve
+  - RULE-SET,CN_Domain,國內直連
+  #- GEOSITE,cn,國內直連
   - RULE-SET,MY_PROXY,國際互聯
-  - GEOSITE,reddit,Reddit
-  #- RULE-SET,AI,AI
-  - GEOSITE,category-ai-!cn,AI
-  #- RULE-SET,TikTok,TikTok
-  - GEOSITE,tiktok,TikTok
-  - GEOSITE,telegram,Telegram
-  - GEOIP,TELEGRAM,Telegram,no-resolve
-  - GEOSITE,youtube,YouTube
-  - GEOSITE,google,Google
-  - GEOIP,GOOGLE,Google,no-resolve
-  - GEOSITE,twitter,Twitter
-  - GEOIP,TWITTER,Twitter,no-resolve
+  - GEOSITE,reddit,自由論壇
+  #- RULE-SET,AI,人工智能
+  - GEOSITE,category-ai-!cn,人工智能
+  #- RULE-SET,TikTok,國際抖音
+  - GEOSITE,tiktok,國際抖音
+  - GEOSITE,telegram,飛機電報
+  - GEOIP,TELEGRAM,飛機電報,no-resolve
+  - GEOSITE,youtube,油管視頻
+  - GEOSITE,google,谷歌引擎
+  - GEOIP,GOOGLE,谷歌引擎,no-resolve
+  - GEOSITE,twitter,推特社交
+  - GEOIP,TWITTER,推特社交,no-resolve
   - RULE-SET,Global_Domain,國際互聯
   - RULE-SET,Global_IP,國際互聯,no-resolve
-  - RULE-SET,CN_ASN,DIRECT
-  #- NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),DIRECT
+  - RULE-SET,CN_ASN,國內直連
+  #- NOT,((OR,((DST-PORT,80),(DST-PORT,443)))),國內直連
   - MATCH,國際互聯,dns-failed
