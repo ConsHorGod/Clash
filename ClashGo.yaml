@@ -53,8 +53,8 @@ dns:
   direct-nameserver-follow-policy: true
   nameserver-policy:
     "RULE-SET:LAN": ["system"]
+    "RULE-SET:iOS_PUSH(DOMAIN)": ["https://cloudflare-dns.com/dns-query", "https://dns.google/dns-query"]
     "RULE-SET:iOS_OTA": ["system"]
-    "RULE-SET:iOS_PUSH(DOMAIN)": ["system"]
     "RULE-SET:MY_DIRECT": ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"]
     "GEOSITE:apple": ["system"]
     "RULE-SET:CN_Domain": ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"]
